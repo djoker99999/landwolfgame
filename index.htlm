@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu Futuriste</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('https://pbs.twimg.com/media/GMVM2MPacAAP9qS.jpg:large');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .game-container {
+            max-width: 100%;
+            width: 485px;
+            height: 402px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00bfff;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .button:hover {
+            background-color: #00bfff;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                width: 100%;
+                height: auto;
+            }
+
+            .button {
+                font-size: 1em;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <iframe src="https://scratch.mit.edu/projects/1062643454/embed" allowtransparency="true" width="485" height="402" frameborder="0" scrolling="no" allowfullscreen></iframe>
+    </div>
+
+    <div class="buttons">
+        <a href="https://t.me/firstlandwolfeth" class="button" target="_blank">Telegram</a>
+        <a href="https://x.com/landwolfctoeth" class="button" target="_blank">Twitter</a>
+    </div>
+
+</body>
+</html>
