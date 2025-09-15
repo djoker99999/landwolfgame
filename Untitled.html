@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Roue - Spin rapide avec compteurs et sons</title>
+<title>Roue - Spin rapide avec compteurs</title>
 <style>
 :root{
   --bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -247,27 +247,6 @@ footer {
   animation: celebrate 0.5s ease;
 }
 
-/* Indicateur de son */
-.sound-control {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(0,0,0,0.7);
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 100;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-.sound-control i {
-  font-size: 24px;
-  color: white;
-}
-
 /* Popup de félicitations */
 .popup {
   position: fixed;
@@ -374,6 +353,7 @@ footer {
 <div id="fragCount">Total fragments: 0</div>
 <div id="fragSylver">Argent: 0</div>
 <div id="fragGold">Or: 0</div>
+<div id="fragDiamond">Diamant: 0</div>
 </div>
 <div class="stat">
 <b>Changements de roue</b>
@@ -396,10 +376,6 @@ footer {
 </div>
 
 <footer>Spin rapide 0.5s — multi-spin séquentiel — couleurs & compteurs en temps réel.</footer>
-</div>
-
-<div class="sound-control" id="soundControl">
-  <i>🔊</i>
 </div>
 
 <!-- Popup de félicitations -->
@@ -469,7 +445,6 @@ const spinBtn = document.getElementById('spinBtn');
 const multiBtn = document.getElementById('multiBtn');
 const resetBtn = document.getElementById('resetBtn');
 const wheelSelect = document.getElementById('wheelSelect');
-const soundControl = document.getElementById('soundControl');
 const congratsPopup = document.getElementById('congratsPopup');
 
 const resultEl = document.getElementById('result');
@@ -495,7 +470,6 @@ let currentItems = wheelsData[currentWheel];
 let angle = 0;
 let spinning = false;
 let totalTurns = 0;
-let soundEnabled = true;
 const resultsCount = {};
 const counters = {
   piecesTotal:0, piecesCount:0,
@@ -503,24 +477,6 @@ const counters = {
   fragCount:0, fragSylver:0, fragGold:0, fragDiamond:0,
   wheelSylver:0, wheelGold:0, wheelDiamond:0
 };
-
-// Sons
-const spinSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA");
-const winSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA");
-const wheelChangeSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA");
-
-// Configuration des sons (sons de base encodés en base64)
-function initSounds() {
-  // Son de rotation (bruit de roue qui tourne)
-  spinSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAASAQA+AAEAAABYgDTADEAeQICAAEAugC/AAgB9wD+AA==";
-  spinSound.loop = true;
-  
-  // Son de gain (son de victoire)
-  winSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAASAQA+AAEAAABYgDTADEAeQICAAEAugC/AAgB9wD+AA==";
-  
-  // Son de changement de roue (son spécial)
-  wheelChangeSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAA9wD+AA==";
-}
 
 // ==================== UTIL ====================
 function setCanvasSize(){
@@ -639,12 +595,6 @@ function spinOnce(){
   spinBtn.disabled=true; 
   multiBtn.disabled=true;
   
-  // Jouer le son de rotation
-  if (soundEnabled) {
-    spinSound.currentTime = 0;
-    spinSound.play();
-  }
-  
   // Ajouter une classe pour l'animation de la roue
   canvas.classList.add('spinning');
 
@@ -671,9 +621,6 @@ function spinOnce(){
       else{
         angle=((angle%(2*Math.PI))+2*Math.PI)% (2*Math.PI);
         const pick = items[targetIndex];
-        
-        // Arrêter le son de rotation
-        spinSound.pause();
         
         // Enlever la classe d'animation
         canvas.classList.remove('spinning');
@@ -730,19 +677,16 @@ function applyResult(pick){
     currentWheel = "silver";
     wheelChanged = true;
     counters.wheelSylver++;
-    if (soundEnabled) wheelChangeSound.play();
   } 
   else if(normalizedPick.includes("roue or") || normalizedPick.includes("gold wheel")) {
     currentWheel = "gold";
     wheelChanged = true;
     counters.wheelGold++;
-    if (soundEnabled) wheelChangeSound.play();
   } 
   else if(normalizedPick.includes("roue diamant") || normalizedPick.includes("diamond wheel")) {
     currentWheel = "diamond";
     wheelChanged = true;
     counters.wheelDiamond++;
-    if (soundEnabled) wheelChangeSound.play();
     
     // Stocker le résultat pour l'afficher dans le popup
     diamondResult = pick;
@@ -772,29 +716,21 @@ function applyResult(pick){
     const val = parseInt(pick) || 0;
     counters.piecesTotal += val;
     counters.piecesCount++;
-    if (soundEnabled && val > 0) winSound.play();
   } else if(cat==='tickets'){
     const val = parseInt(pick) || 1;
     counters.ticketsTotal += val;
     counters.ticketsCount++;
-    if (soundEnabled && val > 0) winSound.play();
   } else if(cat==='fragment-sylver'){ 
     counters.fragCount++; 
     counters.fragSylver++; 
-    if (soundEnabled) winSound.play();
   }
   else if(cat==='fragment-gold'){ 
     counters.fragCount++; 
     counters.fragGold++; 
-    if (soundEnabled) winSound.play();
   }
   else if(cat==='fragment-diamond'){ 
     counters.fragCount++; 
     counters.fragDiamond++; 
-    if (soundEnabled) winSound.play();
-  }
-  else if(cat==='wheelChange') {
-    if (soundEnabled) wheelChangeSound.play();
   }
 
   updateCounters();
@@ -829,6 +765,7 @@ function updateCounters(){
   fragCountEl.textContent='Total fragments: '+counters.fragCount;
   fragSylverEl.textContent='Argent: '+counters.fragSylver;
   fragGoldEl.textContent='Or: '+counters.fragGold;
+  fragDiamondEl.textContent='Diamant: '+counters.fragDiamond;
   sylverCountEl.textContent='Argent: '+counters.wheelSylver;
   goldCountEl.textContent='Or: '+counters.wheelGold;
   diamondCountEl.textContent='Diamant: '+counters.wheelDiamond;
@@ -897,16 +834,9 @@ wheelSelect.addEventListener('change',(e)=>{
   updateHistory('Changement manuel de roue','wheelChange');
 });
 
-// Contrôle du son
-soundControl.addEventListener('click', function() {
-  soundEnabled = !soundEnabled;
-  this.querySelector('i').textContent = soundEnabled ? '🔊' : '🔇';
-});
-
 // ==================== INIT ====================
 setCanvasSize();
 drawWheel(currentItems,angle);
-initSounds();
 </script>
 </body>
 </html>
