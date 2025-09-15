@@ -1,83 +1,912 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu Futuriste</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-image: url('https://pbs.twimg.com/media/GMVM2MPacAAP9qS.jpg:large');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Roue - Spin rapide avec compteurs et sons</title>
+<style>
+:root{
+  --bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  --card: rgba(15, 15, 16, 0.8);
+  --txt: #eef0f2;
+  --bronze: #cd7f32; --silver: #c0c0c0; --gold: #ffd700; --diamond: #00e6e6;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --glow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 20px;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  background: linear-gradient(45deg, var(--bronze), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+select, input, button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(40, 40, 45, 0.8);
+  color: var(--txt);
+  font-size: 0.95rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+select:focus, input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--gold);
+}
+button {
+  cursor: pointer;
+  font-weight: 600;
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+  border: 1px solid #444;
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+button:active {
+  transform: translateY(1px);
+}
+#spinBtn {
+  background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+}
+#multiBtn {
+  background: linear-gradient(to bottom, #2196F3, #0D47A1);
+}
+#resetBtn {
+  background: linear-gradient(to bottom, #F44336, #B71C1C);
+}
+.main {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.canvasWrap {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+canvas {
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--shadow), 0 0 30px rgba(255, 215, 0, 0.3);
+  transition: transform 0.5s ease;
+}
+canvas.spinning {
+  animation: wheelGlow 1.5s infinite alternate;
+}
+@keyframes wheelGlow {
+  0% { box-shadow: var(--shadow), 0 0 20px rgba(255, 215, 0, 0.3); }
+  100% { box-shadow: var(--shadow), 0 0 40px rgba(255, 215, 0, 0.8); }
+}
+#result {
+  font-size: 1.4rem;
+  margin: 15px 0;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  text-align: center;
+  min-width: 80%;
+  transition: all 0.5s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+#result.highlight {
+  background: linear-gradient(45deg, rgba(255,215,0,0.3), rgba(255,140,0,0.3));
+  transform: scale(1.05);
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+#turnCounter {
+  font-size: 1.1rem;
+  margin-top: 10px;
+  color: #ccc;
+}
+.info {
+  flex: 1;
+  min-width: 320px;
+  background: var(--card);
+  border: 1px solid #333;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+.statGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.stat {
+  background: rgba(20, 20, 25, 0.8);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #222;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}
+.stat:hover {
+  transform: translateY(-3px);
+}
+.stat b {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #ddd;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+}
+.stat .reset-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+.stat .reset-icon:hover {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+#summary, #history {
+  margin-top: 15px;
+  max-height: 180px;
+  overflow: auto;
+  padding: 12px;
+  background: rgba(10, 10, 15, 0.8);
+  border-radius: 8px;
+  border: 1px solid #222;
+  white-space: pre-wrap;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+}
+#history {
+  margin-top: 20px;
+}
+.legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  justify-content: center;
+}
+.legendItem {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 6px;
+}
+.colorBox {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #222;
+}
+.hist-pieces{ color: #65b26e }
+.hist-tickets{ color: #6ea8ff }
+.hist-fragment-sylver{ color: #c78cff }
+.hist-fragment-gold{ color: #ffd700 }
+.hist-fragment-diamond{ color: #00e6e6 }
+.hist-wheelchange{ color: #ffd166 }
+.hist-other{ color: #ffb86b }
+footer {
+  margin-top: 25px;
+  color: #909090;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 15px;
+  border-top: 1px solid #333;
+}
 
-        .game-container {
-            max-width: 100%;
-            width: 485px;
-            height: 402px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
+/* Animation pour les gains importants */
+@keyframes celebrate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.celebrate {
+  animation: celebrate 0.5s ease;
+}
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+/* Indicateur de son */
+.sound-control {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.sound-control i {
+  font-size: 24px;
+  color: white;
+}
 
-        .buttons {
-            display: flex;
-            gap: 20px;
-        }
+/* Popup de félicitations */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.popup.active {
+  opacity: 1;
+  visibility: visible;
+}
+.popup-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 400px;
+  width: 80%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 2px solid var(--diamond);
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+.popup.active .popup-content {
+  transform: scale(1);
+}
+.popup h2 {
+  color: var(--diamond);
+  margin-top: 0;
+  font-size: 2rem;
+}
+.popup p {
+  font-size: 1.2rem;
+  margin: 15px 0;
+}
+.popup-btn {
+  background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 15px;
+}
 
-        .button {
-            padding: 10px 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 2px solid #00bfff;
-            border-radius: 10px;
-            text-align: center;
-            color: white;
-            text-decoration: none;
-            font-size: 1.2em;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        .button:hover {
-            background-color: #00bfff;
-            transform: scale(1.05);
-        }
-
-        @media (max-width: 600px) {
-            .game-container {
-                width: 100%;
-                height: auto;
-            }
-
-            .button {
-                font-size: 1em;
-                padding: 8px 16px;
-            }
-        }
-    </style>
+@media(max-width: 760px){
+  .main { flex-direction: column; }
+  header { flex-direction: column; }
+  .controls { justify-content: center; }
+}
+</style>
 </head>
-
 <body>
-    <div class="game-container"><iframe src="https://scratch.mit.edu/projects/1062643454/embed" allowtransparency="true" width="485" height="402" frameborder="0" scrolling="no" allowfullscreen=""></iframe></div>
-    <div class="buttons"><a href="https://t.me/firstlandwolfeth" class="button" target="_blank">Telegram</a> <a href="https://x.com/landwolfctoeth" class="button" target="_blank">Twitter</a></div>
+<div class="wrap">
+<header>
+<h1 id="wheelTitle">🎡 Roue Bronze</h1>
+<div class="controls">
+<select id="wheelSelect">
+<option value="bronze">Bronze</option>
+<option value="silver">Argent</option>
+<option value="gold">Or</option>
+<option value="diamond">Diamant</option>
+</select>
 
-<div style="color: red">Word to HTML trial - please <a href="https://wordtohtml.net/site/payment">Go PRO</a> to get whole HTML.</div>
+<button id="spinBtn">🎯 1 Tour</button>
+<input id="multiCount" type="number" min="1" value="10" style="width:78px" />
+<button id="multiBtn">🚀 Lancer plusieurs</button>
+<button id="resetBtn">🔄 Reset Complet</button>
+</div>
+</header>
+
+<div class="main">
+<div class="canvasWrap">
+<canvas id="wheel"></canvas>
+<h2 id="result">Résultat : -</h2>
+<div id="turnCounter">Tours effectués : 0</div>
+</div>
+
+<div class="info">
+<div class="statGrid">
+<div class="stat">
+<b>Pièces</b>
+<div id="piecesTotal">Total pièces: 0</div>
+<div id="piecesCount">Nombre de gains pièces: 0</div>
+<span class="reset-icon" title="Réinitialiser les pièces" onclick="resetPieces()">↺</span>
+</div>
+<div class="stat">
+<b>Tickets</b>
+<div id="ticketsTotal">Total tickets: 0</div>
+<div id="ticketsCount">Nombre de gains tickets: 0</div>
+</div>
+<div class="stat">
+<b>Fragments</b>
+<div id="fragCount">Total fragments: 0</div>
+<div id="fragSylver">Argent: 0</div>
+<div id="fragGold">Or: 0</div>
+</div>
+<div class="stat">
+<b>Changements de roue</b>
+<div id="sylverCount">Argent: 0</div>
+<div id="goldCount">Or: 0</div>
+<div id="diamondCount">Diamant: 0</div>
+</div>
+</div>
+
+<div class="legend">
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#d4ffd4,#88cc88)"></div> Pièces</div>
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#e6f0ff,#66a3ff)"></div> Tickets</div>
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#f0e6ff,#c59bff)"></div> Fragment Argent</div>
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#fff5b1,#ffd700)"></div> Changement de roue</div>
+</div>
+
+<div id="summary"></div>
+<div id="history"><b>Historique :</b></div>
+</div>
+</div>
+
+<footer>Spin rapide 0.5s — multi-spin séquentiel — couleurs & compteurs en temps réel.</footer>
+</div>
+
+<div class="sound-control" id="soundControl">
+  <i>🔊</i>
+</div>
+
+<!-- Popup de félicitations -->
+<div class="popup" id="congratsPopup">
+  <div class="popup-content">
+    <h2>Félicitations !</h2>
+    <p id="popupMessage">Vous avez gagné un prix spécial !</p>
+    <button class="popup-btn" onclick="document.getElementById('congratsPopup').classList.remove('active')">Fermer</button>
+  </div>
+</div>
+
+<script>
+// ==================== DONNÉES ====================
+const bronzeItems = [
+  "1 Ticket", "5 Pièces", "1/100 Argent", "1 Ticket", "1 Ticket",
+  "5 Pièces", "1 Ticket", "1/100 Argent", "5 Pièces", "15 Pièces",
+  "1 Ticket", "1 Ticket", "5 Pièces", "10 Pièces", "1 Ticket",
+  "1 Ticket", "Roue Argent", "1 Pièce", "30 Pièces", "1 Ticket"
+];
+
+const silverItems = [
+  "1/100 Or", "2 Tickets", "2 Tickets", "2 Tickets", "2 Tickets",
+  "2 Tickets", "2 Tickets", "2 Tickets", "100 Pièces", "1/100 Or",
+  "2 Tickets", "2 Tickets", "30 Pièces", "Roue Or", "2 Tickets",
+  "2 Tickets", "2 Tickets", "2 Tickets", "2 Tickets", "100 Pièces"
+];
+
+const goldItems = [
+  "200 Pièces", "Roue Diamant", "1000 Pièces", "1/100 Diamant", "100 Pièces",
+  "10 tours Argent", "300 Pièces", "500 Pièces", "1000 Pièces", "1000 Pièces",
+  "500 Pièces", "300 Pièces", "500 Pièces", "3 Tickets", "500 Pièces",
+  "1/100 Diamant", "500 Pièces", "300 Pièces", "400 Pièces", "500 Pièces"
+];
+
+const diamondItems = [
+  "Roue Univers", "5000 Pièces", "2000 Pièces", "1000 Pièces", "10000 Pièces",
+  "1000 Pièces", "30000 Pièces", "1000 Pièces", "3 Tickets", "7000 Pièces",
+  "1000 Pièces", "5000 Pièces", "1000 Pièces", "7000 Pièces", "500 Pièces",
+  "1000 Pièces", "50 tours Argent offerts", "1000 Pièces", "3 tours Or offerts",
+  "10000 Pièces", "1000 Pièces", "300 Pièces", "3 Tickets"
+];
+
+const wheelsData = { bronze: bronzeItems, silver: silverItems, gold: goldItems, diamond: diamondItems };
+
+// ==================== COLORS ====================
+const categoryColors = {
+  pieces: ['#d4ffd4','#88cc88'],
+  tickets: ['#e6f0ff','#66a3ff'],
+  'fragment-sylver': ['#c78cff','#a050d0'],
+  'fragment-gold': ['#ffd700','#e6c84a'],
+  'fragment-diamond': ['#00e6e6','#009999'],
+  wheelChange: ['#fff5b1','#ffd700'],
+  other: ['#f39c12','#e67e22']
+};
+
+const wheelBaseColors = {
+  bronze: ['#f1c27d','#d99a4a'],
+  silver: ['#dedede','#aaaaaa'],
+  gold: ['#ffef9c','#e6c84a'],
+  diamond: ['#bff9ff','#66e6e6']
+};
+
+// ==================== STATE ====================
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const spinBtn = document.getElementById('spinBtn');
+const multiBtn = document.getElementById('multiBtn');
+const resetBtn = document.getElementById('resetBtn');
+const wheelSelect = document.getElementById('wheelSelect');
+const soundControl = document.getElementById('soundControl');
+const congratsPopup = document.getElementById('congratsPopup');
+
+const resultEl = document.getElementById('result');
+const turnCounterEl = document.getElementById('turnCounter');
+const summaryEl = document.getElementById('summary');
+const historyEl = document.getElementById('history');
+const wheelTitle = document.getElementById('wheelTitle');
+
+const piecesTotalEl = document.getElementById('piecesTotal');
+const piecesCountEl = document.getElementById('piecesCount');
+const ticketsTotalEl = document.getElementById('ticketsTotal');
+const ticketsCountEl = document.getElementById('ticketsCount');
+const fragCountEl = document.getElementById('fragCount');
+const fragSylverEl = document.getElementById('fragSylver');
+const fragGoldEl = document.getElementById('fragGold');
+const fragDiamondEl = document.getElementById('fragDiamond');
+const sylverCountEl = document.getElementById('sylverCount');
+const goldCountEl = document.getElementById('goldCount');
+const diamondCountEl = document.getElementById('diamondCount');
+
+let currentWheel = 'bronze';
+let currentItems = wheelsData[currentWheel];
+let angle = 0;
+let spinning = false;
+let totalTurns = 0;
+let soundEnabled = true;
+const resultsCount = {};
+const counters = {
+  piecesTotal:0, piecesCount:0,
+  ticketsTotal:0, ticketsCount:0,
+  fragCount:0, fragSylver:0, fragGold:0, fragDiamond:0,
+  wheelSylver:0, wheelGold:0, wheelDiamond:0
+};
+
+// Sons
+const spinSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA");
+const winSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA");
+const wheelChangeSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA");
+
+// Configuration des sons (sons de base encodés en base64)
+function initSounds() {
+  // Son de rotation (bruit de roue qui tourne)
+  spinSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAAAAASAQA+AAEAAABYgDTADEAeQICAAEAugC/AAgB9wD+AA==";
+  spinSound.loop = true;
+  
+  // Son de gain (son de victoire)
+  winSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAASAQA+AAEAAABYgDTADEAeQICAAEAugC/AAgB9wD+AA==";
+  
+  // Son de changement de roue (son spécial)
+  wheelChangeSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAA9wD+AA==";
+}
+
+// ==================== UTIL ====================
+function setCanvasSize(){
+  const size = Math.min(520, Math.floor(window.innerWidth * 0.56));
+  const dpr = window.devicePixelRatio || 1;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  drawWheel(currentItems, angle);
+}
+window.addEventListener('resize', setCanvasSize);
+
+function normalize(s){ return (s||'').toLowerCase(); }
+function extractFraction(s){ const m = s.match(/(\d+)\s*\/\s*(\d+)/); return m ? Number(m[1])/Number(m[2]) : null; }
+function categorizeLabel(s){
+  const low = normalize(s);
+  if(/\bpi[eè]c/i.test(s) || low.includes('pièce') || low.includes('pièces')) return 'pieces';
+  if(/\btickets?\b|ticket de/i.test(low)) return 'tickets';
+  if(/\/\d+|1\/100/.test(low)){
+    if(low.includes('sylver') || low.includes('argent')) return 'fragment-sylver';
+    if(low.includes('gold') || low.includes('or')) return 'fragment-gold';
+    if(low.includes('diamond')||low.includes('diamant')) return 'fragment-diamond';
+    return 'fragment';
+  }
+  if(/wheel|golden|silver|diamond|diamant|universe|galaxie|galaxy|or|argent/i.test(low)) return 'wheelChange';
+  return 'other';
+}
+
+// ==================== DRAW ====================
+function drawWheel(items, angleOffset = 0){
+  const size = canvas.clientWidth;
+  const center = size/2;
+  const radius = center-12;
+  const num = items.length;
+  const arc = (2*Math.PI)/num;
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.save(); 
+  ctx.translate(center,center); 
+  ctx.rotate(angleOffset);
+
+  // Dessiner l'arrière-plan de la roue avec un dégradé
+  const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+  gradient.addColorStop(0, wheelBaseColors[currentWheel][0]);
+  gradient.addColorStop(1, wheelBaseColors[currentWheel][1]);
+  
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  for(let i=0;i<num;i++){
+    const start = i*arc;
+    const label = items[i];
+    const cat = categorizeLabel(label);
+    let colors = categoryColors[cat] || categoryColors.other;
+    const fill = (i%2===0)?colors[0]:colors[1];
+
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,radius,start,start+arc);
+    ctx.closePath();
+    ctx.fillStyle=fill;
+    ctx.fill();
+    ctx.strokeStyle='#fff'; 
+    ctx.lineWidth=1; 
+    ctx.stroke();
+
+    ctx.save(); 
+    ctx.rotate(start + arc/2);
+    const fontSize = Math.max(11, Math.floor(radius / (num > 12 ? 7.6 : 6.6)));
+    ctx.font = `bold ${fontSize}px Arial`;
+    ctx.textAlign='right';
+    ctx.fillStyle='#000';
+    ctx.fillText(label, radius-8,6);
+    ctx.restore();
+  }
+  
+  // Dessiner le centre de la roue
+  ctx.beginPath();
+  ctx.arc(0, 0, 15, 0, 2 * Math.PI);
+  ctx.fillStyle = '#222';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  ctx.restore();
+
+  // Dessiner l'indicateur
+  ctx.fillStyle='#d62828';
+  ctx.beginPath();
+  ctx.moveTo(center-14,8);
+  ctx.lineTo(center+14,8);
+  ctx.lineTo(center,36);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Ajouter un effet d'ombre à l'indicateur
+  ctx.strokeStyle = '#900';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// ==================== SPIN ====================
+function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
+
+function spinOnce(){
+  if(spinning) return Promise.resolve(null);
+  spinning=true; 
+  spinBtn.disabled=true; 
+  multiBtn.disabled=true;
+  
+  // Jouer le son de rotation
+  if (soundEnabled) {
+    spinSound.currentTime = 0;
+    spinSound.play();
+  }
+  
+  // Ajouter une classe pour l'animation de la roue
+  canvas.classList.add('spinning');
+
+  const items = currentItems;
+  const num = items.length;
+  const arc = (2*Math.PI)/num;
+  const targetIndex = Math.floor(Math.random()*num);
+  const center_i = targetIndex*arc+arc/2;
+  const rotations = 4+Math.floor(Math.random()*2);
+  const finalRotation = -Math.PI/2-center_i+rotations*2*Math.PI;
+  const startRotation = angle;
+  const duration=1500; // Augmenté la durée pour un effet plus dramatique
+  let startTime=null;
+
+  return new Promise(resolve=>{
+    function animate(ts){
+      if(!startTime) startTime=ts;
+      const elapsed = ts-startTime;
+      const t = Math.min(1,elapsed/duration);
+      const ease = easeOutCubic(t);
+      angle = startRotation + (finalRotation-startRotation)*ease;
+      drawWheel(currentItems, angle);
+      if(t<1) requestAnimationFrame(animate);
+      else{
+        angle=((angle%(2*Math.PI))+2*Math.PI)% (2*Math.PI);
+        const pick = items[targetIndex];
+        
+        // Arrêter le son de rotation
+        spinSound.pause();
+        
+        // Enlever la classe d'animation
+        canvas.classList.remove('spinning');
+        
+        applyResult(pick);
+        spinning=false; 
+        spinBtn.disabled=false; 
+        multiBtn.disabled=false;
+        resolve(pick);
+      }
+    }
+    requestAnimationFrame(animate);
+  });
+}
+
+async function multiSpin(){
+  const count=parseInt(document.getElementById('multiCount').value,10);
+  if(isNaN(count)||count<1) return alert('Veuillez entrer un nombre valide.');
+  spinBtn.disabled=true; 
+  multiBtn.disabled=true;
+  for(let i=0;i<count;i++){
+    await spinOnce();
+    await new Promise(r=>setTimeout(r,120));
+  }
+  spinBtn.disabled=false; 
+  multiBtn.disabled=false;
+}
+
+// ==================== APPLY RESULT ====================
+function applyResult(pick){
+  totalTurns++;
+  resultsCount[pick]=(resultsCount[pick]||0)+1;
+  resultEl.textContent='Résultat : '+pick;
+  
+  // Animation du résultat
+  resultEl.classList.remove('highlight');
+  void resultEl.offsetWidth; // Déclencher le reflow
+  resultEl.classList.add('highlight');
+  
+  setTimeout(() => {
+    resultEl.classList.remove('highlight');
+  }, 2000);
+  
+  turnCounterEl.textContent='Tours effectués : '+totalTurns;
+
+  const cat = categorizeLabel(pick);
+  const normalizedPick = normalize(pick);
+
+  // Gestion du changement de roue
+  let wheelChanged = false;
+  let diamondResult = null;
+  
+  if(normalizedPick.includes("roue argent") || normalizedPick.includes("silver wheel")) {
+    currentWheel = "silver";
+    wheelChanged = true;
+    counters.wheelSylver++;
+    if (soundEnabled) wheelChangeSound.play();
+  } 
+  else if(normalizedPick.includes("roue or") || normalizedPick.includes("gold wheel")) {
+    currentWheel = "gold";
+    wheelChanged = true;
+    counters.wheelGold++;
+    if (soundEnabled) wheelChangeSound.play();
+  } 
+  else if(normalizedPick.includes("roue diamant") || normalizedPick.includes("diamond wheel")) {
+    currentWheel = "diamond";
+    wheelChanged = true;
+    counters.wheelDiamond++;
+    if (soundEnabled) wheelChangeSound.play();
+    
+    // Stocker le résultat pour l'afficher dans le popup
+    diamondResult = pick;
+  }
+  else if((cat === 'pieces' || cat === 'tickets') && currentWheel !== 'bronze') {
+    // Revenir à la roue bronze si on obtient des pièces ou tickets sur une autre roue
+    currentWheel = "bronze";
+    wheelChanged = true;
+  }
+  
+  // Mise à jour de la roue si changement
+  if(wheelChanged) {
+    currentItems = wheelsData[currentWheel];
+    wheelSelect.value = currentWheel;
+    const wheelNames = {
+      'bronze': 'Bronze',
+      'silver': 'Argent', 
+      'gold': 'Or',
+      'diamond': 'Diamant'
+    };
+    wheelTitle.textContent = `🎡 Roue ${wheelNames[currentWheel]}`;
+    drawWheel(currentItems, angle);
+  }
+
+  // Compter les gains
+  if(cat==='pieces'){
+    const val = parseInt(pick) || 0;
+    counters.piecesTotal += val;
+    counters.piecesCount++;
+    if (soundEnabled && val > 0) winSound.play();
+  } else if(cat==='tickets'){
+    const val = parseInt(pick) || 1;
+    counters.ticketsTotal += val;
+    counters.ticketsCount++;
+    if (soundEnabled && val > 0) winSound.play();
+  } else if(cat==='fragment-sylver'){ 
+    counters.fragCount++; 
+    counters.fragSylver++; 
+    if (soundEnabled) winSound.play();
+  }
+  else if(cat==='fragment-gold'){ 
+    counters.fragCount++; 
+    counters.fragGold++; 
+    if (soundEnabled) winSound.play();
+  }
+  else if(cat==='fragment-diamond'){ 
+    counters.fragCount++; 
+    counters.fragDiamond++; 
+    if (soundEnabled) winSound.play();
+  }
+  else if(cat==='wheelChange') {
+    if (soundEnabled) wheelChangeSound.play();
+  }
+
+  updateCounters();
+  updateSummary();
+  updateHistory(pick,cat);
+  
+  // Afficher le popup pour la roue diamant
+  if (diamondResult) {
+    setTimeout(() => {
+      document.getElementById('popupMessage').textContent = `Vous avez gagné: ${diamondResult}`;
+      congratsPopup.classList.add('active');
+      
+      // Retour à la roue bronze après affichage du popup
+      setTimeout(() => {
+        currentWheel = "bronze";
+        currentItems = wheelsData[currentWheel];
+        wheelSelect.value = currentWheel;
+        wheelTitle.textContent = '🎡 Roue Bronze';
+        drawWheel(currentItems, angle);
+        updateHistory('Retour à la roue Bronze', 'wheelChange');
+      }, 500);
+    }, 1000);
+  }
+}
+
+// ==================== UPDATE UI ====================
+function updateCounters(){
+  piecesTotalEl.textContent='Total pièces: '+counters.piecesTotal;
+  piecesCountEl.textContent='Nombre de gains pièces: '+counters.piecesCount;
+  ticketsTotalEl.textContent='Total tickets: '+counters.ticketsTotal;
+  ticketsCountEl.textContent='Nombre de gains tickets: '+counters.ticketsCount;
+  fragCountEl.textContent='Total fragments: '+counters.fragCount;
+  fragSylverEl.textContent='Argent: '+counters.fragSylver;
+  fragGoldEl.textContent='Or: '+counters.fragGold;
+  sylverCountEl.textContent='Argent: '+counters.wheelSylver;
+  goldCountEl.textContent='Or: '+counters.wheelGold;
+  diamondCountEl.textContent='Diamant: '+counters.wheelDiamond;
+}
+
+function updateSummary(){
+  let text='Résumé des résultats :\n';
+  for(const [k,v] of Object.entries(resultsCount)) text+=`${k}: ${v}\n`;
+  summaryEl.textContent=text;
+}
+
+function updateHistory(pick,cat){
+  const time=(new Date()).toLocaleTimeString();
+  const cls = cat==='pieces'?'hist-pieces':
+              cat==='tickets'?'hist-tickets':
+              cat==='fragment-sylver'?'hist-fragment-sylver':
+              cat==='fragment-gold'?'hist-fragment-gold':
+              cat==='fragment-diamond'?'hist-fragment-diamond':
+              cat==='wheelChange'?'hist-wheelchange':'hist-other';
+  const div=document.createElement('div');
+  div.className=cls;
+  div.textContent=`${time} - ${pick}`;
+  historyEl.appendChild(div);
+  historyEl.scrollTop=historyEl.scrollHeight;
+}
+
+// ==================== RESET FUNCTIONS ====================
+function resetPieces() {
+  counters.piecesTotal = 0;
+  counters.piecesCount = 0;
+  updateCounters();
+  updateHistory('Réinitialisation des pièces', 'other');
+}
+
+function resetAll(){
+  totalTurns=0;
+  currentWheel = 'bronze';
+  currentItems = wheelsData[currentWheel];
+  wheelSelect.value = currentWheel;
+  wheelTitle.textContent = '🎡 Roue Bronze';
+  Object.keys(resultsCount).forEach(k=>delete resultsCount[k]);
+  Object.keys(counters).forEach(k=>counters[k]=0);
+  resultEl.textContent='Résultat : -';
+  turnCounterEl.textContent='Tours effectués : 0';
+  summaryEl.textContent='';
+  historyEl.innerHTML='<b>Historique :</b>';
+  updateCounters();
+  drawWheel(currentItems, angle);
+}
+
+// ==================== EVENTS ====================
+spinBtn.addEventListener('click',()=>spinOnce());
+multiBtn.addEventListener('click',multiSpin);
+resetBtn.addEventListener('click',resetAll);
+wheelSelect.addEventListener('change',(e)=>{
+  currentWheel=e.target.value;
+  currentItems=wheelsData[currentWheel];
+  const wheelNames = {
+    'bronze': 'Bronze',
+    'silver': 'Argent', 
+    'gold': 'Or',
+    'diamond': 'Diamant'
+  };
+  wheelTitle.textContent=`🎡 Roue ${wheelNames[currentWheel]}`;
+  drawWheel(currentItems,angle);
+  updateHistory('Changement manuel de roue','wheelChange');
+});
+
+// Contrôle du son
+soundControl.addEventListener('click', function() {
+  soundEnabled = !soundEnabled;
+  this.querySelector('i').textContent = soundEnabled ? '🔊' : '🔇';
+});
+
+// ==================== INIT ====================
+setCanvasSize();
+drawWheel(currentItems,angle);
+initSounds();
+</script>
 </body>
-
 </html>
