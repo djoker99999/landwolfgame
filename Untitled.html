@@ -443,7 +443,7 @@ footer {
 <div class="progress-container">
   <div class="progress-title">
     <span>Progression vers la roue Argent</span>
-    <span id="sylverProgressText">0/100</span>
+    <span id="sylverProgressText">0/20</span>
   </div>
   <div class="progress-bar">
     <div class="progress-fill" id="sylverProgressBar"></div>
@@ -484,24 +484,24 @@ footer {
 <script>
 // ==================== DONNÉES ====================
 const bronzeItems = [
-  "1 Ticket", "5 Pièces", "1/100 Argent", "1 Ticket", "1 Ticket",
-  "5 Pièces", "1 Ticket", "1/100 Argent", "5 Pièces", "15 Pièces",
+  "1 Ticket", "5 Pièces", "1/20 Argent", "1 Ticket", "1 Ticket",
+  "5 Pièces", "1 Ticket", "1/20 Argent", "5 Pièces", "15 Pièces",
   "1 Ticket", "1 Ticket", "5 Pièces", "10 Pièces", "1 Ticket",
   "1 Ticket", "Roue Argent", "1 Pièce", "30 Pièces", "1 Ticket"
 ];
 
 const silverItems = [
-  "1/100 Or", "2 Tickets", "2 Tickets", "2 Tickets", "2 Tickets",
-  "2 Tickets", "2 Tickets", "2 Tickets", "100 Pièces", "1/100 Or",
+  "1/20 Or", "2 Tickets", "2 Tickets", "2 Tickets", "2 Tickets",
+  "2 Tickets", "2 Tickets", "2 Tickets", "100 Pièces", "1/20 Or",
   "2 Tickets", "2 Tickets", "30 Pièces", "Roue Or", "2 Tickets",
   "2 Tickets", "2 Tickets", "2 Tickets", "2 Tickets", "100 Pièces"
 ];
 
 const goldItems = [
-  "200 Pièces", "Roue Diamant", "1000 Pièces", "1/100 Diamant", "100 Pièces",
+  "200 Pièces", "Roue Diamant", "1000 Pièces", "1/20 Diamant", "100 Pièces",
   "10 tours Argent", "300 Pièces", "500 Pièces", "1000 Pièces", "1000 Pièces",
   "500 Pièces", "300 Pièces", "500 Pièces", "3 Tickets", "500 Pièces",
-  "1/100 Diamant", "500 Pièces", "300 Pièces", "400 Pièces", "500 Pièces"
+  "1/20 Diamant", "500 Pièces", "300 Pièces", "400 Pièces", "500 Pièces"
 ];
 
 const diamondItems = [
@@ -606,7 +606,7 @@ function categorizeLabel(s){
   const low = normalize(s);
   if(/\bpi[eè]c/i.test(s) || low.includes('pièce') || low.includes('pièces')) return 'pieces';
   if(/\btickets?\b|ticket de/i.test(low)) return 'tickets';
-  if(/\/\d+|1\/100/.test(low)){
+  if(/\/\d+|1\/20/.test(low)){
     if(low.includes('sylver') || low.includes('argent')) return 'fragment-sylver';
     if(low.includes('gold') || low.includes('or')) return 'fragment-gold';
     if(low.includes('diamond')||low.includes('diamant')) return 'fragment-diamond';
@@ -950,7 +950,7 @@ function updateCounters(){
 }
 
 function updateSylverProgress() {
-  const totalNeeded = 100;
+  const totalNeeded = 20; // Changé de 100 à 20
   const currentProgress = counters.fragSylver;
   const percentage = Math.min(100, (currentProgress / totalNeeded) * 100);
   
