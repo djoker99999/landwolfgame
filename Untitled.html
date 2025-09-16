@@ -691,8 +691,9 @@ function applyResult(pick){
     // Stocker le résultat pour l'afficher dans le popup
     diamondResult = pick;
   }
-  else if((cat === 'pieces' || cat === 'tickets') && currentWheel !== 'bronze') {
+  else if((cat === 'pieces' || cat === 'tickets') && currentWheel !== 'bronze' && !normalizedPick.includes("roue diamant")) {
     // Revenir à la roue bronze si on obtient des pièces ou tickets sur une autre roue
+    // SAUF si on vient de gagner la roue diamant
     currentWheel = "bronze";
     wheelChanged = true;
   }
