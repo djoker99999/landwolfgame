@@ -228,6 +228,72 @@ canvas.spinning {
 .hist-fragment-diamond{ color: #00e6e6 }
 .hist-wheelchange{ color: #ffd166 }
 .hist-other{ color: #ffb86b }
+
+/* Barre de progression pour la roue argent */
+.progress-container {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+}
+.progress-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #ddd;
+}
+.progress-bar {
+  height: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a050d0, #c78cff, #e0c0ff);
+  border-radius: 10px;
+  width: 0%;
+  transition: width 0.5s ease;
+  position: relative;
+}
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: progressShine 2s infinite;
+}
+@keyframes progressShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.progress-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 0 2px rgba(255,255,255,0.8);
+  font-size: 0.85rem;
+}
+.progress-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.progress-btn {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+}
+
 footer {
   margin-top: 25px;
   color: #909090;
@@ -347,6 +413,7 @@ footer {
 <b>Tickets</b>
 <div id="ticketsTotal">Total tickets: 0</div>
 <div id="ticketsCount">Nombre de gains tickets: 0</div>
+<span class="reset-icon" title="Réinitialiser les tickets" onclick="resetTickets()">↺</span>
 </div>
 <div class="stat">
 <b>Fragments</b>
@@ -354,6 +421,7 @@ footer {
 <div id="fragSylver">Argent: 0</div>
 <div id="fragGold">Or: 0</div>
 <div id="fragDiamond">Diamant: 0</div>
+<span class="reset-icon" title="Réinitialiser les fragments" onclick="resetFragments()">↺</span>
 </div>
 <div class="stat">
 <b>Changements de roue</b>
@@ -361,6 +429,24 @@ footer {
 <div id="goldCount">Or: 0</div>
 <div id="diamondCount">Diamant: 0</div>
 </div>
+</div>
+
+<!-- Barre de progression pour la roue argent -->
+<div class="progress-container">
+  <div class="progress-title">
+    <span>Progression vers la roue Argent</span>
+    <span id="sylverProgressText">0/100</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="sylverProgressBar"></div>
+    <div class="progress-label" id="sylverProgressLabel">0%</div>
+  </div>
+  <div class="progress-controls">
+    <button class="progress-btn" onclick="modifySylverProgress(-10)">-10</button>
+    <button class="progress-btn" onclick="modifySylverProgress(-1)">-1</button>
+    <button class="progress-btn" onclick="modifySylverProgress(1)">+1</button>
+    <button class="progress-btn" onclick="modifySylverProgress(10)">+10</button>
+  </div>
 </div>
 
 <div class="legend">
@@ -464,6 +550,11 @@ const fragDiamondEl = document.getElementById('fragDiamond');
 const sylverCountEl = document.getElementById('sylverCount');
 const goldCountEl = document.getElementById('goldCount');
 const diamondCountEl = document.getElementById('diamondCount');
+
+// Éléments de la barre de progression argent
+const sylverProgressBar = document.getElementById('sylverProgressBar');
+const sylverProgressLabel = document.getElementById('sylverProgressLabel');
+const sylverProgressText = document.getElementById('sylverProgressText');
 
 let currentWheel = 'bronze';
 let currentItems = wheelsData[currentWheel];
@@ -770,6 +861,25 @@ function updateCounters(){
   sylverCountEl.textContent='Argent: '+counters.wheelSylver;
   goldCountEl.textContent='Or: '+counters.wheelGold;
   diamondCountEl.textContent='Diamant: '+counters.wheelDiamond;
+  
+  // Mettre à jour la barre de progression pour la roue argent
+  updateSylverProgress();
+}
+
+function updateSylverProgress() {
+  const totalNeeded = 100;
+  const currentProgress = counters.fragSylver;
+  const percentage = Math.min(100, (currentProgress / totalNeeded) * 100);
+  
+  sylverProgressBar.style.width = percentage + '%';
+  sylverProgressLabel.textContent = Math.round(percentage) + '%';
+  sylverProgressText.textContent = currentProgress + '/' + totalNeeded;
+}
+
+function modifySylverProgress(value) {
+  counters.fragSylver = Math.max(0, counters.fragSylver + value);
+  updateCounters();
+  updateHistory(`Modification manuelle des fragments argent: ${value > 0 ? '+' : ''}${value}`, 'other');
 }
 
 function updateSummary(){
@@ -799,6 +909,22 @@ function resetPieces() {
   counters.piecesCount = 0;
   updateCounters();
   updateHistory('Réinitialisation des pièces', 'other');
+}
+
+function resetTickets() {
+  counters.ticketsTotal = 0;
+  counters.ticketsCount = 0;
+  updateCounters();
+  updateHistory('Réinitialisation des tickets', 'other');
+}
+
+function resetFragments() {
+  counters.fragCount = 0;
+  counters.fragSylver = 0;
+  counters.fragGold = 0;
+  counters.fragDiamond = 0;
+  updateCounters();
+  updateHistory('Réinitialisation des fragments', 'other');
 }
 
 function resetAll(){
@@ -838,6 +964,7 @@ wheelSelect.addEventListener('change',(e)=>{
 // ==================== INIT ====================
 setCanvasSize();
 drawWheel(currentItems,angle);
+updateSylverProgress(); // Initialiser la barre de progression
 </script>
 </body>
 </html>
