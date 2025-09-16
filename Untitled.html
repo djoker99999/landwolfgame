@@ -89,6 +89,12 @@ button:active {
 #resetBtn {
   background: linear-gradient(to bottom, #F44336, #B71C1C);
 }
+#stopBtn {
+  background: linear-gradient(to bottom, #FF9800, #E65100);
+}
+#speedBtn {
+  background: linear-gradient(to bottom, #9C27B0, #4A148C);
+}
 .main {
   display: flex;
   gap: 25px;
@@ -390,6 +396,8 @@ footer {
 <button id="spinBtn">🎯 1 Tour</button>
 <input id="multiCount" type="number" min="1" value="10" style="width:78px" />
 <button id="multiBtn">🚀 Lancer plusieurs</button>
+<button id="stopBtn" disabled>⏹️ Stop</button>
+<button id="speedBtn">⚡ Accélérer</button>
 <button id="resetBtn">🔄 Reset Complet</button>
 </div>
 </header>
@@ -529,6 +537,8 @@ const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
 const spinBtn = document.getElementById('spinBtn');
 const multiBtn = document.getElementById('multiBtn');
+const stopBtn = document.getElementById('stopBtn');
+const speedBtn = document.getElementById('speedBtn');
 const resetBtn = document.getElementById('resetBtn');
 const wheelSelect = document.getElementById('wheelSelect');
 const congratsPopup = document.getElementById('congratsPopup');
@@ -568,6 +578,14 @@ const counters = {
   fragCount:0, fragSylver:0, fragGold:0, fragDiamond:0,
   wheelSylver:0, wheelGold:0, wheelDiamond:0
 };
+
+// Variables pour le contrôle des animations
+let animationId = null;
+let currentAnimation = null;
+let spinDuration = 1500; // Durée par défaut d'un tour
+let isFastMode = false; // Mode accéléré
+let isMultiSpinning = false; // Indique si un multi-spin est en cours
+let remainingSpins = 0; // Nombre de tours restants dans un multi-spin
 
 // ==================== UTIL ====================
 function setCanvasSize(){
@@ -685,6 +703,7 @@ function spinOnce(){
   spinning=true; 
   spinBtn.disabled=true; 
   multiBtn.disabled=true;
+  stopBtn.disabled = false;
   
   // Ajouter une classe pour l'animation de la roue
   canvas.classList.add('spinning');
@@ -697,19 +716,20 @@ function spinOnce(){
   const rotations = 4+Math.floor(Math.random()*2);
   const finalRotation = -Math.PI/2-center_i+rotations*2*Math.PI;
   const startRotation = angle;
-  const duration=1500; // Augmenté la durée pour un effet plus dramatique
   let startTime=null;
 
   return new Promise(resolve=>{
     function animate(ts){
       if(!startTime) startTime=ts;
       const elapsed = ts-startTime;
-      const t = Math.min(1,elapsed/duration);
+      const t = Math.min(1,elapsed/spinDuration);
       const ease = easeOutCubic(t);
       angle = startRotation + (finalRotation-startRotation)*ease;
       drawWheel(currentItems, angle);
-      if(t<1) requestAnimationFrame(animate);
-      else{
+      
+      if(t<1) {
+        animationId = requestAnimationFrame(animate);
+      } else {
         angle=((angle%(2*Math.PI))+2*Math.PI)% (2*Math.PI);
         const pick = items[targetIndex];
         
@@ -720,24 +740,87 @@ function spinOnce(){
         spinning=false; 
         spinBtn.disabled=false; 
         multiBtn.disabled=false;
+        stopBtn.disabled = true;
         resolve(pick);
       }
     }
-    requestAnimationFrame(animate);
+    
+    // Stocker la fonction d'animation pour pouvoir l'arrêter
+    currentAnimation = animate;
+    animationId = requestAnimationFrame(animate);
   });
+}
+
+function stopSpinning() {
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+  
+  // Si on est en mode multi-spin, on arrête complètement la séquence
+  if (isMultiSpinning) {
+    isMultiSpinning = false;
+    remainingSpins = 0;
+    multiBtn.disabled = false;
+    spinBtn.disabled = false;
+  }
+  
+  spinning = false;
+  spinBtn.disabled = false;
+  multiBtn.disabled = false;
+  stopBtn.disabled = true;
+  canvas.classList.remove('spinning');
+  
+  // Calculer le résultat basé sur l'angle actuel
+  const items = currentItems;
+  const num = items.length;
+  const arc = (2*Math.PI)/num;
+  const normalizedAngle = ((angle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+  const targetIndex = Math.floor((2*Math.PI - normalizedAngle) / arc) % num;
+  const pick = items[targetIndex];
+  
+  applyResult(pick);
+  updateHistory('Tour arrêté manuellement', 'other');
+}
+
+function toggleSpeed() {
+  isFastMode = !isFastMode;
+  spinDuration = isFastMode ? 500 : 1500;
+  speedBtn.textContent = isFastMode ? '🐌 Ralentir' : '⚡ Accélérer';
+  speedBtn.style.background = isFastMode ? 
+    'linear-gradient(to bottom, #FF9800, #E65100)' : 
+    'linear-gradient(to bottom, #9C27B0, #4A148C)';
+  updateHistory(`Mode ${isFastMode ? 'accéléré' : 'normal'} activé`, 'other');
 }
 
 async function multiSpin(){
   const count=parseInt(document.getElementById('multiCount').value,10);
   if(isNaN(count)||count<1) return alert('Veuillez entrer un nombre valide.');
+  
+  // Désactiver les boutons pendant le multi-spin
   spinBtn.disabled=true; 
   multiBtn.disabled=true;
-  for(let i=0;i<count;i++){
+  stopBtn.disabled = false;
+  
+  isMultiSpinning = true;
+  remainingSpins = count;
+  
+  for(let i=0; i<count && isMultiSpinning; i++){
     await spinOnce();
-    await new Promise(r=>setTimeout(r,120));
+    remainingSpins--;
+    
+    // Si on a encore des tours à faire et que l'utilisateur n'a pas arrêté
+    if (isMultiSpinning && remainingSpins > 0) {
+      await new Promise(r=>setTimeout(r, isFastMode ? 50 : 120));
+    }
   }
+  
+  // Réactiver les boutons
+  isMultiSpinning = false;
+  spinning = false;
   spinBtn.disabled=false; 
   multiBtn.disabled=false;
+  stopBtn.disabled = true;
 }
 
 // ==================== APPLY RESULT ====================
@@ -939,6 +1022,20 @@ function resetAll(){
   turnCounterEl.textContent='Tours effectués : 0';
   summaryEl.textContent='';
   historyEl.innerHTML='<b>Historique :</b>';
+  
+  // Réinitialiser le mode de vitesse
+  isFastMode = false;
+  spinDuration = 1500;
+  speedBtn.textContent = '⚡ Accélérer';
+  speedBtn.style.background = 'linear-gradient(to bottom, #9C27B0, #4A148C)';
+  
+  // Arrêter tout spin en cours
+  if (isMultiSpinning) {
+    isMultiSpinning = false;
+    remainingSpins = 0;
+  }
+  stopSpinning();
+  
   updateCounters();
   drawWheel(currentItems, angle);
 }
@@ -946,6 +1043,8 @@ function resetAll(){
 // ==================== EVENTS ====================
 spinBtn.addEventListener('click',()=>spinOnce());
 multiBtn.addEventListener('click',multiSpin);
+stopBtn.addEventListener('click', stopSpinning);
+speedBtn.addEventListener('click', toggleSpeed);
 resetBtn.addEventListener('click',resetAll);
 wheelSelect.addEventListener('change',(e)=>{
   currentWheel=e.target.value;
