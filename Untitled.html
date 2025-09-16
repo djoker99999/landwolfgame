@@ -200,6 +200,19 @@ canvas.spinning {
   opacity: 1;
   transform: rotate(180deg);
 }
+.stat .add-icon {
+  position: absolute;
+  top: 40px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+.stat .add-icon:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
 #summary, #history {
   margin-top: 15px;
   max-height: 180px;
@@ -430,28 +443,6 @@ footer {
   }
 }
 
-/* Animation de tickets qui volent */
-.ticket {
-  position: absolute;
-  width: 30px;
-  height: 15px;
-  background: linear-gradient(45deg, #4a86e8, #3a66c4);
-  border-radius: 3px;
-  box-shadow: 0 0 8px #3a66c4;
-  animation: ticket-fly linear forwards;
-}
-
-@keyframes ticket-fly {
-  0% {
-    transform: translateY(-50px) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0;
-  }
-}
-
 /* Indicateur de roue amélioré */
 .wheel-pointer {
   position: absolute;
@@ -509,10 +500,78 @@ footer {
   opacity: 0.3;
 }
 
+/* Popup pour modifier les compteurs */
+.modify-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.modify-popup.active {
+  opacity: 1;
+  visibility: visible;
+}
+.modify-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 400px;
+  width: 80%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 2px solid var(--gold);
+}
+.modify-content h2 {
+  color: var(--gold);
+  margin-top: 0;
+}
+.modify-content input {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: rgba(40, 40, 45, 0.8);
+  color: var(--txt);
+  font-size: 1rem;
+}
+.modify-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.modify-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+.modify-confirm {
+  background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+  color: white;
+}
+.modify-cancel {
+  background: linear-gradient(to bottom, #F44336, #B71C1C);
+  color: white;
+}
+
 @media(max-width: 760px){
   .main { flex-direction: column; }
   header { flex-direction: column; }
   .controls { justify-content: center; }
+  .modify-content { width: 90%; padding: 20px; }
+  .modify-buttons { flex-direction: column; }
 }
 </style>
 </head>
@@ -556,12 +615,14 @@ footer {
 <div id="piecesTotal">Total pièces: 0</div>
 <div id="piecesCount">Nombre de gains pièces: 0</div>
 <span class="reset-icon" title="Réinitialiser les pièces" onclick="resetPieces()">↺</span>
+<span class="add-icon" title="Modifier les pièces" onclick="modifyPieces()">✎</span>
 </div>
 <div class="stat">
 <b>Tickets</b>
 <div id="ticketsTotal">Total tickets: 0</div>
 <div id="ticketsCount">Nombre de gains tickets: 0</div>
 <span class="reset-icon" title="Réinitialiser les tickets" onclick="resetTickets()">↺</span>
+<span class="add-icon" title="Modifier les tickets" onclick="modifyTickets()">✎</span>
 </div>
 <div class="stat">
 <b>Fragments</b>
@@ -627,6 +688,30 @@ footer {
     <h2 id="toursPopupTitle">Tours offerts !</h2>
     <p id="toursPopupMessage">Vous avez gagné des tours gratuits !</p>
     <button class="popup-btn" onclick="document.getElementById('toursPopup').classList.remove('active')">Super !</button>
+  </div>
+</div>
+
+<!-- Popup pour modifier les pièces -->
+<div class="modify-popup" id="modifyPiecesPopup">
+  <div class="modify-content">
+    <h2>Modifier les pièces</h2>
+    <input type="number" id="piecesInput" min="0" value="0" />
+    <div class="modify-buttons">
+      <button class="modify-btn modify-confirm" onclick="confirmModifyPieces()">Confirmer</button>
+      <button class="modify-btn modify-cancel" onclick="cancelModifyPieces()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Popup pour modifier les tickets -->
+<div class="modify-popup" id="modifyTicketsPopup">
+  <div class="modify-content">
+    <h2>Modifier les tickets</h2>
+    <input type="number" id="ticketsInput" min="0" value="0" />
+    <div class="modify-buttons">
+      <button class="modify-btn modify-confirm" onclick="confirmModifyTickets()">Confirmer</button>
+      <button class="modify-btn modify-cancel" onclick="cancelModifyTickets()">Annuler</button>
+    </div>
   </div>
 </div>
 
@@ -741,6 +826,12 @@ const sylverProgressBar = document.getElementById('sylverProgressBar');
 const sylverProgressLabel = document.getElementById('sylverProgressLabel');
 const sylverProgressText = document.getElementById('sylverProgressText');
 
+// Éléments pour les popups de modification
+const modifyPiecesPopup = document.getElementById('modifyPiecesPopup');
+const modifyTicketsPopup = document.getElementById('modifyTicketsPopup');
+const piecesInput = document.getElementById('piecesInput');
+const ticketsInput = document.getElementById('ticketsInput');
+
 let currentWheel = 'bronze';
 let currentItems = wheelsData[currentWheel];
 let angle = 0;
@@ -786,30 +877,6 @@ function createCoinRain() {
   
   setTimeout(() => {
     coinRain.remove();
-  }, 5000);
-}
-
-function createTicketFly() {
-  const ticketFly = document.createElement('div');
-  ticketFly.className = 'coin-rain';
-  document.body.appendChild(ticketFly);
-  
-  for (let i = 0; i < 30; i++) {
-    setTimeout(() => {
-      const ticket = document.createElement('div');
-      ticket.className = 'ticket';
-      ticket.style.left = Math.random() * 100 + 'vw';
-      ticket.style.animationDuration = (Math.random() * 3 + 2) + 's';
-      ticketFly.appendChild(ticket);
-      
-      setTimeout(() => {
-        ticket.remove();
-      }, 5000);
-    }, i * 150);
-  }
-  
-  setTimeout(() => {
-    ticketFly.remove();
   }, 5000);
 }
 
@@ -1309,12 +1376,16 @@ function applyResult(pick){
     const val = parseInt(pick) || 0;
     counters.piecesTotal += val;
     counters.piecesCount++;
-    createCoinRain(); // Animation de pièces qui tombent
+    
+    // Animation de pièces seulement pour les gains importants (100+ pièces)
+    if (val >= 100) {
+      createCoinRain();
+    }
   } else if(cat==='tickets'){
     const val = parseInt(pick) || 1;
     counters.ticketsTotal += val;
     counters.ticketsCount++;
-    createTicketFly(); // Animation de tickets qui volent
+    // Supprimé: createTicketFly(); // Animation de tickets qui volent
   } else if(cat==='fragment-sylver'){ 
     counters.fragCount++; 
     counters.fragSylver++; 
@@ -1425,6 +1496,45 @@ function updateHistory(pick,cat){
   div.textContent=`${time} - ${pick}`;
   historyEl.appendChild(div);
   historyEl.scrollTop=historyEl.scrollHeight;
+}
+
+// ==================== FONCTIONS DE MODIFICATION MANUELLE ====================
+function modifyPieces() {
+  piecesInput.value = counters.piecesTotal;
+  modifyPiecesPopup.classList.add('active');
+}
+
+function modifyTickets() {
+  ticketsInput.value = counters.ticketsTotal;
+  modifyTicketsPopup.classList.add('active');
+}
+
+function confirmModifyPieces() {
+  const newValue = parseInt(piecesInput.value) || 0;
+  if (newValue >= 0) {
+    counters.piecesTotal = newValue;
+    updateCounters();
+    updateHistory(`Modification manuelle des pièces: ${newValue}`, 'other');
+  }
+  modifyPiecesPopup.classList.remove('active');
+}
+
+function confirmModifyTickets() {
+  const newValue = parseInt(ticketsInput.value) || 0;
+  if (newValue >= 0) {
+    counters.ticketsTotal = newValue;
+    updateCounters();
+    updateHistory(`Modification manuelle des tickets: ${newValue}`, 'other');
+  }
+  modifyTicketsPopup.classList.remove('active');
+}
+
+function cancelModifyPieces() {
+  modifyPiecesPopup.classList.remove('active');
+}
+
+function cancelModifyTickets() {
+  modifyTicketsPopup.classList.remove('active');
 }
 
 // ==================== RESET FUNCTIONS ====================
