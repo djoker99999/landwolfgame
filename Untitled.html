@@ -336,9 +336,9 @@ footer {
 
 /* Animation pour les gains importants */
 @keyframes celebrate {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+ 0% { transform: scale(1); }
+ 50% { transform: scale(1.2); }
+ 100% { transform: scale(1); }
 }
 .celebrate {
   animation: celebrate 0.5s ease;
@@ -1485,6 +1485,11 @@ function applyResult(pick){
     currentWheel = "bronze";
     wheelChanged = true;
   }
+  // CORRECTION: Tous les fragments font revenir à la roue bronze
+  else if(cat.includes('fragment')) {
+    currentWheel = "bronze";
+    wheelChanged = true;
+  }
   
   // Mise à jour de la roue si changement
   if(wheelChanged) {
@@ -1514,7 +1519,6 @@ function applyResult(pick){
     const val = parseInt(pick) || 1;
     counters.ticketsTotal += val;
     counters.ticketsCount++;
-    // Supprimé: createTicketFly(); // Animation de tickets qui volent
   } else if(cat==='fragment-sylver'){ 
     counters.fragCount++; 
     counters.fragSylver++; 
@@ -1722,7 +1726,7 @@ function createBarChart(containerId, data, title) {
     text.setAttribute("y", chartHeight + 15);
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("font-size", "10");
-    text.setAttribute("fill", "#fff");
+    text.setAttribute("fill", '#fff');
     text.textContent = item.type.substring(0, 8);
     svg.appendChild(text);
     
@@ -1732,7 +1736,7 @@ function createBarChart(containerId, data, title) {
     valueText.setAttribute("y", y - 5);
     valueText.setAttribute("text-anchor", "middle");
     valueText.setAttribute("font-size", "10");
-    valueText.setAttribute("fill", "#fff");
+    valueText.setAttribute("fill", '#fff');
     valueText.textContent = item.count;
     svg.appendChild(valueText);
   });
