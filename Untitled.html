@@ -99,6 +99,9 @@ button:active {
 #speedBtn {
   background: linear-gradient(to bottom, #9C27B0, #4A148C);
 }
+#statsBtn {
+  background: linear-gradient(to bottom, #607D8B, #455A64);
+}
 .main {
   display: flex;
   gap: 25px;
@@ -566,12 +569,92 @@ footer {
   color: white;
 }
 
+/* Nouveau style pour les statistiques */
+.stats-container {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+.stats-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #ddd;
+  cursor: pointer;
+}
+.stats-content {
+  display: none;
+}
+.stats-content.active {
+  display: block;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.stats-chart {
+  background: rgba(10, 10, 15, 0.8);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #222;
+}
+.stats-chart h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #ffd700;
+  text-align: center;
+}
+.chart-container {
+  height: 150px;
+  position: relative;
+}
+.bar {
+  position: absolute;
+  bottom: 0;
+  width: 30px;
+  background: linear-gradient(to top, #4CAF50, #2E7D32);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+}
+.bar-label {
+  position: absolute;
+  bottom: -25px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+}
+.recent-history {
+  margin-top: 15px;
+  max-height: 150px;
+  overflow: auto;
+  padding: 10px;
+  background: rgba(10, 10, 15, 0.8);
+  border-radius: 8px;
+  border: 1px solid #222;
+}
+.recent-item {
+  padding: 5px;
+  border-bottom: 1px solid #333;
+  font-size: 0.9rem;
+}
+.recent-item:last-child {
+  border-bottom: none;
+}
+
 @media(max-width: 760px){
   .main { flex-direction: column; }
   header { flex-direction: column; }
   .controls { justify-content: center; }
   .modify-content { width: 90%; padding: 20px; }
   .modify-buttons { flex-direction: column; }
+  .stats-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -592,6 +675,7 @@ footer {
 <button id="multiBtn">🚀 Lancer plusieurs</button>
 <button id="stopBtn" disabled>⏹️ Stop</button>
 <button id="speedBtn">⚡ Accélérer</button>
+<button id="statsBtn">📊 Statistiques</button>
 <button id="resetBtn">🔄 Reset Complet</button>
 </div>
 </header>
@@ -609,6 +693,19 @@ footer {
 </div>
 
 <div class="info">
+<!-- Nouvelle section pour l'historique récent -->
+<div class="stats-container">
+  <div class="stats-title" onclick="toggleStats()">
+    <span>📊 Historique Récent (10 derniers tours)</span>
+    <span>▼</span>
+  </div>
+  <div class="stats-content" id="recentHistory">
+    <div class="recent-history" id="recentList">
+      <!-- L'historique récent sera ajouté ici dynamiquement -->
+    </div>
+  </div>
+</div>
+
 <div class="statGrid">
 <div class="stat">
 <b>Pièces</b>
@@ -666,8 +763,36 @@ footer {
 </div>
 
 <div id="summary"></div>
-<div id="history"><b>Historique :</b></div>
+<div id="history"><b>Historique Complet :</b></div>
 </div>
+</div>
+
+<!-- Popup de statistiques avancées -->
+<div class="popup" id="statsPopup">
+  <div class="popup-content">
+    <h2>📊 Statistiques Avancées</h2>
+    <div class="stats-grid">
+      <div class="stats-chart">
+        <h3>Répartition des gains</h3>
+        <div class="chart-container" id="gainDistributionChart">
+          <!-- Graphique de répartition -->
+        </div>
+      </div>
+      <div class="stats-chart">
+        <h3>Gains par type</h3>
+        <div class="chart-container" id="gainByTypeChart">
+          <!-- Graphique par type -->
+        </div>
+      </div>
+    </div>
+    <div class="stats-chart" style="grid-column: 1 / -1; margin-top: 15px;">
+      <h3>Évolution des gains</h3>
+      <div class="chart-container" id="gainEvolutionChart">
+        <!-- Graphique d'évolution -->
+      </div>
+    </div>
+    <button class="popup-btn" onclick="document.getElementById('statsPopup').classList.remove('active')">Fermer</button>
+  </div>
 </div>
 
 <footer>Spin rapide 0.5s — multi-spin séquentiel — couleurs & compteurs en temps réel.</footer>
@@ -798,16 +923,19 @@ const spinBtn = document.getElementById('spinBtn');
 const multiBtn = document.getElementById('multiBtn');
 const stopBtn = document.getElementById('stopBtn');
 const speedBtn = document.getElementById('speedBtn');
+const statsBtn = document.getElementById('statsBtn');
 const resetBtn = document.getElementById('resetBtn');
 const wheelSelect = document.getElementById('wheelSelect');
 const congratsPopup = document.getElementById('congratsPopup');
 const toursPopup = document.getElementById('toursPopup');
+const statsPopup = document.getElementById('statsPopup');
 
 const resultEl = document.getElementById('result');
 const turnCounterEl = document.getElementById('turnCounter');
 const summaryEl = document.getElementById('summary');
 const historyEl = document.getElementById('history');
 const wheelTitle = document.getElementById('wheelTitle');
+const recentListEl = document.getElementById('recentList');
 
 const piecesTotalEl = document.getElementById('piecesTotal');
 const piecesCountEl = document.getElementById('piecesCount');
@@ -838,6 +966,7 @@ let angle = 0;
 let spinning = false;
 let totalTurns = 0;
 const resultsCount = {};
+const recentHistory = []; // Historique des 10 derniers tours
 const counters = {
   piecesTotal:0, piecesCount:0,
   ticketsTotal:0, ticketsCount:0,
@@ -1408,6 +1537,7 @@ function applyResult(pick){
   updateCounters();
   updateSummary();
   updateHistory(pick,cat);
+  updateRecentHistory(pick,cat); // Mettre à jour l'historique récent
   
   // Afficher le popup pour la roue diamant
   if (diamondResult) {
@@ -1498,6 +1628,138 @@ function updateHistory(pick,cat){
   historyEl.scrollTop=historyEl.scrollHeight;
 }
 
+function updateRecentHistory(pick,cat){
+  const time=(new Date()).toLocaleTimeString();
+  const cls = cat==='pieces'?'hist-pieces':
+              cat==='tickets'?'hist-tickets':
+              cat==='fragment-sylver'?'hist-fragment-sylver':
+              cat==='fragment-gold'?'hist-fragment-gold':
+              cat==='fragment-diamond'?'hist-fragment-diamond':
+              cat==='wheelChange'?'hist-wheelchange':
+              cat==='tours-offerts'?'hist-wheelchange':'hist-other';
+  
+  // Ajouter le nouvel élément au début de la liste
+  recentHistory.unshift({time, pick, cls});
+  
+  // Garder seulement les 10 derniers éléments
+  if (recentHistory.length > 10) {
+    recentHistory.pop();
+  }
+  
+  // Mettre à jour l'affichage
+  recentListEl.innerHTML = '';
+  recentHistory.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'recent-item ' + item.cls;
+    div.textContent = `${item.time} - ${item.pick}`;
+    recentListEl.appendChild(div);
+  });
+}
+
+// ==================== STATISTIQUES AVANCÉES ====================
+function showAdvancedStats() {
+  // Calculer les statistiques
+  const totalSpins = totalTurns;
+  const totalGains = Object.values(resultsCount).reduce((a, b) => a + b, 0);
+  
+  // Calculer les pourcentages par type de gain
+  const gainTypes = {};
+  Object.keys(resultsCount).forEach(gain => {
+    const type = categorizeLabel(gain);
+    gainTypes[type] = (gainTypes[type] || 0) + resultsCount[gain];
+  });
+  
+  // Préparer les données pour les graphiques
+  const gainDistributionData = Object.entries(gainTypes).map(([type, count]) => ({
+    type,
+    count,
+    percentage: totalSpins > 0 ? ((count / totalSpins) * 100).toFixed(1) : 0
+  }));
+  
+  // Afficher le popup de statistiques
+  const statsContent = document.getElementById('statsPopup').querySelector('.popup-content');
+  
+  // Créer les graphiques (version simplifiée avec des barres)
+  createBarChart('gainDistributionChart', gainDistributionData, 'Répartition des gains');
+  
+  // Afficher le popup
+  statsPopup.classList.add('active');
+}
+
+function createBarChart(containerId, data, title) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  
+  const maxValue = Math.max(...data.map(item => item.count));
+  const barWidth = 30;
+  const spacing = 10;
+  const chartWidth = data.length * (barWidth + spacing);
+  const chartHeight = 120;
+  
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", chartHeight + 30);
+  svg.setAttribute("viewBox", `0 0 ${chartWidth} ${chartHeight + 30}`);
+  
+  data.forEach((item, index) => {
+    const barHeight = (item.count / maxValue) * chartHeight;
+    const x = index * (barWidth + spacing);
+    const y = chartHeight - barHeight;
+    
+    // Barre
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", x);
+    rect.setAttribute("y", y);
+    rect.setAttribute("width", barWidth);
+    rect.setAttribute("height", barHeight);
+    rect.setAttribute("fill", getColorForType(item.type));
+    rect.setAttribute("rx", 2);
+    svg.appendChild(rect);
+    
+    // Étiquette
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", x + barWidth / 2);
+    text.setAttribute("y", chartHeight + 15);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("font-size", "10");
+    text.setAttribute("fill", "#fff");
+    text.textContent = item.type.substring(0, 8);
+    svg.appendChild(text);
+    
+    // Valeur
+    const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    valueText.setAttribute("x", x + barWidth / 2);
+    valueText.setAttribute("y", y - 5);
+    valueText.setAttribute("text-anchor", "middle");
+    valueText.setAttribute("font-size", "10");
+    valueText.setAttribute("fill", "#fff");
+    valueText.textContent = item.count;
+    svg.appendChild(valueText);
+  });
+  
+  container.appendChild(svg);
+}
+
+function getColorForType(type) {
+  const colors = {
+    'pieces': '#65b26e',
+    'tickets': '#6ea8ff',
+    'fragment-sylver': '#c78cff',
+    'fragment-gold': '#ffd700',
+    'fragment-diamond': '#00e6e6',
+    'wheelChange': '#ffd166',
+    'tours-offerts': '#ff6b6b',
+    'other': '#ffb86b'
+  };
+  
+  return colors[type] || '#cccccc';
+}
+
+function toggleStats() {
+  const statsContent = document.getElementById('recentHistory');
+  statsContent.classList.toggle('active');
+}
+
 // ==================== FONCTIONS DE MODIFICATION MANUELLE ====================
 function modifyPieces() {
   piecesInput.value = counters.piecesTotal;
@@ -1568,11 +1830,13 @@ function resetAll(){
   wheelSelect.value = currentWheel;
   wheelTitle.textContent = '🎡 Roue Bronze';
   Object.keys(resultsCount).forEach(k=>delete resultsCount[k]);
+  recentHistory.length = 0; // Vider l'historique récent
   Object.keys(counters).forEach(k=>counters[k]=0);
   resultEl.textContent='Résultat : -';
   turnCounterEl.textContent='Tours effectués : 0';
   summaryEl.textContent='';
   historyEl.innerHTML='<b>Historique :</b>';
+  recentListEl.innerHTML = '';
   
   // Réinitialiser le mode de vitesse
   isFastMode = false;
@@ -1596,6 +1860,7 @@ spinBtn.addEventListener('click',()=>spinOnce());
 multiBtn.addEventListener('click',multiSpin);
 stopBtn.addEventListener('click', stopSpinning);
 speedBtn.addEventListener('click', toggleSpeed);
+statsBtn.addEventListener('click', showAdvancedStats);
 resetBtn.addEventListener('click',resetAll);
 wheelSelect.addEventListener('change',(e)=>{
   currentWheel=e.target.value;
