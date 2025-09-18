@@ -12,6 +12,7 @@
   --bronze: #cd7f32; --silver: #c0c0c0; --gold: #ffd700; --diamond: #00e6e6;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   --glow: 0 0 15px rgba(255, 255, 255, 0.7);
+  --chest: #8b4513; /* Nouvelle couleur pour le coffre */
 }
 body {
   margin: 0;
@@ -258,6 +259,7 @@ canvas.spinning {
 .hist-fragment-diamond{ color: #00e6e6 }
 .hist-wheelchange{ color: #ffd166 }
 .hist-other{ color: #ffb86b }
+.hist-chest{ color: #d2691e } /* Nouvelle couleur pour le coffre */
 
 /* Barre de progression pour la roue argent */
 .progress-container {
@@ -323,6 +325,70 @@ canvas.spinning {
 .progress-btn {
   padding: 5px 10px;
   font-size: 0.85rem;
+}
+
+/* Nouvelle barre de progression pour le coffre */
+.chest-container {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(139, 69, 19, 0.5);
+}
+.chest-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #ddd;
+}
+.chest-bar {
+  height: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.chest-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b4513, #a0522d, #cd853f);
+  border-radius: 10px;
+  width: 0%;
+  transition: width 0.5s ease;
+  position: relative;
+}
+.chest-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: progressShine 2s infinite;
+}
+.chest-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 0 2px rgba(0,0,0,0.8);
+  font-size: 0.85rem;
+}
+.chest-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.chest-btn {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+  background: linear-gradient(to bottom, #8b4513, #654321);
+  color: white;
 }
 
 footer {
@@ -755,11 +821,27 @@ footer {
   </div>
 </div>
 
+<!-- Nouvelle barre de progression pour le coffre -->
+<div class="chest-container">
+  <div class="chest-title">
+    <span>🪙 Progression du Coffre</span>
+    <span id="chestProgressText">0 pièces</span>
+  </div>
+  <div class="chest-bar">
+    <div class="chest-fill" id="chestProgressBar"></div>
+    <div class="chest-label" id="chestProgressLabel">0%</div>
+  </div>
+  <div class="chest-controls">
+    <button class="chest-btn" onclick="resetChest()">🔄 Reset Coffre</button>
+  </div>
+</div>
+
 <div class="legend">
 <div class="legendItem"><div class="colorBox" style="background:linear-gradient(#d4ffd4,#88cc88)"></div> Pièces</div>
 <div class="legendItem"><div class="colorBox" style="background:linear-gradient(#e6f0ff,#66a3ff)"></div> Tickets</div>
 <div class="legendItem"><div class="colorBox" style="background:linear-gradient(#f0e6ff,#c59bff)"></div> Fragment Argent</div>
 <div class="legendItem"><div class="colorBox" style="background:linear-gradient(#fff5b1,#ffd700)"></div> Changement de roue</div>
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#8b4513,#a0522d)"></div> Coffre</div>
 </div>
 
 <div id="summary"></div>
@@ -842,11 +924,12 @@ footer {
 
 <script>
 // ==================== DONNÉES ====================
+// Modification de la roue Bronze pour ajouter la case "Coffre"
 const bronzeItems = [
   "1 Ticket", "5 Pièces", "1/20 Argent", "1 Ticket", "1 Ticket",
   "5 Pièces", "1 Ticket", "1/20 Argent", "5 Pièces", "15 Pièces",
   "1 Ticket", "1 Ticket", "5 Pièces", "10 Pièces", "1 Ticket",
-  "1 Ticket", "Roue Argent", "1 Pièce", "30 Pièces", "1 Ticket"
+  "1 Ticket", "Roue Argent", "Coffre", "30 Pièces", "1 Ticket"  // Ajout de "Coffre"
 ];
 
 const silverItems = [
@@ -913,7 +996,8 @@ const categoryColors = {
   'fragment-diamond': ['#00e6e6','#009999'],
   wheelChange: ['#fff5b1','#ffd700'],
   other: ['#f39c12','#e67e22'],
-  'tours-offerts': ['#ffb3ba','#ff6b6b']
+  'tours-offerts': ['#ffb3ba','#ff6b6b'],
+  'chest': ['#8b4513','#a0522d'] // Nouvelle couleur pour le coffre
 };
 
 // ==================== STATE ====================
@@ -954,6 +1038,11 @@ const sylverProgressBar = document.getElementById('sylverProgressBar');
 const sylverProgressLabel = document.getElementById('sylverProgressLabel');
 const sylverProgressText = document.getElementById('sylverProgressText');
 
+// Nouveaux éléments pour la barre de progression du coffre
+const chestProgressBar = document.getElementById('chestProgressBar');
+const chestProgressLabel = document.getElementById('chestProgressLabel');
+const chestProgressText = document.getElementById('chestProgressText');
+
 // Éléments pour les popups de modification
 const modifyPiecesPopup = document.getElementById('modifyPiecesPopup');
 const modifyTicketsPopup = document.getElementById('modifyTicketsPopup');
@@ -973,7 +1062,8 @@ const counters = {
   fragCount:0, fragSylver:0, fragGold:0, fragDiamond:0,
   wheelSylver:0, wheelGold:0, wheelDiamond:0,
   toursArgentOfferts: 0,
-  toursOrOfferts: 0
+  toursOrOfferts: 0,
+  chestPieces: 0 // Nouveau compteur pour les pièces dans le coffre
 };
 
 // Variables pour le contrôle des animations
@@ -1085,6 +1175,7 @@ function categorizeLabel(s){
   }
   if(/wheel|golden|silver|diamond|diamant|universe|galaxie|galaxy|or|argent/i.test(low)) return 'wheelChange';
   if(/tours?.*offert|offert.*tours?/i.test(low)) return 'tours-offerts';
+  if(/coffre/i.test(low)) return 'chest'; // Nouvelle catégorie pour le coffre
   return 'other';
 }
 
@@ -1537,6 +1628,12 @@ function applyResult(pick){
   else if(cat==='tours-offerts') {
     createTourParticles(); // Animation pour les tours offerts
   }
+  else if(cat==='chest') {
+    // Ajouter 2 pièces au coffre
+    counters.chestPieces += 2;
+    updateChestProgress(); // Mettre à jour la barre de progression du coffre
+    updateHistory(`+2 pièces ajoutées au coffre (Total: ${counters.chestPieces})`, 'chest');
+  }
 
   updateCounters();
   updateSummary();
@@ -1587,6 +1684,9 @@ function updateCounters(){
   
   // Mettre à jour la barre de progression pour la roue argent
   updateSylverProgress();
+  
+  // Mettre à jour la barre de progression pour le coffre
+  updateChestProgress();
 }
 
 function updateSylverProgress() {
@@ -1597,6 +1697,19 @@ function updateSylverProgress() {
   sylverProgressBar.style.width = percentage + '%';
   sylverProgressLabel.textContent = Math.round(percentage) + '%';
   sylverProgressText.textContent = currentProgress + '/' + totalNeeded;
+}
+
+function updateChestProgress() {
+  // Pas de limite maximale pour le coffre, donc on affiche juste le nombre de pièces
+  chestProgressText.textContent = counters.chestPieces + ' pièces';
+  
+  // Pour la barre de progression, on utilise un pourcentage basé sur un objectif arbitraire
+  // pour que la barre ait toujours un aspect visuel intéressant
+  const targetForDisplay = Math.max(100, counters.chestPieces + 10); // Toujours au moins 100
+  const percentage = Math.min(100, (counters.chestPieces / targetForDisplay) * 100);
+  
+  chestProgressBar.style.width = percentage + '%';
+  chestProgressLabel.textContent = Math.round(percentage) + '%';
 }
 
 function modifySylverProgress(value) {
@@ -1612,6 +1725,7 @@ function updateSummary(){
   // Ajouter les compteurs de tours offerts
   text += `\nTours Argent offerts: ${counters.toursArgentOfferts}\n`;
   text += `Tours Or offerts: ${counters.toursOrOfferts}\n`;
+  text += `Pièces dans le coffre: ${counters.chestPieces}\n`;
   
   summaryEl.textContent=text;
 }
@@ -1624,7 +1738,8 @@ function updateHistory(pick,cat){
               cat==='fragment-gold'?'hist-fragment-gold':
               cat==='fragment-diamond'?'hist-fragment-diamond':
               cat==='wheelChange'?'hist-wheelchange':
-              cat==='tours-offerts'?'hist-wheelchange':'hist-other';
+              cat==='tours-offerts'?'hist-wheelchange':
+              cat==='chest'?'hist-chest':'hist-other';
   const div=document.createElement('div');
   div.className=cls;
   div.textContent=`${time} - ${pick}`;
@@ -1640,7 +1755,8 @@ function updateRecentHistory(pick,cat){
               cat==='fragment-gold'?'hist-fragment-gold':
               cat==='fragment-diamond'?'hist-fragment-diamond':
               cat==='wheelChange'?'hist-wheelchange':
-              cat==='tours-offerts'?'hist-wheelchange':'hist-other';
+              cat==='tours-offerts'?'hist-wheelchange':
+              cat==='chest'?'hist-chest':'hist-other';
   
   // Ajouter le nouvel élément au début de la liste
   recentHistory.unshift({time, pick, cls});
@@ -1732,13 +1848,13 @@ function createBarChart(containerId, data, title) {
     
     // Valeur
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    valueText.setAttribute("x", x + barWidth / 2);
-    valueText.setAttribute("y", y - 5);
-    valueText.setAttribute("text-anchor", "middle");
-    valueText.setAttribute("font-size", "10");
-    valueText.setAttribute("fill", '#fff');
-    valueText.textContent = item.count;
-    svg.appendChild(valueText);
+  valueText.setAttribute("x", x + barWidth / 2);
+  valueText.setAttribute("y", y - 5);
+  valueText.setAttribute("text-anchor", "middle");
+  valueText.setAttribute("font-size", "10");
+  valueText.setAttribute("fill", '#fff');
+  valueText.textContent = item.count;
+  svg.appendChild(valueText);
   });
   
   container.appendChild(svg);
@@ -1753,6 +1869,7 @@ function getColorForType(type) {
     'fragment-diamond': '#00e6e6',
     'wheelChange': '#ffd166',
     'tours-offerts': '#ff6b6b',
+    'chest': '#d2691e', // Nouvelle couleur pour le coffre
     'other': '#ffb86b'
   };
   
@@ -1801,6 +1918,13 @@ function cancelModifyPieces() {
 
 function cancelModifyTickets() {
   modifyTicketsPopup.classList.remove('active');
+}
+
+// ==================== FONCTIONS POUR LE COFFRE ====================
+function resetChest() {
+  counters.chestPieces = 0;
+  updateCounters();
+  updateHistory('Réinitialisation du coffre', 'chest');
 }
 
 // ==================== RESET FUNCTIONS ====================
@@ -1884,6 +2008,7 @@ wheelSelect.addEventListener('change',(e)=>{
 setCanvasSize();
 drawWheel(currentItems,angle);
 updateSylverProgress(); // Initialiser la barre de progression
+updateChestProgress(); // Initialiser la barre de progression du coffre
 </script>
 </body>
 </html>
