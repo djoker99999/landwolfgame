@@ -41,6 +41,52 @@ header {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 215, 0, 0.3);
 }
+.chest-header {
+  flex: 0 0 200px;
+  min-width: 180px;
+}
+.chest-title-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: #ddd;
+}
+.chest-bar-header {
+  height: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.chest-fill-header {
+  height: 100%;
+  background: linear-gradient(90deg, #8b4513, #a0522d, #cd853f);
+  border-radius: 8px;
+  width: 0%;
+  transition: width 0.5s ease;
+  position: relative;
+}
+.chest-fill-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: progressShine 2s infinite;
+}
+.chest-label-header {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 0 2px rgba(0,0,0,0.8);
+  font-size: 0.75rem;
+}
 h1 {
   margin: 0;
   font-size: 1.8rem;
@@ -94,6 +140,10 @@ button:active {
 #resetBtn {
   background: linear-gradient(to bottom, #F44336, #B71C1C);
 }
+#resetChestBtn {
+  background: linear-gradient(to bottom, #8b4513, #654321);
+  color: white;
+}
 #stopBtn {
   background: linear-gradient(to bottom, #FF9800, #E65100);
 }
@@ -108,6 +158,24 @@ button:active {
   gap: 25px;
   flex-wrap: wrap;
   margin-top: 20px;
+}
+.topliker-wrap {
+  flex: 0 0 300px;
+  min-width: 280px;
+}
+.topliker-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  text-align: center;
+}
+.topliker-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #ddd;
+  font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
 }
 .canvasWrap {
   flex: 1;
@@ -153,6 +221,45 @@ canvas.spinning {
   font-size: 1.1rem;
   margin-top: 10px;
   color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.timer-container {
+  margin-top: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  text-align: center;
+  width: 80%;
+}
+.timer-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #ddd;
+}
+.timer-display {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+.timer-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.timer-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+}
+.timer-btn:hover {
+  transform: translateY(-2px);
 }
 .info {
   flex: 1;
@@ -716,11 +823,15 @@ footer {
 
 @media(max-width: 760px){
   .main { flex-direction: column; }
+  .topliker-wrap { flex: 1; min-width: auto; }
+  .topliker-container iframe { height: 300px; }
   header { flex-direction: column; }
+  .chest-header { flex: 1; min-width: auto; margin-bottom: 10px; }
   .controls { justify-content: center; }
   .modify-content { width: 90%; padding: 20px; }
   .modify-buttons { flex-direction: column; }
   .stats-grid { grid-template-columns: 1fr; }
+  .timer-controls { flex-direction: column; }
 }
 </style>
 </head>
@@ -728,6 +839,19 @@ footer {
 <div class="wrap">
 <header>
 <h1 id="wheelTitle">🎡 Roue Bronze</h1>
+
+<!-- Progression du Coffre intégrée dans le header -->
+<div class="chest-header">
+  <div class="chest-title-header">
+    <span>🪙 Coffre</span>
+    <span id="chestProgressTextHeader">0 pièces</span>
+  </div>
+  <div class="chest-bar-header">
+    <div class="chest-fill-header" id="chestProgressBarHeader"></div>
+    <div class="chest-label-header" id="chestProgressLabelHeader">0%</div>
+  </div>
+</div>
+
 <div class="controls">
 <select id="wheelSelect">
 <option value="bronze">Bronze</option>
@@ -741,12 +865,27 @@ footer {
 <button id="multiBtn">🚀 Lancer plusieurs</button>
 <button id="stopBtn" disabled>⏹️ Stop</button>
 <button id="speedBtn">⚡ Accélérer</button>
+<button id="resetChestBtn">🪙 Reset Coffre</button>
 <button id="statsBtn">📊 Statistiques</button>
 <button id="resetBtn">🔄 Reset Complet</button>
 </div>
 </header>
 
 <div class="main">
+<!-- Widget Top Liker à gauche -->
+<div class="topliker-wrap">
+  <div class="topliker-container">
+    <div class="topliker-title">🏆 Top Liker</div>
+    <iframe 
+      src="https://tikfinity.zerody.one/widget/topliker?cid=2136326" 
+      width="100%" 
+      height="400" 
+      frameborder="0" 
+      style="border-radius: 10px; background: rgba(0,0,0,0.3);">
+    </iframe>
+  </div>
+</div>
+
 <div class="canvasWrap">
   <div style="position: relative; display: inline-block;">
     <canvas id="wheel"></canvas>
@@ -755,23 +894,22 @@ footer {
     <div class="wheel-shine"></div>
   </div>
 <h2 id="result">Résultat : -</h2>
-<div id="turnCounter">Tours effectués : 0</div>
+<div id="turnCounter">Tours effectués : 0 <button class="timer-btn" id="resetTurnBtn">↺ Reset</button></div>
+  
+  <!-- Widget TikTok -->
+  <div class="timer-container">
+    <div class="timer-title">📱 Widget TikTok</div>
+    <iframe 
+      src="https://tikfinity.zerody.one/widget/timer?cid=2136326" 
+      width="100%" 
+      height="200" 
+      frameborder="0" 
+      style="border-radius: 10px; background: rgba(0,0,0,0.3);">
+    </iframe>
+  </div>
 </div>
 
 <div class="info">
-<!-- Nouvelle section pour l'historique récent -->
-<div class="stats-container">
-  <div class="stats-title" onclick="toggleStats()">
-    <span>📊 Historique Récent (10 derniers tours)</span>
-    <span>▼</span>
-  </div>
-  <div class="stats-content" id="recentHistory">
-    <div class="recent-history" id="recentList">
-      <!-- L'historique récent sera ajouté ici dynamiquement -->
-    </div>
-  </div>
-</div>
-
 <div class="statGrid">
 <div class="stat">
 <b>Pièces</b>
@@ -821,20 +959,7 @@ footer {
   </div>
 </div>
 
-<!-- Nouvelle barre de progression pour le coffre -->
-<div class="chest-container">
-  <div class="chest-title">
-    <span>🪙 Progression du Coffre</span>
-    <span id="chestProgressText">0 pièces</span>
-  </div>
-  <div class="chest-bar">
-    <div class="chest-fill" id="chestProgressBar"></div>
-    <div class="chest-label" id="chestProgressLabel">0%</div>
-  </div>
-  <div class="chest-controls">
-    <button class="chest-btn" onclick="resetChest()">🔄 Reset Coffre</button>
-  </div>
-</div>
+<!-- Nouvelle barre de progression pour le coffre déplacée dans le header -->
 
 <div class="legend">
 <div class="legendItem"><div class="colorBox" style="background:linear-gradient(#d4ffd4,#88cc88)"></div> Pièces</div>
@@ -1007,6 +1132,7 @@ const spinBtn = document.getElementById('spinBtn');
 const multiBtn = document.getElementById('multiBtn');
 const stopBtn = document.getElementById('stopBtn');
 const speedBtn = document.getElementById('speedBtn');
+const resetChestBtn = document.getElementById('resetChestBtn');
 const statsBtn = document.getElementById('statsBtn');
 const resetBtn = document.getElementById('resetBtn');
 const wheelSelect = document.getElementById('wheelSelect');
@@ -1019,7 +1145,7 @@ const turnCounterEl = document.getElementById('turnCounter');
 const summaryEl = document.getElementById('summary');
 const historyEl = document.getElementById('history');
 const wheelTitle = document.getElementById('wheelTitle');
-const recentListEl = document.getElementById('recentList');
+const recentListEl = null; // Supprimé - historique récent retiré
 
 const piecesTotalEl = document.getElementById('piecesTotal');
 const piecesCountEl = document.getElementById('piecesCount');
@@ -1038,10 +1164,10 @@ const sylverProgressBar = document.getElementById('sylverProgressBar');
 const sylverProgressLabel = document.getElementById('sylverProgressLabel');
 const sylverProgressText = document.getElementById('sylverProgressText');
 
-// Nouveaux éléments pour la barre de progression du coffre
-const chestProgressBar = document.getElementById('chestProgressBar');
-const chestProgressLabel = document.getElementById('chestProgressLabel');
-const chestProgressText = document.getElementById('chestProgressText');
+// Nouveaux éléments pour la barre de progression du coffre (dans le header)
+const chestProgressBar = document.getElementById('chestProgressBarHeader');
+const chestProgressLabel = document.getElementById('chestProgressLabelHeader');
+const chestProgressText = document.getElementById('chestProgressTextHeader');
 
 // Éléments pour les popups de modification
 const modifyPiecesPopup = document.getElementById('modifyPiecesPopup');
@@ -1049,13 +1175,15 @@ const modifyTicketsPopup = document.getElementById('modifyTicketsPopup');
 const piecesInput = document.getElementById('piecesInput');
 const ticketsInput = document.getElementById('ticketsInput');
 
+// Élément pour le timer (supprimé - remplacé par widget TikTok)
+
 let currentWheel = 'bronze';
 let currentItems = wheelsData[currentWheel];
 let angle = 0;
 let spinning = false;
 let totalTurns = 0;
 const resultsCount = {};
-const recentHistory = []; // Historique des 10 derniers tours
+const recentHistory = []; // Supprimé - historique récent retiré
 const counters = {
   piecesTotal:0, piecesCount:0,
   ticketsTotal:0, ticketsCount:0,
@@ -1073,6 +1201,11 @@ let spinDuration = 1500; // Durée par défaut d'un tour
 let isFastMode = false; // Mode accéléré
 let isMultiSpinning = false; // Indique si un multi-spin est en cours
 let remainingSpins = 0; // Nombre de tours restants dans un multi-spin
+
+// Variables supprimées - timer remplacé par widget TikTok
+
+// ==================== FONCTIONS TIMER SUPPRIMÉES ====================
+// Le timer a été remplacé par le widget TikTok
 
 // ==================== ANIMATIONS ====================
 function createCoinRain() {
@@ -1523,7 +1656,7 @@ function applyResult(pick){
     resultEl.classList.remove('highlight');
   }, 2000);
   
-  turnCounterEl.textContent='Tours effectués : '+totalTurns;
+  turnCounterEl.innerHTML = `Tours effectués : ${totalTurns} <button class="timer-btn" id="resetTurnBtn">↺ Reset</button>`;
 
   const cat = categorizeLabel(pick);
   const normalizedPick = normalize(pick);
@@ -1638,7 +1771,7 @@ function applyResult(pick){
   updateCounters();
   updateSummary();
   updateHistory(pick,cat);
-  updateRecentHistory(pick,cat); // Mettre à jour l'historique récent
+  // updateRecentHistory supprimé - historique récent retiré
   
   // Afficher le popup pour la roue diamant
   if (diamondResult) {
@@ -1747,34 +1880,7 @@ function updateHistory(pick,cat){
   historyEl.scrollTop=historyEl.scrollHeight;
 }
 
-function updateRecentHistory(pick,cat){
-  const time=(new Date()).toLocaleTimeString();
-  const cls = cat==='pieces'?'hist-pieces':
-              cat==='tickets'?'hist-tickets':
-              cat==='fragment-sylver'?'hist-fragment-sylver':
-              cat==='fragment-gold'?'hist-fragment-gold':
-              cat==='fragment-diamond'?'hist-fragment-diamond':
-              cat==='wheelChange'?'hist-wheelchange':
-              cat==='tours-offerts'?'hist-wheelchange':
-              cat==='chest'?'hist-chest':'hist-other';
-  
-  // Ajouter le nouvel élément au début de la liste
-  recentHistory.unshift({time, pick, cls});
-  
-  // Garder seulement les 10 derniers éléments
-  if (recentHistory.length > 10) {
-    recentHistory.pop();
-  }
-  
-  // Mettre à jour l'affichage
-  recentListEl.innerHTML = '';
-  recentHistory.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'recent-item ' + item.cls;
-    div.textContent = `${item.time} - ${item.pick}`;
-    recentListEl.appendChild(div);
-  });
-}
+// Fonction updateRecentHistory supprimée - historique récent retiré
 
 // ==================== STATISTIQUES AVANCÉES ====================
 function showAdvancedStats() {
@@ -1848,13 +1954,13 @@ function createBarChart(containerId, data, title) {
     
     // Valeur
     const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  valueText.setAttribute("x", x + barWidth / 2);
-  valueText.setAttribute("y", y - 5);
-  valueText.setAttribute("text-anchor", "middle");
-  valueText.setAttribute("font-size", "10");
-  valueText.setAttribute("fill", '#fff');
-  valueText.textContent = item.count;
-  svg.appendChild(valueText);
+    valueText.setAttribute("x", x + barWidth / 2);
+    valueText.setAttribute("y", y - 5);
+    valueText.setAttribute("text-anchor", "middle");
+    valueText.setAttribute("font-size", "10");
+    valueText.setAttribute("fill", '#fff');
+    valueText.textContent = item.count;
+    svg.appendChild(valueText);
   });
   
   container.appendChild(svg);
@@ -1876,10 +1982,7 @@ function getColorForType(type) {
   return colors[type] || '#cccccc';
 }
 
-function toggleStats() {
-  const statsContent = document.getElementById('recentHistory');
-  statsContent.classList.toggle('active');
-}
+// Fonction toggleStats supprimée - liée à l'historique récent retiré
 
 // ==================== FONCTIONS DE MODIFICATION MANUELLE ====================
 function modifyPieces() {
@@ -1951,6 +2054,12 @@ function resetFragments() {
   updateHistory('Réinitialisation des fragments', 'other');
 }
 
+function resetTurnCounter() {
+  totalTurns = 0;
+  document.getElementById('turnCounter').innerHTML = 'Tours effectués : 0 <button class="timer-btn" id="resetTurnBtn">↺ Reset</button>';
+  updateHistory('Compteur de tours réinitialisé', 'other');
+}
+
 function resetAll(){
   totalTurns=0;
   currentWheel = 'bronze';
@@ -1958,13 +2067,13 @@ function resetAll(){
   wheelSelect.value = currentWheel;
   wheelTitle.textContent = '🎡 Roue Bronze';
   Object.keys(resultsCount).forEach(k=>delete resultsCount[k]);
-  recentHistory.length = 0; // Vider l'historique récent
+  // recentHistory supprimé - historique récent retiré
   Object.keys(counters).forEach(k=>counters[k]=0);
   resultEl.textContent='Résultat : -';
-  turnCounterEl.textContent='Tours effectués : 0';
+  turnCounterEl.innerHTML = 'Tours effectués : 0 <button class="timer-btn" id="resetTurnBtn">↺ Reset</button>';
   summaryEl.textContent='';
   historyEl.innerHTML='<b>Historique :</b>';
-  recentListEl.innerHTML = '';
+  // recentListEl supprimé - historique récent retiré
   
   // Réinitialiser le mode de vitesse
   isFastMode = false;
@@ -1979,6 +2088,8 @@ function resetAll(){
   }
   stopSpinning();
   
+  // Timer supprimé - remplacé par widget TikTok
+  
   updateCounters();
   drawWheel(currentItems, angle);
 }
@@ -1988,8 +2099,17 @@ spinBtn.addEventListener('click',()=>spinOnce());
 multiBtn.addEventListener('click',multiSpin);
 stopBtn.addEventListener('click', stopSpinning);
 speedBtn.addEventListener('click', toggleSpeed);
+resetChestBtn.addEventListener('click', resetChest);
 statsBtn.addEventListener('click', showAdvancedStats);
 resetBtn.addEventListener('click',resetAll);
+
+// Délégation d'événements pour le bouton de reset des tours
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.id === 'resetTurnBtn') {
+    resetTurnCounter();
+  }
+});
+
 wheelSelect.addEventListener('change',(e)=>{
   currentWheel=e.target.value;
   currentItems=wheelsData[currentWheel];
@@ -2009,6 +2129,7 @@ setCanvasSize();
 drawWheel(currentItems,angle);
 updateSylverProgress(); // Initialiser la barre de progression
 updateChestProgress(); // Initialiser la barre de progression du coffre
+// Timer remplacé par widget TikTok
 </script>
 </body>
 </html>
