@@ -158,10 +158,22 @@ button:active {
   gap: 25px;
   flex-wrap: wrap;
   margin-top: 20px;
+  position: relative;
+}
+.firework-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 15;
+  pointer-events: none;
 }
 .topliker-wrap {
   flex: 0 0 300px;
   min-width: 280px;
+  position: relative;
+  z-index: 10;
 }
 .topliker-container {
   background: rgba(0, 0, 0, 0.3);
@@ -199,6 +211,7 @@ button:active {
   flex-direction: column;
   align-items: center;
   position: relative;
+  z-index: 10;
 }
 canvas {
   border-radius: 50%;
@@ -286,6 +299,8 @@ canvas.spinning {
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 215, 0, 0.3);
+  position: relative;
+  z-index: 10;
 }
 .statGrid {
   display: grid;
@@ -512,6 +527,8 @@ canvas.spinning {
   background: linear-gradient(to bottom, #8b4513, #654321);
   color: white;
 }
+
+/* Section Firework supprimée - maintenant en arrière-plan */
 
 footer {
   margin-top: 25px;
@@ -838,6 +855,7 @@ footer {
 
 @media(max-width: 760px){
   .main { flex-direction: column; }
+  .firework-background { height: auto; min-height: 300px; }
   .topliker-wrap { flex: 1; min-width: auto; }
   .topliker-container iframe { height: 250px; }
   .topgifter-container iframe { height: 250px; }
@@ -888,6 +906,17 @@ footer {
 </header>
 
 <div class="main">
+<!-- Widget Firework en arrière-plan -->
+<div class="firework-background">
+  <iframe 
+    src="https://tikfinity.zerody.one/widget/firework?cid=2136326" 
+    width="100%" 
+    height="500" 
+    frameborder="0" 
+    style="background: transparent; pointer-events: none;">
+  </iframe>
+</div>
+
 <!-- Widget Top Liker à gauche -->
 <div class="topliker-wrap">
   <div class="topliker-container">
@@ -926,7 +955,7 @@ footer {
   
   <!-- Widget TikTok -->
   <div class="timer-container">
-    <div class="timer-title">📱 Widget TikTok</div>
+    <div class="timer-title">🎁 Cadeaux = + de temps</div>
     <iframe 
       src="https://tikfinity.zerody.one/widget/timer?cid=2136326" 
       width="100%" 
