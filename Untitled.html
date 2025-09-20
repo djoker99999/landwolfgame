@@ -570,7 +570,12 @@ canvas.spinning {
   color: white;
 }
 
-/* Section Firework supprimée - maintenant en arrière-plan */
+/* Section Stream Buddies */
+.streambuddies-section {
+  margin: 20px auto;
+  text-align: center;
+  width: 100%;
+}
 
 footer {
   margin-top: 25px;
@@ -904,6 +909,7 @@ footer {
   .coindrop-overlay iframe { width: 200px; height: 200px; }
   .myactions-overlay iframe { width: 300px; height: 150px; }
   .myactions-overlay-timer iframe { width: 300px; height: 150px; }
+  .streambuddies-section iframe { height: 120px; }
   header { flex-direction: column; }
   .chest-header { flex: 1; min-width: auto; margin-bottom: 10px; }
   .controls { justify-content: center; }
@@ -1126,6 +1132,17 @@ footer {
     </div>
     <button class="popup-btn" onclick="document.getElementById('statsPopup').classList.remove('active')">Fermer</button>
   </div>
+</div>
+
+<!-- Widget Stream Buddies en bas centré sans contour -->
+<div class="streambuddies-section">
+  <iframe 
+    src="https://tikfinity.zerody.one/widget/streambuddies?cid=2260505" 
+    width="100%" 
+    height="150" 
+    frameborder="0" 
+    style="background: transparent; border: none; max-width: 800px; margin: 0 auto; display: block;">
+  </iframe>
 </div>
 
 <footer>Spin rapide 0.5s — multi-spin séquentiel — couleurs & compteurs en temps réel.</footer>
