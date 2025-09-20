@@ -38,7 +38,7 @@
             display: flex;
             gap: 25px;
             width: 100%;
-            max-width: 1400px;
+            max-width: 1600px;
             align-items: flex-start;
         }
 
@@ -85,6 +85,8 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 215, 0, 0.3);
             backdrop-filter: blur(10px);
+            max-width: 1000px;
+            margin: 0 auto;
         }
         
         h1 {
@@ -134,14 +136,34 @@
             box-shadow: 0 0 15px rgba(218, 165, 32, 0.6);
         }
         
+        .level-btn.extreme {
+            background: linear-gradient(to right, #8b0000, #ff0000);
+        }
+        
+        .level-btn.extreme.active {
+            background: linear-gradient(to right, #8b0000, #ff4500);
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
+        }
+        
+        .prize-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
         .chests-container {
             margin-bottom: 30px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 10px;
         }
         
         .chests-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
             margin-bottom: 30px;
         }
         
@@ -153,14 +175,18 @@
             grid-template-columns: repeat(5, 1fr);
         }
         
-        .chests-grid-50 {
+        .chests-grid-56 {
             grid-template-columns: repeat(8, 1fr);
+        }
+        
+        .chests-grid-250 {
+            grid-template-columns: repeat(10, 1fr);
         }
         
         .chest {
             background: linear-gradient(145deg, #8b4513, #6b3409);
             border-radius: 10px;
-            height: 90px;
+            height: 70px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -190,15 +216,25 @@
         }
         
         .chest-number {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             font-weight: bold;
             color: #ffd700;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
         
         .chest-lock {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #ffd700;
+        }
+        
+        .win-animation {
+            animation: chestWin 1s ease-in-out;
+        }
+        
+        @keyframes chestWin {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
         
         .stats {
@@ -273,12 +309,71 @@
             background: linear-gradient(to right, #3a3a3a, #2a2a2a);
         }
         
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+        
+        .calculator {
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .calculator h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+        
+        .calc-section {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        .calc-section h4 {
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+        
+        .calc-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .calc-input label {
+            font-weight: bold;
+        }
+        
+        .calc-input input {
+            width: 80px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .calc-result-text {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+        
         .coins {
             position: absolute;
             font-size: 1.5rem;
             color: #ffd700;
             opacity: 0;
             animation: coinAnimation 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 10;
         }
         
         @keyframes coinAnimation {
@@ -292,173 +387,78 @@
             }
         }
         
-        .win-animation {
-            animation: winPulse 0.5s ease-in-out;
-        }
-        
-        @keyframes winPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        .instructions {
-            text-align: center;
-            margin-top: 20px;
-            color: #a0a0a0;
-            font-style: italic;
-        }
-        
-        .calculator {
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 20px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-        
-        .calculator h3 {
-            text-align: center;
-            color: #ffd700;
-            margin-bottom: 20px;
-            font-size: 1.4rem;
-        }
-        
-        .calc-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-        }
-        
-        .calc-section h4 {
-            color: #ffd700;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-        
-        .calc-input {
+        /* Popups */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
         
-        .calc-input label {
-            color: #e0e0e0;
-            min-width: 100px;
+        .popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
         }
         
-        .calc-input input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #444;
-            border-radius: 5px;
-            padding: 8px;
-            color: white;
-            font-size: 1rem;
-            width: 120px;
-        }
-        
-        .calc-result {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
-        }
-        
-        .calc-result-text {
-            color: #ffd700;
-            font-weight: bold;
-        }
-        
-        .prize-info {
+        .popup {
+            background: linear-gradient(to bottom, #2c2c2c, #1a1a1a);
+            border-radius: 15px;
+            padding: 30px;
             text-align: center;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            border: 2px solid #ffd700;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .popup h3 {
             color: #ffd700;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .main-wrapper {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .sidebar-left, .sidebar-right {
-                flex: none;
-                width: 100%;
-                max-width: 600px;
-                order: 2;
-            }
-
-            .container {
-                order: 1;
-                width: 100%;
-                max-width: 800px;
-            }
-
-            .sidebar-left {
-                flex-direction: row;
-                gap: 20px;
-            }
-
-            .sidebar-right {
-                flex-direction: row;
-                gap: 20px;
-            }
-
-            .widget-container {
-                flex: 1;
-            }
+            margin-bottom: 15px;
+            font-size: 1.8rem;
         }
         
-        @media (max-width: 768px) {
-            .chests-grid-50 {
-                grid-template-columns: repeat(5, 1fr);
-            }
-            
-            .chest {
-                height: 80px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .level-btn {
-                padding: 10px 15px;
-                font-size: 0.9rem;
-            }
-
-            .sidebar-left, .sidebar-right {
-                flex-direction: column;
-            }
+        .popup p {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: #e0e0e0;
         }
         
-        @media (max-width: 480px) {
-            .chests-grid, .chests-grid-13, .chests-grid-25 {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .chests-grid-50 {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .chest {
-                height: 70px;
-            }
-            
-            .btn {
-                padding: 10px 20px;
-                font-size: 1rem;
-            }
-
-            .main-wrapper {
-                padding: 10px;
-            }
+        .popup.extreme {
+            background: linear-gradient(to bottom, #600, #300);
+            border-color: #f00;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        }
+        
+        .popup.extreme h3 {
+            color: #ff4500;
+            text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+        }
+        
+        .popup-btn {
+            padding: 10px 25px;
+            background: linear-gradient(to right, #8b4513, #daa520);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .popup-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.8);
         }
     </style>
 </head>
@@ -483,7 +483,8 @@
             <div class="level-selector">
                 <button class="level-btn active" data-level="13">Facile (13 coffres)</button>
                 <button class="level-btn" data-level="25">Moyen (25 coffres)</button>
-                <button class="level-btn" data-level="50">Difficile (50 coffres)</button>
+                <button class="level-btn" data-level="56">Difficile (56 coffres)</button>
+                <button class="level-btn extreme" data-level="250">Extrême (250 coffres)</button>
             </div>
             
             <div class="prize-info" id="prizeInfo">Trouvez le coffre avec 500 pièces !</div>
@@ -552,15 +553,29 @@
                 </div>
                 
                 <div class="calc-section">
-                    <h4>🎯 Niveau Difficile (50 coffres)</h4>
+                    <h4>🎯 Niveau Difficile (56 coffres)</h4>
                     <div class="calc-input">
                         <label>Mise :</label>
-                        <input type="number" id="bet50" value="100" min="1">
+                        <input type="number" id="bet56" value="100" min="1">
                         <span style="color: #e0e0e0;">pièces</span>
                     </div>
                     <div class="calc-result">
-                        <div class="calc-result-text" id="result50">
-                            Gain possible: 2000 pièces | Probabilité: 2.00% | Espérance: -60 pièces
+                        <div class="calc-result-text" id="result56">
+                            Gain possible: 2000 pièces | Probabilité: 1.79% | Espérance: -60 pièces
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calc-section">
+                    <h4>🎯 Niveau Extrême (250 coffres)</h4>
+                    <div class="calc-input">
+                        <label>Mise :</label>
+                        <input type="number" id="bet250" value="100" min="1">
+                        <span style="color: #e0e0e0;">pièces</span>
+                    </div>
+                    <div class="calc-result">
+                        <div class="calc-result-text" id="result250">
+                            Gain possible: 10000 pièces | Probabilité: 0.40% | Espérance: -60 pièces
                         </div>
                     </div>
                 </div>
@@ -573,6 +588,25 @@
                 <div class="widget-title">🏆 Top Ranker</div>
                 <iframe class="widget-iframe" src="https://tikfinity.zerody.one/widget/ranking?cid=2260505" frameborder="0"></iframe>
             </div>
+        </div>
+    </div>
+    
+    <!-- Popup pour gains normaux -->
+    <div class="popup-overlay" id="winPopup">
+        <div class="popup">
+            <h3>🎉 Félicitations !</h3>
+            <p id="winMessage">Vous avez gagné X pièces !</p>
+            <button class="popup-btn" onclick="closePopup('winPopup')">Super !</button>
+        </div>
+    </div>
+    
+    <!-- Popup pour gains extrêmes -->
+    <div class="popup-overlay" id="extremePopup">
+        <div class="popup extreme">
+            <h3>🔥 INCROYABLE ! 🔥</h3>
+            <p id="extremeMessage">Vous avez trouvé le coffre parmi 250 ! Vous gagnez 10 000 pièces !</p>
+            <p>🎊 C'est un exploit rare ! 🎊</p>
+            <button class="popup-btn" onclick="closePopup('extremePopup')">GÉNIAL !</button>
         </div>
     </div>
 
@@ -595,6 +629,7 @@
             let gameActive = false;
             let currentLevel = 13;
             let prizeAmount = 500;
+            let currentBet = 100;
             
             // Initialiser le jeu
             updateStats();
@@ -612,13 +647,17 @@
                     // Définir le montant du prix selon le niveau
                     if (currentLevel === 13) {
                         prizeAmount = 500;
+                        prizeInfoElement.textContent = "Trouvez le coffre avec 500 pièces !";
                     } else if (currentLevel === 25) {
                         prizeAmount = 1000;
-                    } else if (currentLevel === 50) {
+                        prizeInfoElement.textContent = "Trouvez le coffre avec 1000 pièces !";
+                    } else if (currentLevel === 56) {
                         prizeAmount = 2000;
+                        prizeInfoElement.textContent = "Trouvez le coffre avec 2000 pièces !";
+                    } else if (currentLevel === 250) {
+                        prizeAmount = 10000;
+                        prizeInfoElement.textContent = "Trouvez le coffre avec 10 000 pièces !";
                     }
-                    
-                    prizeInfoElement.textContent = `Trouvez le coffre avec ${prizeAmount} pièces !`;
                     
                     createChests();
                 });
@@ -634,7 +673,8 @@
                 chestsGrid.className = 'chests-grid';
                 if (currentLevel === 13) chestsGrid.classList.add('chests-grid-13');
                 if (currentLevel === 25) chestsGrid.classList.add('chests-grid-25');
-                if (currentLevel === 50) chestsGrid.classList.add('chests-grid-50');
+                if (currentLevel === 56) chestsGrid.classList.add('chests-grid-56');
+                if (currentLevel === 250) chestsGrid.classList.add('chests-grid-250');
                 
                 // Créer les coffres
                 for (let i = 0; i < currentLevel; i++) {
@@ -692,8 +732,6 @@
                         <div class="chest-number">${index + 1}</div>
                         <div class="chest-lock">💰</div>
                     `;
-                    resultElement.textContent = `Félicitations ! Vous avez gagné ${prizeAmount} pièces ! 🎉`;
-                    resultElement.style.color = '#ffd700';
                     
                     // Animation de pièces
                     for (let i = 0; i < 15; i++) {
@@ -701,6 +739,19 @@
                     }
                     
                     chestElement.classList.add('win-animation');
+                    
+                    // Afficher la popup appropriée
+                    if (currentLevel === 250) {
+                        resultElement.textContent = `INCROYABLE ! Vous avez gagné ${prizeAmount} pièces ! 🔥`;
+                        resultElement.style.color = '#ff4500';
+                        document.getElementById('extremeMessage').textContent = `Vous avez trouvé le coffre parmi 250 ! Vous gagnez ${prizeAmount} pièces !`;
+                        showPopup('extremePopup');
+                    } else {
+                        resultElement.textContent = `Félicitations ! Vous avez gagné ${prizeAmount} pièces ! 🎉`;
+                        resultElement.style.color = '#ffd700';
+                        document.getElementById('winMessage').textContent = `Vous avez gagné ${prizeAmount} pièces !`;
+                        showPopup('winPopup');
+                    }
                 } else {
                     // Le joueur a perdu
                     gamesLost++;
@@ -748,6 +799,26 @@
                 gamesLostElement.textContent = gamesLost;
             }
             
+            // Fonctions pour les popups
+            function showPopup(popupId) {
+                const popup = document.getElementById(popupId);
+                popup.classList.add('show');
+            }
+            
+            window.closePopup = function(popupId) {
+                const popup = document.getElementById(popupId);
+                popup.classList.remove('show');
+            }
+            
+            // Fermer la popup en cliquant sur l'overlay
+            document.querySelectorAll('.popup-overlay').forEach(popup => {
+                popup.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('show');
+                    }
+                });
+            });
+            
             // Événement pour le bouton Jouer
             playBtn.addEventListener('click', startGame);
             
@@ -764,16 +835,19 @@
             function initCalculator() {
                 const bet13 = document.getElementById('bet13');
                 const bet25 = document.getElementById('bet25');
-                const bet50 = document.getElementById('bet50');
+                const bet56 = document.getElementById('bet56');
+                const bet250 = document.getElementById('bet250');
                 
                 bet13.addEventListener('input', () => updateCalculation(13, bet13.value));
                 bet25.addEventListener('input', () => updateCalculation(25, bet25.value));
-                bet50.addEventListener('input', () => updateCalculation(50, bet50.value));
+                bet56.addEventListener('input', () => updateCalculation(56, bet56.value));
+                bet250.addEventListener('input', () => updateCalculation(250, bet250.value));
                 
                 // Calculs initiaux
                 updateCalculation(13, 100);
                 updateCalculation(25, 100);
-                updateCalculation(50, 100);
+                updateCalculation(56, 100);
+                updateCalculation(250, 100);
             }
             
             function updateCalculation(chests, bet) {
@@ -792,11 +866,17 @@
                     expectedValue = (prize * (1/25) - betAmount).toFixed(0);
                     document.getElementById('result25').textContent = 
                         `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
-                } else if (chests === 50) {
+                } else if (chests === 56) {
                     prize = betAmount * 20; // 20x la mise
-                    probability = (1/50 * 100).toFixed(2);
-                    expectedValue = (prize * (1/50) - betAmount).toFixed(0);
-                    document.getElementById('result50').textContent = 
+                    probability = (1/56 * 100).toFixed(2);
+                    expectedValue = (prize * (1/56) - betAmount).toFixed(0);
+                    document.getElementById('result56').textContent = 
+                        `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
+                } else if (chests === 250) {
+                    prize = betAmount * 100; // 100x la mise
+                    probability = (1/250 * 100).toFixed(2);
+                    expectedValue = (prize * (1/250) - betAmount).toFixed(0);
+                    document.getElementById('result250').textContent = 
                         `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
                 }
             }
