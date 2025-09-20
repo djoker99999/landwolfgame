@@ -1,886 +1,461 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu des Coffres Mystères</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: url('https://img.freepik.com/fotos-premium/ilustracion-dibujos-animados-carretera-paisaje-rosa-montanas-arboles_771703-14399.jpg?w=1380') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: -1;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💎 Casse le Diamant</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .main-wrapper {
-            display: flex;
-            gap: 25px;
-            width: 100%;
-            max-width: 1600px;
-            align-items: flex-start;
-        }
+    body {
+      font-family: 'Arial', sans-serif;
+      background-image: url('https://img.freepik.com/premium-photo/cherry-blossoms-forest_1091302-2482.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
 
-        /* Widgets latéraux */
-        .sidebar-left, .sidebar-right {
-            flex: 0 0 280px;
-            min-width: 280px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: -1;
+    }
 
-        .widget-container {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            backdrop-filter: blur(10px);
-            height: 400px;
-            overflow: hidden;
-        }
+    .game-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
 
-        .widget-title {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: #ffd700;
-            text-align: center;
-            font-weight: bold;
-        }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-        .widget-iframe {
-            width: 100%;
-            height: 350px;
-            border-radius: 8px;
-            border: none;
-        }
-        
-        .container {
-            flex: 1;
-            background: rgba(15, 15, 16, 0.9);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            backdrop-filter: blur(10px);
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            font-size: 2.5rem;
-        }
-        
-        .description {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 1.2rem;
-            color: #e0e0e0;
-        }
-        
-        .level-selector {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        
-        .level-btn {
-            padding: 12px 20px;
-            background: linear-gradient(to right, #3a3a3a, #2a2a2a);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            border: 1px solid #444;
-        }
-        
-        .level-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-        }
-        
-        .level-btn.active {
-            background: linear-gradient(to right, #8b4513, #daa520);
-            box-shadow: 0 0 15px rgba(218, 165, 32, 0.6);
-        }
-        
-        .level-btn.extreme {
-            background: linear-gradient(to right, #8b0000, #ff0000);
-        }
-        
-        .level-btn.extreme.active {
-            background: linear-gradient(to right, #8b0000, #ff4500);
-            box-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
-        }
-        
-        .prize-info {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            color: #ffd700;
-            font-weight: bold;
-        }
-        
-        .chests-container {
-            margin-bottom: 30px;
-            max-height: 600px;
-            overflow-y: auto;
-            padding: 10px;
-        }
-        
-        .chests-grid {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 8px;
-            margin-bottom: 30px;
-        }
-        
-        .chests-grid-13 {
-            grid-template-columns: repeat(5, 1fr);
-        }
-        
-        .chests-grid-25 {
-            grid-template-columns: repeat(5, 1fr);
-        }
-        
-        .chests-grid-56 {
-            grid-template-columns: repeat(8, 1fr);
-        }
-        
-        .chests-grid-250 {
-            grid-template-columns: repeat(10, 1fr);
-        }
-        
-        .chest {
-            background: linear-gradient(145deg, #8b4513, #6b3409);
-            border-radius: 10px;
-            height: 70px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-            border: 2px solid #daa520;
-        }
-        
-        .chest:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 20px rgba(218, 165, 32, 0.8);
-        }
-        
-        .chest::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            border: 2px solid rgba(218, 165, 32, 0.5);
-            border-radius: 8px;
-        }
-        
-        .chest-number {
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #ffd700;
-            margin-bottom: 3px;
-        }
-        
-        .chest-lock {
-            font-size: 1.2rem;
-            color: #ffd700;
-        }
-        
-        .win-animation {
-            animation: chestWin 1s ease-in-out;
-        }
-        
-        @keyframes chestWin {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 30px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .stat-item {
-            text-align: center;
-            flex: 1;
-            min-width: 120px;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ffd700;
-        }
-        
-        .stat-label {
-            font-size: 1rem;
-            color: #e0e0e0;
-        }
-        
-        .result {
-            text-align: center;
-            margin-bottom: 20px;
-            min-height: 60px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            padding: 10px;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.4);
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 12px 30px;
-            background: linear-gradient(to right, #8b4513, #daa520);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px rgba(218, 165, 32, 0.8);
-        }
-        
-        .btn-reset {
-            background: linear-gradient(to right, #3a3a3a, #2a2a2a);
-        }
-        
-        .instructions {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #e0e0e0;
-        }
-        
-        .calculator {
-            margin-top: 30px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-        }
-        
-        .calculator h3 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #ffd700;
-        }
-        
-        .calc-section {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-        }
-        
-        .calc-section h4 {
-            margin-bottom: 10px;
-            color: #ffd700;
-        }
-        
-        .calc-input {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .calc-input label {
-            font-weight: bold;
-        }
-        
-        .calc-input input {
-            width: 80px;
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid #444;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        
-        .calc-result-text {
-            color: #e0e0e0;
-            font-size: 0.9rem;
-        }
-        
-        .coins {
-            position: absolute;
-            font-size: 1.5rem;
-            color: #ffd700;
-            opacity: 0;
-            animation: coinAnimation 1s ease-out forwards;
-            pointer-events: none;
-            z-index: 10;
-        }
-        
-        @keyframes coinAnimation {
-            0% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100px);
-                opacity: 0;
-            }
-        }
-        
-        /* Popups */
-        .popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .popup-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .popup {
-            background: linear-gradient(to bottom, #2c2c2c, #1a1a1a);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            border: 2px solid #ffd700;
-            max-width: 500px;
-            width: 90%;
-        }
-        
-        .popup h3 {
-            color: #ffd700;
-            margin-bottom: 15px;
-            font-size: 1.8rem;
-        }
-        
-        .popup p {
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-            color: #e0e0e0;
-        }
-        
-        .popup.extreme {
-            background: linear-gradient(to bottom, #600, #300);
-            border-color: #f00;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
-        }
-        
-        .popup.extreme h3 {
-            color: #ff4500;
-            text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
-        }
-        
-        .popup-btn {
-            padding: 10px 25px;
-            background: linear-gradient(to right, #8b4513, #daa520);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 15px;
-        }
-        
-        .popup-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(218, 165, 32, 0.8);
-        }
-    </style>
+    .instructions {
+      margin: 30px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .instructions h2 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .instructions p {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #feca57;
+    }
+
+    .diamond-container {
+      position: relative;
+      margin: 30px 0;
+    }
+
+    .diamond {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48e.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: relative;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) brightness(1.2) contrast(1.1);
+    }
+
+    .diamond.hit {
+      animation: shake 0.3s ease-in-out;
+    }
+
+    .diamond.cracked {
+      filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8));
+    }
+
+    .diamond.broken {
+      opacity: 0.3;
+      filter: grayscale(100%) brightness(0.3);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px) rotate(-2deg); }
+      75% { transform: translateX(10px) rotate(2deg); }
+    }
+
+    .attack-modes {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .attack-mode-btn {
+      padding: 12px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .attack-mode-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .attack-mode-btn.active {
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      border-color: #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .controls {
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(45deg, #feca57, #ff6b9d);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #resetBtn {
+      background: linear-gradient(45deg, #555, #777);
+    }
+
+    #resetBtn:hover {
+      background: linear-gradient(45deg, #777, #999);
+    }
+
+    #message {
+      margin: 20px 0;
+      font-size: 1.2em;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      min-height: 30px;
+    }
+
+    .result-box {
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.9), rgba(254, 202, 87, 0.9));
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .coins-display {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: gold;
+      color: black;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      animation: coinPop 1s ease;
+      pointer-events: none;
+    }
+
+    @keyframes coinPop {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.5);
+      }
+      50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px) scale(1);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .game-container {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      .diamond {
+        width: 150px;
+        height: 150px;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+      
+      .stats {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="main-wrapper">
-        <!-- Sidebar gauche - Top Liker -->
-        <div class="sidebar-left">
-            <div class="widget-container">
-                <div class="widget-title">🏆 Top Liker</div>
-                <iframe class="widget-iframe" src="https://tikfinity.zerody.one/widget/topliker?cid=2260505" frameborder="0"></iframe>
-            </div>
-        </div>
-
-        <!-- Contenu principal -->
-        <div class="container">
-            <h1>🎰 Coffres Mystères 🎰</h1>
-            
-            <div class="description">
-                <p>Trouvez le coffre contenant le trésor ! Misez 100 pièces pour jouer.</p>
-            </div>
-            
-            <div class="level-selector">
-                <button class="level-btn active" data-level="13">Facile (13 coffres)</button>
-                <button class="level-btn" data-level="25">Moyen (25 coffres)</button>
-                <button class="level-btn" data-level="56">Difficile (56 coffres)</button>
-                <button class="level-btn extreme" data-level="250">Extrême (250 coffres)</button>
-            </div>
-            
-            <div class="prize-info" id="prizeInfo">Trouvez le coffre avec 500 pièces !</div>
-            
-            <div class="chests-container">
-                <div class="chests-grid chests-grid-13" id="chestsGrid">
-                    <!-- Les coffres seront générés par JavaScript -->
-                </div>
-            </div>
-            
-            <div class="result" id="result"></div>
-            
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="gamesPlayed">0</div>
-                    <div class="stat-label">Parties jouées</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="gamesWon">0</div>
-                    <div class="stat-label">Parties gagnées</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="gamesLost">0</div>
-                    <div class="stat-label">Parties perdues</div>
-                </div>
-            </div>
-            
-            <div class="controls">
-                <button class="btn" id="playBtn">Jouer</button>
-                <button class="btn btn-reset" id="resetStatsBtn">Nouvelle Partie</button>
-            </div>
-            
-            <div class="instructions">
-                <p>Choisissez un niveau, puis cliquez sur "Jouer" pour tenter votre chance</p>
-            </div>
-            
-            <div class="calculator">
-                <h3>📊 Calculateur de Gains</h3>
-                
-                <div class="calc-section">
-                    <h4>🎯 Niveau Facile (13 coffres)</h4>
-                    <div class="calc-input">
-                        <label>Mise :</label>
-                        <input type="number" id="bet13" value="100" min="1">
-                        <span style="color: #e0e0e0;">pièces</span>
-                    </div>
-                    <div class="calc-result">
-                        <div class="calc-result-text" id="result13">
-                            Gain possible: 500 pièces | Probabilité: 7.69% | Espérance: -60 pièces
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="calc-section">
-                    <h4>🎯 Niveau Moyen (25 coffres)</h4>
-                    <div class="calc-input">
-                        <label>Mise :</label>
-                        <input type="number" id="bet25" value="100" min="1">
-                        <span style="color: #e0e0e0;">pièces</span>
-                    </div>
-                    <div class="calc-result">
-                        <div class="calc-result-text" id="result25">
-                            Gain possible: 1000 pièces | Probabilité: 4.00% | Espérance: -60 pièces
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="calc-section">
-                    <h4>🎯 Niveau Difficile (56 coffres)</h4>
-                    <div class="calc-input">
-                        <label>Mise :</label>
-                        <input type="number" id="bet56" value="100" min="1">
-                        <span style="color: #e0e0e0;">pièces</span>
-                    </div>
-                    <div class="calc-result">
-                        <div class="calc-result-text" id="result56">
-                            Gain possible: 2000 pièces | Probabilité: 1.79% | Espérance: -60 pièces
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="calc-section">
-                    <h4>🎯 Niveau Extrême (250 coffres)</h4>
-                    <div class="calc-input">
-                        <label>Mise :</label>
-                        <input type="number" id="bet250" value="100" min="1">
-                        <span style="color: #e0e0e0;">pièces</span>
-                    </div>
-                    <div class="calc-result">
-                        <div class="calc-result-text" id="result250">
-                            Gain possible: 10000 pièces | Probabilité: 0.40% | Espérance: -60 pièces
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar droite - Top Ranker -->
-        <div class="sidebar-right">
-            <div class="widget-container">
-                <div class="widget-title">🏆 Top Ranker</div>
-                <iframe class="widget-iframe" src="https://tikfinity.zerody.one/widget/ranking?cid=2260505" frameborder="0"></iframe>
-            </div>
-        </div>
-    </div>
+  <div class="game-container">
+    <h1>💎 Casse le Diamant !</h1>
     
-    <!-- Popup pour gains normaux -->
-    <div class="popup-overlay" id="winPopup">
-        <div class="popup">
-            <h3>🎉 Félicitations !</h3>
-            <p id="winMessage">Vous avez gagné X pièces !</p>
-            <button class="popup-btn" onclick="closePopup('winPopup')">Super !</button>
-        </div>
-    </div>
-    
-    <!-- Popup pour gains extrêmes -->
-    <div class="popup-overlay" id="extremePopup">
-        <div class="popup extreme">
-            <h3>🔥 INCROYABLE ! 🔥</h3>
-            <p id="extremeMessage">Vous avez trouvé le coffre parmi 250 ! Vous gagnez 10 000 pièces !</p>
-            <p>🎊 C'est un exploit rare ! 🎊</p>
-            <button class="popup-btn" onclick="closePopup('extremePopup')">GÉNIAL !</button>
-        </div>
+    <div class="diamond-container">
+      <div class="diamond" id="diamond"></div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const chestsGrid = document.getElementById('chestsGrid');
-            const resultElement = document.getElementById('result');
-            const playBtn = document.getElementById('playBtn');
-            const resetStatsBtn = document.getElementById('resetStatsBtn');
-            const gamesPlayedElement = document.getElementById('gamesPlayed');
-            const gamesWonElement = document.getElementById('gamesWon');
-            const gamesLostElement = document.getElementById('gamesLost');
-            const prizeInfoElement = document.getElementById('prizeInfo');
-            const levelButtons = document.querySelectorAll('.level-btn');
-            
-            let gamesPlayed = 0;
-            let gamesWon = 0;
-            let gamesLost = 0;
-            let winningChest;
-            let gameActive = false;
-            let currentLevel = 13;
-            let prizeAmount = 500;
-            let currentBet = 100;
-            
-            // Initialiser le jeu
-            updateStats();
-            createChests();
-            initCalculator();
-            
-            // Gestionnaires d'événements pour les boutons de niveau
-            levelButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    levelButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    currentLevel = parseInt(this.dataset.level);
-                    
-                    // Définir le montant du prix selon le niveau
-                    if (currentLevel === 13) {
-                        prizeAmount = 500;
-                        prizeInfoElement.textContent = "Trouvez le coffre avec 500 pièces !";
-                    } else if (currentLevel === 25) {
-                        prizeAmount = 1000;
-                        prizeInfoElement.textContent = "Trouvez le coffre avec 1000 pièces !";
-                    } else if (currentLevel === 56) {
-                        prizeAmount = 2000;
-                        prizeInfoElement.textContent = "Trouvez le coffre avec 2000 pièces !";
-                    } else if (currentLevel === 250) {
-                        prizeAmount = 10000;
-                        prizeInfoElement.textContent = "Trouvez le coffre avec 10 000 pièces !";
-                    }
-                    
-                    createChests();
-                });
-            });
-            
-            function createChests() {
-                // Réinitialiser l'affichage
-                chestsGrid.innerHTML = '';
-                resultElement.textContent = '';
-                gameActive = false;
-                
-                // Adapter la grille selon le niveau
-                chestsGrid.className = 'chests-grid';
-                if (currentLevel === 13) chestsGrid.classList.add('chests-grid-13');
-                if (currentLevel === 25) chestsGrid.classList.add('chests-grid-25');
-                if (currentLevel === 56) chestsGrid.classList.add('chests-grid-56');
-                if (currentLevel === 250) chestsGrid.classList.add('chests-grid-250');
-                
-                // Créer les coffres
-                for (let i = 0; i < currentLevel; i++) {
-                    const chest = document.createElement('div');
-                    chest.className = 'chest';
-                    chest.innerHTML = `
-                        <div class="chest-number">${i + 1}</div>
-                        <div class="chest-lock">🔒</div>
-                    `;
-                    
-                    chestsGrid.appendChild(chest);
-                }
-            }
-            
-            function startGame() {
-                // Réinitialiser l'affichage
-                chestsGrid.innerHTML = '';
-                resultElement.textContent = '';
-                gameActive = true;
-                gamesPlayed++;
-                
-                // Choisir un coffre gagnant aléatoire
-                winningChest = Math.floor(Math.random() * currentLevel);
-                
-                // Créer les coffres
-                for (let i = 0; i < currentLevel; i++) {
-                    const chest = document.createElement('div');
-                    chest.className = 'chest';
-                    chest.innerHTML = `
-                        <div class="chest-number">${i + 1}</div>
-                        <div class="chest-lock">🔓</div>
-                    `;
-                    
-                    // Ajouter un événement au clic
-                    chest.addEventListener('click', function() {
-                        if (!gameActive) return;
-                        
-                        openChest(i, chest);
-                    });
-                    
-                    chestsGrid.appendChild(chest);
-                }
-                
-                updateStats();
-            }
-            
-            function openChest(index, chestElement) {
-                gameActive = false;
-                
-                if (index === winningChest) {
-                    // Le joueur a gagné
-                    gamesWon++;
-                    chestElement.style.background = 'linear-gradient(145deg, #daa520, #ffd700)';
-                    chestElement.innerHTML = `
-                        <div class="chest-number">${index + 1}</div>
-                        <div class="chest-lock">💰</div>
-                    `;
-                    
-                    // Animation de pièces
-                    for (let i = 0; i < 15; i++) {
-                        createCoinAnimation(chestElement);
-                    }
-                    
-                    chestElement.classList.add('win-animation');
-                    
-                    // Afficher la popup appropriée
-                    if (currentLevel === 250) {
-                        resultElement.textContent = `INCROYABLE ! Vous avez gagné ${prizeAmount} pièces ! 🔥`;
-                        resultElement.style.color = '#ff4500';
-                        document.getElementById('extremeMessage').textContent = `Vous avez trouvé le coffre parmi 250 ! Vous gagnez ${prizeAmount} pièces !`;
-                        showPopup('extremePopup');
-                    } else {
-                        resultElement.textContent = `Félicitations ! Vous avez gagné ${prizeAmount} pièces ! 🎉`;
-                        resultElement.style.color = '#ffd700';
-                        document.getElementById('winMessage').textContent = `Vous avez gagné ${prizeAmount} pièces !`;
-                        showPopup('winPopup');
-                    }
-                } else {
-                    // Le joueur a perdu
-                    gamesLost++;
-                    chestElement.style.background = 'linear-gradient(145deg, #555, #333)';
-                    chestElement.innerHTML = `
-                        <div class="chest-number">${index + 1}</div>
-                        <div class="chest-lock">❌</div>
-                    `;
-                    resultElement.textContent = 'Perdu ! Essayez encore !';
-                    resultElement.style.color = '#ff6b6b';
-                }
-                
-                // Mettre à jour les statistiques
-                updateStats();
-                
-                // Révéler le coffre gagnant après un délai
-                setTimeout(() => {
-                    if (index !== winningChest) {
-                        const winningChestElement = chestsGrid.children[winningChest];
-                        winningChestElement.style.background = 'linear-gradient(145deg, #daa520, #ffd700)';
-                        winningChestElement.innerHTML = `
-                            <div class="chest-number">${winningChest + 1}</div>
-                            <div class="chest-lock">💰</div>
-                        `;
-                    }
-                }, 1500);
-            }
-            
-            function createCoinAnimation(parentElement) {
-                const coin = document.createElement('div');
-                coin.className = 'coins';
-                coin.textContent = '🪙';
-                coin.style.left = Math.random() * 80 + 10 + '%';
-                parentElement.appendChild(coin);
-                
-                // Supprimer l'élément après l'animation
-                setTimeout(() => {
-                    coin.remove();
-                }, 1000);
-            }
-            
-            function updateStats() {
-                gamesPlayedElement.textContent = gamesPlayed;
-                gamesWonElement.textContent = gamesWon;
-                gamesLostElement.textContent = gamesLost;
-            }
-            
-            // Fonctions pour les popups
-            function showPopup(popupId) {
-                const popup = document.getElementById(popupId);
-                popup.classList.add('show');
-            }
-            
-            window.closePopup = function(popupId) {
-                const popup = document.getElementById(popupId);
-                popup.classList.remove('show');
-            }
-            
-            // Fermer la popup en cliquant sur l'overlay
-            document.querySelectorAll('.popup-overlay').forEach(popup => {
-                popup.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        this.classList.remove('show');
-                    }
-                });
-            });
-            
-            // Événement pour le bouton Jouer
-            playBtn.addEventListener('click', startGame);
-            
-            // Événement pour le bouton de réinitialisation des statistiques
-            resetStatsBtn.addEventListener('click', function() {
-                gamesPlayed = 0;
-                gamesWon = 0;
-                gamesLost = 0;
-                updateStats();
-                createChests();
-            });
-            
-            // Calculateur de gains
-            function initCalculator() {
-                const bet13 = document.getElementById('bet13');
-                const bet25 = document.getElementById('bet25');
-                const bet56 = document.getElementById('bet56');
-                const bet250 = document.getElementById('bet250');
-                
-                bet13.addEventListener('input', () => updateCalculation(13, bet13.value));
-                bet25.addEventListener('input', () => updateCalculation(25, bet25.value));
-                bet56.addEventListener('input', () => updateCalculation(56, bet56.value));
-                bet250.addEventListener('input', () => updateCalculation(250, bet250.value));
-                
-                // Calculs initiaux
-                updateCalculation(13, 100);
-                updateCalculation(25, 100);
-                updateCalculation(56, 100);
-                updateCalculation(250, 100);
-            }
-            
-            function updateCalculation(chests, bet) {
-                const betAmount = parseFloat(bet) || 0;
-                let prize, probability, expectedValue;
-                
-                if (chests === 13) {
-                    prize = betAmount * 5; // 5x la mise
-                    probability = (1/13 * 100).toFixed(2);
-                    expectedValue = (prize * (1/13) - betAmount).toFixed(0);
-                    document.getElementById('result13').textContent = 
-                        `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
-                } else if (chests === 25) {
-                    prize = betAmount * 10; // 10x la mise
-                    probability = (1/25 * 100).toFixed(2);
-                    expectedValue = (prize * (1/25) - betAmount).toFixed(0);
-                    document.getElementById('result25').textContent = 
-                        `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
-                } else if (chests === 56) {
-                    prize = betAmount * 20; // 20x la mise
-                    probability = (1/56 * 100).toFixed(2);
-                    expectedValue = (prize * (1/56) - betAmount).toFixed(0);
-                    document.getElementById('result56').textContent = 
-                        `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
-                } else if (chests === 250) {
-                    prize = betAmount * 100; // 100x la mise
-                    probability = (1/250 * 100).toFixed(2);
-                    expectedValue = (prize * (1/250) - betAmount).toFixed(0);
-                    document.getElementById('result250').textContent = 
-                        `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
-                }
-            }
-        });
-    </script>
+    <div class="instructions">
+      <h2>🌹 Casse le Diamant et Gagne le Cadeau ! 🌹</h2>
+      <p>Une Rose - Un Coup</p>
+    </div>
+
+    <div class="attack-modes">
+      <button id="mode1" class="attack-mode-btn active">1 coup</button>
+      <button id="mode10" class="attack-mode-btn">10 coups</button>
+      <button id="mode100" class="attack-mode-btn">100 coups</button>
+    </div>
+
+    <div class="controls">
+      <button id="attackBtn">Attaquer (1 coup)</button>
+      <button id="resetBtn">Nouveau Diamant</button>
+    </div>
+
+    <p id="message"></p>
+
+    <div id="resultContainer" class="hidden result-box">
+      <h3>🎉 Diamant Détruit ! 🎉</h3>
+      <p id="coinsResult">Vous avez gagné 0 pièce !</p>
+    </div>
+  </div>
+
+  <script>
+    let maxHP, currentHP, coupCounter, totalHits;
+    let hitsUntilCoin = 4;
+    let attackMode = 1;
+    let rosesEarnedThisDiamond = 0;
+
+    const diamond = document.getElementById("diamond");
+    const message = document.getElementById("message");
+    const attackBtn = document.getElementById("attackBtn");
+    const resultContainer = document.getElementById("resultContainer");
+    const coinsResult = document.getElementById("coinsResult");
+
+    function initGame() {
+      maxHP = Math.floor(Math.random() * (2000 - 200 + 1)) + 200;
+      currentHP = maxHP;
+      coupCounter = 0;
+      totalHits = 0;
+      hitsUntilCoin = 4;
+      rosesEarnedThisDiamond = 0;
+      
+      diamond.className = "diamond";
+      message.textContent = `🌹 Nouveau diamant à casser !`;
+      resultContainer.classList.add("hidden");
+      updateUI();
+    }
+
+    function attack() {
+      if (currentHP <= 0) return;
+      
+      let hits = attackMode;
+      let actualHits = 0;
+      let rosesEarned = 0;
+      
+      // Ajouter effet visuel de frappe
+      diamond.classList.add('hit');
+      setTimeout(() => diamond.classList.remove('hit'), 300);
+      
+      // Effectuer le nombre de coups selon le mode
+      for (let i = 0; i < hits && currentHP > 0; i++) {
+        coupCounter++;
+        actualHits++;
+        totalHits++;
+
+        // Tous les 2 coups -> -1 PV
+        if (coupCounter >= 2) {
+          coupCounter = 0;
+          currentHP--;
+        }
+
+        // Gestion des roses (tous les 4 coups)
+        hitsUntilCoin--;
+        if (hitsUntilCoin <= 0) {
+          rosesEarnedThisDiamond++;
+          rosesEarned++;
+          hitsUntilCoin = 4;
+        }
+      }
+      
+      // Afficher les roses gagnées
+      if (rosesEarned > 0) {
+        showRoseGain(rosesEarned);
+      }
+      
+      updateUI();
+      
+      if (currentHP <= 0) {
+        endGame();
+      }
+    }
+
+    function showRoseGain(amount) {
+      const roseDisplay = document.createElement('div');
+      roseDisplay.className = 'coins-display';
+      roseDisplay.textContent = `+${amount} 🌹`;
+      roseDisplay.style.background = 'linear-gradient(45deg, #ff6b9d, #feca57)';
+      diamond.parentElement.appendChild(roseDisplay);
+      
+      setTimeout(() => {
+        roseDisplay.remove();
+      }, 1000);
+    }
+
+    function updateUI() {
+      if (currentHP === 0) {
+        diamond.className = "diamond broken";
+        message.textContent = "💥 Le diamant s'est brisé !";
+      } else {
+        let percent = (currentHP / maxHP) * 100;
+        if (percent < 30) {
+          diamond.classList.add("cracked");
+          message.textContent = "⚠️ Le diamant commence à se fissurer...";
+        } else if (percent < 60) {
+          diamond.classList.remove("cracked");
+          message.textContent = "💪 Continue ! Le diamant s'affaiblit !";
+        } else {
+          diamond.classList.remove("cracked");
+          message.textContent = "🔥 Frappe fort !";
+        }
+      }
+    }
+
+    function endGame() {
+      // Afficher le résultat final avec le nombre de roses gagnées
+      coinsResult.innerHTML = `
+        <strong>🎉 BRAVO ! 🎉</strong><br>
+        Tu as cassé le diamant !<br>
+        <div style="font-size: 3em; margin: 10px 0;">🌹</div>
+        <strong>Tu as gagné ${rosesEarnedThisDiamond} rose${rosesEarnedThisDiamond > 1 ? 's' : ''} !</strong>
+      `;
+      resultContainer.classList.remove("hidden");
+    }
+
+    function setAttackMode(mode) {
+      attackMode = mode;
+      
+      // Mettre à jour l'interface
+      document.getElementById('mode1').classList.toggle('active', mode === 1);
+      document.getElementById('mode10').classList.toggle('active', mode === 10);
+      document.getElementById('mode100').classList.toggle('active', mode === 100);
+      
+      // Mettre à jour le texte du bouton d'attaque
+      attackBtn.textContent = `Attaquer (${mode} coup${mode > 1 ? 's' : ''})`;
+    }
+
+    // Événements
+    document.getElementById("attackBtn").addEventListener("click", attack);
+    document.getElementById("resetBtn").addEventListener("click", initGame);
+    document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
+    document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
+    document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
+
+    // Raccourcis clavier
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case ' ':
+        case 'Enter':
+          e.preventDefault();
+          attack();
+          break;
+        case '1':
+          setAttackMode(1);
+          break;
+        case '2':
+          setAttackMode(10);
+          break;
+        case '3':
+          setAttackMode(100);
+          break;
+        case 'r':
+        case 'R':
+          initGame();
+          break;
+      }
+    });
+
+    initGame();
+  </script>
 </body>
 </html>
