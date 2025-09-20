@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu des Coffres Mystères</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: url('https://img.freepik.com/fotos-premium/ilustracion-dibujos-animados-carretera-paisaje-rosa-montanas-arboles_771703-14399.jpg?w=1380') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+
+        .main-wrapper {
+            display: flex;
+            gap: 25px;
+            width: 100%;
+            max-width: 1400px;
+            align-items: flex-start;
+        }
+
+        /* Widgets latéraux */
+        .sidebar-left, .sidebar-right {
+            flex: 0 0 280px;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .widget-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .widget-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #ffd700;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .widget-iframe {
+            width: 100%;
+            height: 350px;
+            border-radius: 8px;
+            border: none;
+        }
+        
+        .container {
+            flex: 1;
+            background: rgba(15, 15, 16, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-size: 2.5rem;
+        }
+        
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            color: #e0e0e0;
+        }
+        
+        .level-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .level-btn {
+            padding: 12px 20px;
+            background: linear-gradient(to right, #3a3a3a, #2a2a2a);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
+        }
+        
+        .level-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .level-btn.active {
+            background: linear-gradient(to right, #8b4513, #daa520);
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.6);
+        }
+        
+        .chests-container {
+            margin-bottom: 30px;
+        }
+        
+        .chests-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .chests-grid-13 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+        
+        .chests-grid-25 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+        
+        .chests-grid-50 {
+            grid-template-columns: repeat(8, 1fr);
+        }
+        
+        .chest {
+            background: linear-gradient(145deg, #8b4513, #6b3409);
+            border-radius: 10px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #daa520;
+        }
+        
+        .chest:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(218, 165, 32, 0.8);
+        }
+        
+        .chest::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid rgba(218, 165, 32, 0.5);
+            border-radius: 8px;
+        }
+        
+        .chest-number {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        .chest-lock {
+            font-size: 1.5rem;
+            color: #ffd700;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #e0e0e0;
+        }
+        
+        .result {
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 60px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(to right, #8b4513, #daa520);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(218, 165, 32, 0.8);
+        }
+        
+        .btn-reset {
+            background: linear-gradient(to right, #3a3a3a, #2a2a2a);
+        }
+        
+        .coins {
+            position: absolute;
+            font-size: 1.5rem;
+            color: #ffd700;
+            opacity: 0;
+            animation: coinAnimation 1s ease-out forwards;
+        }
+        
+        @keyframes coinAnimation {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+        
+        .win-animation {
+            animation: winPulse 0.5s ease-in-out;
+        }
+        
+        @keyframes winPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .instructions {
+            text-align: center;
+            margin-top: 20px;
+            color: #a0a0a0;
+            font-style: italic;
+        }
+        
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .popup {
+            background: linear-gradient(145deg, #2a2a3a, #1a1a2a);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .popup-overlay.show .popup {
+            transform: scale(1);
+        }
+        
+        .popup h3 {
+            color: #ffd700;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .popup p {
+            color: #e0e0e0;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .popup-btn {
+            background: linear-gradient(to right, #8b4513, #daa520);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.6);
+        }
+        
+        .calculator {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .calculator h3 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+        
+        .calc-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .calc-section h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .calc-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .calc-input label {
+            color: #e0e0e0;
+            min-width: 100px;
+        }
+        
+        .calc-input input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 8px;
+            color: white;
+            font-size: 1rem;
+            width: 120px;
+        }
+        
+        .calc-result {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+        .calc-result-text {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .prize-info {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #ffd700;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .sidebar-left, .sidebar-right {
+                flex: none;
+                width: 100%;
+                max-width: 600px;
+                order: 2;
+            }
+
+            .container {
+                order: 1;
+                width: 100%;
+                max-width: 800px;
+            }
+
+            .sidebar-left {
+                flex-direction: row;
+                gap: 20px;
+            }
+
+            .sidebar-right {
+                flex-direction: row;
+                gap: 20px;
+            }
+
+            .widget-container {
+                flex: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .chests-grid-50 {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .chest {
+                height: 80px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .level-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            .sidebar-left, .sidebar-right {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .chests-grid, .chests-grid-13, .chests-grid-25 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .chests-grid-50 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .chest {
+                height: 70px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+
+            .main-wrapper {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <!-- Sidebar gauche - Top Liker -->
+        <div class="sidebar-left">
+            <div class="widget-container">
+                <div class="widget-title">🏆 Top Liker</div>
+                <iframe class="widget-iframe" src="https://tikfinity.zerody.one/widget/topliker?cid=2136326" frameborder="0"></iframe>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="container">
+            <h1>🎰 Coffres Mystères 🎰</h1>
+            
+            <div class="description">
+                <p>Trouvez le coffre contenant le trésor ! Misez 100 pièces pour jouer.</p>
+            </div>
+            
+            <div class="level-selector">
+                <button class="level-btn active" data-level="13">Facile (13 coffres)</button>
+                <button class="level-btn" data-level="25">Moyen (25 coffres)</button>
+                <button class="level-btn" data-level="50">Difficile (50 coffres)</button>
+            </div>
+            
+            <div class="prize-info" id="prizeInfo">Trouvez le coffre avec 500 pièces !</div>
+            
+            <div class="chests-container">
+                <div class="chests-grid chests-grid-13" id="chestsGrid">
+                    <!-- Les coffres seront générés par JavaScript -->
+                </div>
+            </div>
+            
+            <div class="result" id="result"></div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="gamesPlayed">0</div>
+                    <div class="stat-label">Parties jouées</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="gamesWon">0</div>
+                    <div class="stat-label">Parties gagnées</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="gamesLost">0</div>
+                    <div class="stat-label">Parties perdues</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" id="playBtn">Jouer</button>
+                <button class="btn btn-reset" id="resetStatsBtn">Nouvelle Partie</button>
+            </div>
+            
+            <div class="instructions">
+                <p>Choisissez un niveau, puis cliquez sur "Jouer" pour tenter votre chance</p>
+            </div>
+            
+            <div class="calculator">
+                <h3>📊 Calculateur de Gains</h3>
+                
+                <div class="calc-section">
+                    <h4>🎯 Niveau Facile (13 coffres)</h4>
+                    <div class="calc-input">
+                        <label>Mise :</label>
+                        <input type="number" id="bet13" value="100" min="1">
+                        <span style="color: #e0e0e0;">pièces</span>
+                    </div>
+                    <div class="calc-result">
+                        <div class="calc-result-text" id="result13">
+                            Gain possible: 500 pièces | Probabilité: 7.69% | Espérance: -60 pièces
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calc-section">
+                    <h4>🎯 Niveau Moyen (25 coffres)</h4>
+                    <div class="calc-input">
+                        <label>Mise :</label>
+                        <input type="number" id="bet25" value="100" min="1">
+                        <span style="color: #e0e0e0;">pièces</span>
+                    </div>
+                    <div class="calc-result">
+                        <div class="calc-result-text" id="result25">
+                            Gain possible: 1000 pièces | Probabilité: 4.00% | Espérance: -60 pièces
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="calc-section">
+                    <h4>🎯 Niveau Difficile (50 coffres)</h4>
+                    <div class="calc-input">
+                        <label>Mise :</label>
+                        <input type="number" id="bet50" value="100" min="1">
+                        <span style="color: #e0e0e0;">pièces</span>
+                    </div>
+                    <div class="calc-result">
+                        <div class="calc-result-text" id="result50">
+                            Gain possible: 2000 pièces | Probabilité: 2.00% | Espérance: -60 pièces
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar droite - Top Gifter -->
+        <div class="sidebar-right">
+            <div class="widget-container">
+                <div class="widget-title">🎁 Top Gifter</div>
+                <iframe class="widget-iframe" src="https://tikfinity.zerody.one/widget/topgifter?cid=2136326" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popup pour les tickets -->
+    <div class="popup-overlay" id="ticketPopup">
+        <div class="popup">
+            <h3>🎫 Ticket Gagné !</h3>
+            <p>Vous avez gagné un ticket pour le prochain tirage !</p>
+            <button class="popup-btn" onclick="closeTicketPopup()">Super !</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chestsGrid = document.getElementById('chestsGrid');
+            const resultElement = document.getElementById('result');
+            const playBtn = document.getElementById('playBtn');
+            const resetStatsBtn = document.getElementById('resetStatsBtn');
+            const gamesPlayedElement = document.getElementById('gamesPlayed');
+            const gamesWonElement = document.getElementById('gamesWon');
+            const gamesLostElement = document.getElementById('gamesLost');
+            const prizeInfoElement = document.getElementById('prizeInfo');
+            const levelButtons = document.querySelectorAll('.level-btn');
+            
+            let gamesPlayed = 0;
+            let gamesWon = 0;
+            let gamesLost = 0;
+            let ticketsWon = 0;
+            let winningChest;
+            let gameActive = false;
+            let currentLevel = 13;
+            let prizeAmount = 500;
+            
+            // Initialiser le jeu
+            updateStats();
+            createChests();
+            initCalculator();
+            
+            // Gestionnaires d'événements pour les boutons de niveau
+            levelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    levelButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    currentLevel = parseInt(this.dataset.level);
+                    
+                    // Définir le montant du prix selon le niveau
+                    if (currentLevel === 13) {
+                        prizeAmount = 500;
+                    } else if (currentLevel === 25) {
+                        prizeAmount = 1000;
+                    } else if (currentLevel === 50) {
+                        prizeAmount = 2000;
+                    }
+                    
+                    prizeInfoElement.textContent = `Trouvez le coffre avec ${prizeAmount} pièces !`;
+                    
+                    createChests();
+                });
+            });
+            
+            function createChests() {
+                // Réinitialiser l'affichage
+                chestsGrid.innerHTML = '';
+                resultElement.textContent = '';
+                gameActive = false;
+                
+                // Adapter la grille selon le niveau
+                chestsGrid.className = 'chests-grid';
+                if (currentLevel === 13) chestsGrid.classList.add('chests-grid-13');
+                if (currentLevel === 25) chestsGrid.classList.add('chests-grid-25');
+                if (currentLevel === 50) chestsGrid.classList.add('chests-grid-50');
+                
+                // Créer les coffres
+                for (let i = 0; i < currentLevel; i++) {
+                    const chest = document.createElement('div');
+                    chest.className = 'chest';
+                    chest.innerHTML = `
+                        <div class="chest-number">${i + 1}</div>
+                        <div class="chest-lock">🔒</div>
+                    `;
+                    
+                    chestsGrid.appendChild(chest);
+                }
+            }
+            
+            function startGame() {
+                // Réinitialiser l'affichage
+                chestsGrid.innerHTML = '';
+                resultElement.textContent = '';
+                gameActive = true;
+                gamesPlayed++;
+                
+                // Choisir un coffre gagnant aléatoire
+                winningChest = Math.floor(Math.random() * currentLevel);
+                
+                // Créer les coffres
+                for (let i = 0; i < currentLevel; i++) {
+                    const chest = document.createElement('div');
+                    chest.className = 'chest';
+                    chest.innerHTML = `
+                        <div class="chest-number">${i + 1}</div>
+                        <div class="chest-lock">🔓</div>
+                    `;
+                    
+                    // Ajouter un événement au clic
+                    chest.addEventListener('click', function() {
+                        if (!gameActive) return;
+                        
+                        openChest(i, chest);
+                    });
+                    
+                    chestsGrid.appendChild(chest);
+                }
+                
+                updateStats();
+            }
+            
+            function openChest(index, chestElement) {
+                gameActive = false;
+                
+                if (index === winningChest) {
+                    // Le joueur a gagné
+                    gamesWon++;
+                    chestElement.style.background = 'linear-gradient(145deg, #daa520, #ffd700)';
+                    chestElement.innerHTML = `
+                        <div class="chest-number">${index + 1}</div>
+                        <div class="chest-lock">💰</div>
+                    `;
+                    resultElement.textContent = `Félicitations ! Vous avez gagné ${prizeAmount} pièces ! 🎉`;
+                    resultElement.style.color = '#ffd700';
+                    
+                    // Animation de pièces
+                    for (let i = 0; i < 15; i++) {
+                        createCoinAnimation(chestElement);
+                    }
+                    
+                    chestElement.classList.add('win-animation');
+                } else {
+                    // Le joueur a perdu mais gagne un ticket
+                    gamesLost++;
+                    ticketsWon++;
+                    chestElement.style.background = 'linear-gradient(145deg, #555, #333)';
+                    chestElement.innerHTML = `
+                        <div class="chest-number">${index + 1}</div>
+                        <div class="chest-lock">❌</div>
+                    `;
+                    resultElement.textContent = 'Coffre vide ! Mais vous gagnez un ticket 🎫';
+                    resultElement.style.color = '#87ceeb';
+                    
+                    // Afficher la popup de ticket
+                    showTicketPopup();
+                }
+                
+                // Mettre à jour les statistiques
+                updateStats();
+                
+                // Révéler le coffre gagnant après un délai
+                setTimeout(() => {
+                    if (index !== winningChest) {
+                        const winningChestElement = chestsGrid.children[winningChest];
+                        winningChestElement.style.background = 'linear-gradient(145deg, #daa520, #ffd700)';
+                        winningChestElement.innerHTML = `
+                            <div class="chest-number">${winningChest + 1}</div>
+                            <div class="chest-lock">💰</div>
+                        `;
+                    }
+                }, 1500);
+            }
+            
+            function createCoinAnimation(parentElement) {
+                const coin = document.createElement('div');
+                coin.className = 'coins';
+                coin.textContent = '🪙';
+                coin.style.left = Math.random() * 80 + 10 + '%';
+                parentElement.appendChild(coin);
+                
+                // Supprimer l'élément après l'animation
+                setTimeout(() => {
+                    coin.remove();
+                }, 1000);
+            }
+            
+            function updateStats() {
+                gamesPlayedElement.textContent = gamesPlayed;
+                gamesWonElement.textContent = gamesWon;
+                gamesLostElement.textContent = gamesLost;
+            }
+            
+            // Événement pour le bouton Jouer
+            playBtn.addEventListener('click', startGame);
+            
+            // Événement pour le bouton de réinitialisation des statistiques
+            resetStatsBtn.addEventListener('click', function() {
+                gamesPlayed = 0;
+                gamesWon = 0;
+                gamesLost = 0;
+                ticketsWon = 0;
+                updateStats();
+                createChests();
+            });
+            
+            // Fonctions pour la popup de tickets
+            function showTicketPopup() {
+                const popup = document.getElementById('ticketPopup');
+                popup.classList.add('show');
+            }
+            
+            window.closeTicketPopup = function() {
+                const popup = document.getElementById('ticketPopup');
+                popup.classList.remove('show');
+            }
+            
+            // Fermer la popup en cliquant sur l'overlay
+            document.getElementById('ticketPopup').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeTicketPopup();
+                }
+            });
+            
+            // Calculateur de gains
+            function initCalculator() {
+                const bet13 = document.getElementById('bet13');
+                const bet25 = document.getElementById('bet25');
+                const bet50 = document.getElementById('bet50');
+                
+                bet13.addEventListener('input', () => updateCalculation(13, bet13.value));
+                bet25.addEventListener('input', () => updateCalculation(25, bet25.value));
+                bet50.addEventListener('input', () => updateCalculation(50, bet50.value));
+                
+                // Calculs initiaux
+                updateCalculation(13, 100);
+                updateCalculation(25, 100);
+                updateCalculation(50, 100);
+            }
+            
+            function updateCalculation(chests, bet) {
+                const betAmount = parseFloat(bet) || 0;
+                let prize, probability, expectedValue;
+                
+                if (chests === 13) {
+                    prize = betAmount * 5; // 5x la mise
+                    probability = (1/13 * 100).toFixed(2);
+                    expectedValue = (prize * (1/13) - betAmount).toFixed(0);
+                    document.getElementById('result13').textContent = 
+                        `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
+                } else if (chests === 25) {
+                    prize = betAmount * 10; // 10x la mise
+                    probability = (1/25 * 100).toFixed(2);
+                    expectedValue = (prize * (1/25) - betAmount).toFixed(0);
+                    document.getElementById('result25').textContent = 
+                        `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
+                } else if (chests === 50) {
+                    prize = betAmount * 20; // 20x la mise
+                    probability = (1/50 * 100).toFixed(2);
+                    expectedValue = (prize * (1/50) - betAmount).toFixed(0);
+                    document.getElementById('result50').textContent = 
+                        `Gain possible: ${prize} pièces | Probabilité: ${probability}% | Espérance: ${expectedValue} pièces`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
