@@ -380,6 +380,126 @@
     const resultContainer = document.getElementById("resultContainer");
     const coinsResult = document.getElementById("coinsResult");
 
+    // Création des sons avec Web Audio API
+    function createSound(frequency, duration, type = 'sine') {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = frequency;
+      oscillator.type = type;
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration);
+    }
+
+    // Son de frappe
+    function playHitSound() {
+      createSound(800, 0.1, 'square');
+      setTimeout(() => createSound(400, 0.05, 'triangle'), 50);
+    }
+
+    // Son de fissure
+    function playCrackSound() {
+      createSound(200, 0.3, 'sawtooth');
+      setTimeout(() => createSound(150, 0.2, 'sawtooth'), 100);
+    }
+
+    // Son d'explosion
+    function playBreakSound() {
+      createSound(100, 0.5, 'sawtooth');
+      setTimeout(() => createSound(300, 0.3, 'square'), 100);
+      setTimeout(() => createSound(600, 0.2, 'sine'), 200);
+    }
+
+    // Créer des éclats de diamant
+    function createDiamondShards() {
+      const container = diamond.parentElement;
+      const diamondRect = diamond.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      
+      for (let i = 0; i < 12; i++) {
+        const shard = document.createElement('div');
+        shard.style.cssText = `
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          background: linear-gradient(45deg, #4fc3f7, #29b6f6, #0288d1);
+          transform: rotate(45deg);
+          pointer-events: none;
+          left: 50%;
+          top: 50%;
+          z-index: 1000;
+        `;
+        
+        container.appendChild(shard);
+        
+        // Animation d'explosion aléatoire
+        const angle = (i / 12) * Math.PI * 2;
+        const distance = 100 + Math.random() * 100;
+        const duration = 800 + Math.random() * 400;
+        
+        shard.animate([
+          {
+            transform: 'translate(-50%, -50%) rotate(45deg) scale(1)',
+            opacity: 1
+          },
+          {
+            transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) rotate(${45 + Math.random() * 360}deg) scale(0)`,
+            opacity: 0
+          }
+        ], {
+          duration: duration,
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        }).onfinish = () => shard.remove();
+      }
+    }
+
+    // Effet de particules pour les coups
+    function createHitParticles() {
+      const container = diamond.parentElement;
+      
+      for (let i = 0; i < 6; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          background: #feca57;
+          border-radius: 50%;
+          pointer-events: none;
+          left: ${45 + Math.random() * 10}%;
+          top: ${45 + Math.random() * 10}%;
+          z-index: 999;
+        `;
+        
+        container.appendChild(particle);
+        
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 30 + Math.random() * 30;
+        
+        particle.animate([
+          {
+            transform: 'scale(1)',
+            opacity: 1
+          },
+          {
+            transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
+            opacity: 0
+          }
+        ], {
+          duration: 400,
+          easing: 'ease-out'
+        }).onfinish = () => particle.remove();
+      }
+    }
+
     function initGame() {
       maxHP = Math.floor(Math.random() * (2000 - 200 + 1)) + 200;
       currentHP = maxHP;
@@ -399,10 +519,17 @@
       let hits = attackMode;
       let actualHits = 0;
       let rosesEarned = 0;
+      let wasCracked = diamond.classList.contains('cracked');
+      
+      // Jouer le son de frappe
+      playHitSound();
       
       // Ajouter effet visuel de frappe
       diamond.classList.add('hit');
       setTimeout(() => diamond.classList.remove('hit'), 300);
+      
+      // Créer des particules de coup
+      createHitParticles();
       
       // Effectuer le nombre de coups selon le mode
       for (let i = 0; i < hits && currentHP > 0; i++) {
@@ -431,6 +558,11 @@
       }
       
       updateUI();
+      
+      // Jouer son de fissure si le diamant devient fissuré
+      if (!wasCracked && diamond.classList.contains('cracked')) {
+        playCrackSound();
+      }
       
       if (currentHP <= 0) {
         endGame();
@@ -468,16 +600,22 @@
     function endGame() {
       let recompense = Math.floor(maxHP / 4);
       
+      // Jouer son d'explosion et créer les éclats
+      playBreakSound();
+      setTimeout(() => createDiamondShards(), 100);
+      
       message.textContent = "💥 Félicitations ! Tu as cassé le diamant ! 🌹✨";
       
-      // Afficher le résultat final
-      coinsResult.innerHTML = `
-        <strong>🎉 BRAVO ! 🎉</strong><br>
-        Tu as cassé le diamant !<br>
-        <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
-        <strong>Ta récompense : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
-      `;
-      resultContainer.classList.remove("hidden");
+      // Afficher le résultat final avec un délai pour voir l'explosion
+      setTimeout(() => {
+        coinsResult.innerHTML = `
+          <strong>🎉 BRAVO ! 🎉</strong><br>
+          Tu as cassé le diamant !<br>
+          <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
+          <strong>Ta récompense : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
+        `;
+        resultContainer.classList.remove("hidden");
+      }, 500);
     }
 
     function setAttackMode(mode) {
