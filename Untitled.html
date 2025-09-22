@@ -540,6 +540,7 @@
       try {
         statusDisplay.textContent = "Connexion en cours...";
         
+        console.log('Tentative de connexion à:', TIKFINITY_CONFIG.gameWebSocketUrl);
         gameSocket = new WebSocket(TIKFINITY_CONFIG.gameWebSocketUrl);
         
         gameSocket.onopen = function() {
@@ -547,34 +548,40 @@
           statusDisplay.textContent = "✅ Connecté au serveur de jeu";
           connectBtn.textContent = "🔌 Déconnexion";
           connectBtn.style.background = "linear-gradient(45deg, #27ae60, #2ecc71)";
-          console.log('Connecté au serveur de jeu');
+          console.log('✅ Connecté au serveur de jeu sur port 8833');
+          
+          // Envoyer un ping de test
+          gameSocket.send(JSON.stringify({
+            type: 'ping',
+            message: 'Jeu connecté depuis le navigateur'
+          }));
         };
 
         gameSocket.onmessage = function(event) {
           try {
             const data = JSON.parse(event.data);
-            console.log('Message du serveur:', data);
+            console.log('📨 Message du serveur:', data);
             handleServerMessage(data);
           } catch (e) {
             console.error('Erreur parsing WebSocket:', e);
           }
         };
 
-        gameSocket.onclose = function() {
+        gameSocket.onclose = function(event) {
           isConnected = false;
           statusDisplay.textContent = "❌ Connexion fermée";
           connectBtn.textContent = "🔗 Se connecter au serveur";
           connectBtn.style.background = "linear-gradient(45deg, #ff6b9d, #c44569)";
-          console.log('Connexion fermée');
+          console.log('❌ Connexion fermée. Code:', event.code, 'Raison:', event.reason);
         };
 
         gameSocket.onerror = function(error) {
-          console.error('Erreur WebSocket:', error);
+          console.error('❌ Erreur WebSocket:', error);
           statusDisplay.textContent = "⚠️ Erreur de connexion";
         };
 
       } catch (error) {
-        console.error('Erreur lors de la connexion:', error);
+        console.error('❌ Erreur lors de la connexion:', error);
         statusDisplay.textContent = "❌ Serveur non disponible";
       }
     }
@@ -632,7 +639,7 @@
 
     // Gestion des messages du serveur
     function handleServerMessage(data) {
-      console.log('Message serveur reçu:', data);
+      console.log('📥 Message serveur reçu:', data);
       
       switch(data.type) {
         case 'attack':
@@ -640,6 +647,7 @@
           const attackCount = data.attacks || 1;
           const playerName = data.player || 'Anonyme';
           
+          console.log(`⚔️ Attaque reçue: ${attackCount} coups par ${playerName}`);
           message.textContent = `💥 ${playerName} attaque avec ${attackCount} coup${attackCount > 1 ? 's' : ''} !`;
           
           // Effectuer les attaques
@@ -654,17 +662,25 @@
           
         case 'reset':
           // Nouveau diamant depuis TikFinity
-          maxHP = data.newHP;
+          maxHP = data.newHP || 1000;
           initGame();
           message.textContent = `💎 ${data.player} a créé un nouveau diamant !`;
+          console.log(`💎 Nouveau diamant créé par ${data.player}`);
           break;
           
         case 'game_stats':
           // Statistiques du jeu
-          if (data.data) {
-            console.log('Stats du jeu:', data.data);
-          }
+          console.log('📊 Stats du jeu reçues:', data.data);
           break;
+          
+        case 'test':
+          // Message de test du serveur
+          console.log('🧪 Test du serveur:', data.message);
+          message.textContent = `✅ ${data.message}`;
+          break;
+          
+        default:
+          console.log('❓ Type de message inconnu:', data.type);
       }
     }
 
