@@ -289,37 +289,6 @@
       50% { filter: brightness(0.5) drop-shadow(0 0 40px rgba(255, 0, 0, 1)); }
     }
 
-    .attack-modes {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-
-    .attack-mode-btn {
-      padding: 12px 20px;
-      font-size: 14px;
-      cursor: pointer;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 25px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(5px);
-    }
-
-    .attack-mode-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .attack-mode-btn.active {
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      border-color: #fff;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-    }
-
     .controls {
       margin: 20px 0;
     }
@@ -350,6 +319,12 @@
       transform: translateY(0);
     }
 
+    button:disabled {
+      background: linear-gradient(45deg, #555, #777);
+      cursor: not-allowed;
+      transform: none;
+    }
+
     #resetBtn {
       background: linear-gradient(45deg, #555, #777);
     }
@@ -364,6 +339,19 @@
       font-weight: bold;
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
       min-height: 30px;
+    }
+
+    .status-info {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      margin: 20px 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .status-info p {
+      margin: 5px 0;
+      color: #feca57;
     }
 
     .result-box {
@@ -493,17 +481,18 @@
 
     <div class="instructions">
       <h2>🌹 Casse le Diamant et Gagne le Cadeau ! 🌹</h2>
-      <p>Une Rose - Un Coup</p>
+      <p>Une Rose TikTok - Un Coup automatique</p>
     </div>
 
-    <div class="attack-modes">
-      <button id="mode1" class="attack-mode-btn active">1 coup</button>
-      <button id="mode10" class="attack-mode-btn">10 coups</button>
-      <button id="mode100" class="attack-mode-btn">100 coups</button>
+    <div class="status-info">
+      <p>💎 PV du Diamant: <span id="hpDisplay">???/???</span></p>
+      <p>🌹 Roses reçues: <span id="rosesReceived">0</span></p>
+      <p>⚔️ Attaques effectuées: <span id="attacksCount">0</span></p>
+      <p>📡 Statut: <span id="connectionStatus">En attente de connexion...</span></p>
     </div>
 
     <div class="controls">
-      <button id="attackBtn">Attaquer (1 coup)</button>
+      <button id="connectBtn">🔗 Se connecter à TikTok Live</button>
       <button id="resetBtn">Nouveau Diamant</button>
     </div>
 
@@ -524,15 +513,231 @@
 
   <script>
     let maxHP, currentHP, coupCounter, totalHits;
-    let hitsUntilCoin = 4;
-    let attackMode = 1;
-    let rosesEarnedThisDiamond = 0;
+    let rosesReceived = 0;
+    let attacksCount = 0;
+    let isConnected = false;
+    let tikfinitySocket = null;
 
     const diamond = document.getElementById("diamond");
     const message = document.getElementById("message");
-    const attackBtn = document.getElementById("attackBtn");
+    const connectBtn = document.getElementById("connectBtn");
     const resultContainer = document.getElementById("resultContainer");
     const coinsResult = document.getElementById("coinsResult");
+    const hpDisplay = document.getElementById("hpDisplay");
+    const rosesDisplay = document.getElementById("rosesReceived");
+    const attacksDisplay = document.getElementById("attacksCount");
+    const statusDisplay = document.getElementById("connectionStatus");
+
+    // Configuration TikFinity
+    const TIKFINITY_CONFIG = {
+      channelId: '2260505', // Votre ID de chaîne TikFinity
+      websocketUrl: 'ws://localhost:8832/', // Port correct pour TikFinity
+      httpPort: 8832 // Port HTTP pour l'API REST
+    };
+
+    // Connexion WebSocket au serveur du jeu
+    function connectToTikFinity() {
+      try {
+        statusDisplay.textContent = "Connexion en cours...";
+        
+        gameSocket = new WebSocket(TIKFINITY_CONFIG.gameWebSocketUrl);
+        
+        gameSocket.onopen = function() {
+          isConnected = true;
+          statusDisplay.textContent = "✅ Connecté au serveur de jeu";
+          connectBtn.textContent = "🔌 Déconnexion";
+          connectBtn.style.background = "linear-gradient(45deg, #27ae60, #2ecc71)";
+          console.log('Connecté au serveur de jeu');
+        };
+
+        gameSocket.onmessage = function(event) {
+          try {
+            const data = JSON.parse(event.data);
+            console.log('Message du serveur:', data);
+            handleServerMessage(data);
+          } catch (e) {
+            console.error('Erreur parsing WebSocket:', e);
+          }
+        };
+
+        gameSocket.onclose = function() {
+          isConnected = false;
+          statusDisplay.textContent = "❌ Connexion fermée";
+          connectBtn.textContent = "🔗 Se connecter au serveur";
+          connectBtn.style.background = "linear-gradient(45deg, #ff6b9d, #c44569)";
+          console.log('Connexion fermée');
+        };
+
+        gameSocket.onerror = function(error) {
+          console.error('Erreur WebSocket:', error);
+          statusDisplay.textContent = "⚠️ Erreur de connexion";
+        };
+
+      } catch (error) {
+        console.error('Erreur lors de la connexion:', error);
+        statusDisplay.textContent = "❌ Serveur non disponible";
+      }
+    }
+
+    // Fonction de simulation pour les tests (à supprimer en production)
+    function simulateTikTokConnection() {
+      isConnected = true;
+      statusDisplay.textContent = "🧪 Mode simulation activé";
+      connectBtn.textContent = "🔌 Déconnexion (Simulation)";
+      connectBtn.style.background = "linear-gradient(45deg, #f39c12, #e67e22)";
+      
+      // Simuler des roses automatiques pour tester
+      let testCounter = 0;
+      const testInterval = setInterval(() => {
+        if (isConnected && currentHP > 0) {
+          testCounter++;
+          const randomRoses = Math.floor(Math.random() * 3) + 1;
+          handleTikFinityEvent({
+            type: 'gift',
+            giftName: 'Rose',
+            giftId: 5655,
+            repeatCount: randomRoses,
+            uniqueId: `TestUser${testCounter}`
+          });
+        } else if (!isConnected) {
+          clearInterval(testInterval);
+        }
+      }, 3000);
+    }
+
+    function disconnectFromTikFinity() {
+      if (gameSocket) {
+        gameSocket.close();
+      }
+      isConnected = false;
+      statusDisplay.textContent = "⚪ Déconnecté";
+      connectBtn.textContent = "🔗 Se connecter au serveur";
+      connectBtn.style.background = "linear-gradient(45deg, #ff6b9d, #c44569)";
+    }
+
+    // Envoyer les statistiques au serveur
+    function sendStatsToServer() {
+      if (gameSocket && gameSocket.readyState === WebSocket.OPEN) {
+        gameSocket.send(JSON.stringify({
+          type: 'update_stats',
+          stats: {
+            diamondHP: currentHP,
+            maxHP: maxHP,
+            rosesReceived: rosesReceived,
+            isActive: currentHP > 0
+          }
+        }));
+      }
+    }
+
+    // Gestion des messages du serveur
+    function handleServerMessage(data) {
+      console.log('Message serveur reçu:', data);
+      
+      switch(data.type) {
+        case 'attack':
+          // Attaque reçue de TikFinity!
+          const attackCount = data.attacks || 1;
+          const playerName = data.player || 'Anonyme';
+          
+          message.textContent = `💥 ${playerName} attaque avec ${attackCount} coup${attackCount > 1 ? 's' : ''} !`;
+          
+          // Effectuer les attaques
+          for (let i = 0; i < attackCount; i++) {
+            setTimeout(() => {
+              if (currentHP > 0) {
+                performAttack(playerName);
+              }
+            }, i * 300); // Délai entre chaque attaque
+          }
+          break;
+          
+        case 'reset':
+          // Nouveau diamant depuis TikFinity
+          maxHP = data.newHP;
+          initGame();
+          message.textContent = `💎 ${data.player} a créé un nouveau diamant !`;
+          break;
+          
+        case 'game_stats':
+          // Statistiques du jeu
+          if (data.data) {
+            console.log('Stats du jeu:', data.data);
+          }
+          break;
+      }
+    }
+
+    // Gestion de la réception des roses
+    function handleRoseReceived(count, username = "Anonyme") {
+      if (currentHP <= 0) return;
+      
+      rosesReceived += count;
+      rosesDisplay.textContent = rosesReceived;
+      
+      console.log(`${username} a envoyé ${count} rose(s)`);
+      
+      // Effectuer les attaques automatiquement
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          if (currentHP > 0) {
+            performAutomaticAttack(username);
+          }
+        }, i * 200); // Délai entre chaque attaque
+      }
+      
+      // Afficher l'animation des roses reçues
+      showRoseReceived(count, username);
+    }
+
+    // Effectuer une attaque
+    function performAttack(playerName = "Joueur") {
+      if (currentHP <= 0) return;
+      
+      attacksCount++;
+      attacksDisplay.textContent = attacksCount;
+      coupCounter++;
+      
+      // Jouer le son de frappe
+      playHitSound();
+      
+      // Ajouter effet visuel de frappe
+      diamond.classList.add('hit');
+      setTimeout(() => diamond.classList.remove('hit'), 300);
+      
+      // Créer des particules de coup
+      createHitParticles();
+      
+      // Tous les 2 coups -> -1 PV
+      if (coupCounter >= 2) {
+        coupCounter = 0;
+        currentHP--;
+        updateUI();
+        
+        // Envoyer les stats mises à jour au serveur
+        sendStatsToServer();
+      }
+      
+      if (currentHP <= 0) {
+        endGame();
+      }
+    }
+
+    // Afficher les roses reçues
+    function showRoseReceived(count, username) {
+      const roseDisplay = document.createElement('div');
+      roseDisplay.className = 'coins-display';
+      roseDisplay.textContent = `${username}: +${count} 🌹`;
+      roseDisplay.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+      roseDisplay.style.color = 'white';
+      roseDisplay.style.fontSize = '14px';
+      roseDisplay.style.padding = '8px 15px';
+      diamond.parentElement.appendChild(roseDisplay);
+      
+      setTimeout(() => {
+        roseDisplay.remove();
+      }, 2000);
+    }
 
     // Création des sons avec Web Audio API
     function createSound(frequency, duration, type = 'sine') {
@@ -553,19 +758,16 @@
       oscillator.stop(audioContext.currentTime + duration);
     }
 
-    // Son de frappe
     function playHitSound() {
       createSound(800, 0.1, 'square');
       setTimeout(() => createSound(400, 0.05, 'triangle'), 50);
     }
 
-    // Son de fissure
     function playCrackSound() {
       createSound(200, 0.3, 'sawtooth');
       setTimeout(() => createSound(150, 0.2, 'sawtooth'), 100);
     }
 
-    // Son d'explosion
     function playBreakSound() {
       createSound(100, 0.5, 'sawtooth');
       setTimeout(() => createSound(300, 0.3, 'square'), 100);
@@ -575,8 +777,6 @@
     // Créer des éclats de diamant
     function createDiamondShards() {
       const container = diamond.parentElement;
-      const diamondRect = diamond.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
       
       for (let i = 0; i < 12; i++) {
         const shard = document.createElement('div');
@@ -594,7 +794,6 @@
         
         container.appendChild(shard);
         
-        // Animation d'explosion aléatoire
         const angle = (i / 12) * Math.PI * 2;
         const distance = 100 + Math.random() * 100;
         const duration = 800 + Math.random() * 400;
@@ -615,7 +814,6 @@
       }
     }
 
-    // Effet de particules pour les coups
     function createHitParticles() {
       const container = diamond.parentElement;
       
@@ -658,95 +856,38 @@
       maxHP = Math.floor(Math.random() * (2000 - 200 + 1)) + 200;
       currentHP = maxHP;
       coupCounter = 0;
-      totalHits = 0;
-      hitsUntilCoin = 4;
-      rosesEarnedThisDiamond = 0;
+      attacksCount = 0;
+      rosesReceived = 0;
+      
+      updateDisplays();
       
       diamond.className = "diamond";
-      message.textContent = `À tout moment le diamant peut se briser...`;
+      message.textContent = `En attente de roses TikTok pour attaquer...`;
       resultContainer.classList.add("hidden");
     }
 
-    function attack() {
-      if (currentHP <= 0) return;
-      
-      let hits = attackMode;
-      let actualHits = 0;
-      let rosesEarned = 0;
-      let wasCracked = diamond.classList.contains('cracked');
-      
-      // Jouer le son de frappe
-      playHitSound();
-      
-      // Ajouter effet visuel de frappe
-      diamond.classList.add('hit');
-      setTimeout(() => diamond.classList.remove('hit'), 300);
-      
-      // Créer des particules de coup
-      createHitParticles();
-      
-      // Effectuer le nombre de coups selon le mode
-      for (let i = 0; i < hits && currentHP > 0; i++) {
-        coupCounter++;
-        actualHits++;
-        totalHits++;
-
-        // Tous les 2 coups -> -1 PV
-        if (coupCounter >= 2) {
-          coupCounter = 0;
-          currentHP--;
-        }
-
-        // Gestion des roses (tous les 4 coups)
-        hitsUntilCoin--;
-        if (hitsUntilCoin <= 0) {
-          rosesEarnedThisDiamond++;
-          rosesEarned++;
-          hitsUntilCoin = 4;
-        }
-      }
-      
-      // Afficher les roses gagnées
-      if (rosesEarned > 0) {
-        showRoseGain(rosesEarned);
-      }
-      
-      updateUI();
-      
-      // Jouer son de fissure si le diamant devient fissuré
-      if (!wasCracked && diamond.classList.contains('cracked')) {
-        playCrackSound();
-      }
-      
-      if (currentHP <= 0) {
-        endGame();
-      }
-    }
-
-    function showRoseGain(amount) {
-      const roseDisplay = document.createElement('div');
-      roseDisplay.className = 'coins-display';
-      roseDisplay.textContent = `+${amount} 🌹`;
-      roseDisplay.style.background = 'linear-gradient(45deg, #ff6b9d, #feca57)';
-      diamond.parentElement.appendChild(roseDisplay);
-      
-      setTimeout(() => {
-        roseDisplay.remove();
-      }, 1000);
+    function updateDisplays() {
+      hpDisplay.textContent = `${currentHP}/${maxHP}`;
+      rosesDisplay.textContent = rosesReceived;
+      attacksDisplay.textContent = attacksCount;
     }
 
     function updateUI() {
+      updateDisplays();
+      
       if (currentHP === 0) {
         diamond.className = "diamond broken";
         message.textContent = "💥 Le diamant s'est brisé !";
       } else {
-        // Dès que le diamant a perdu 20 HP, il devient rouge et fissuré
         if (maxHP - currentHP >= 20) {
           diamond.classList.add("cracked");
+          if (!diamond.classList.contains('cracked')) {
+            playCrackSound();
+          }
           message.textContent = "⚠️ Le diamant commence à se fissurer...";
         } else {
           diamond.classList.remove("cracked");
-          message.textContent = "À tout moment le diamant peut se briser...";
+          message.textContent = "En attente de roses TikTok...";
         }
       }
     }
@@ -754,68 +895,106 @@
     function endGame() {
       let recompense = Math.floor(maxHP / 2);
       
-      // Jouer son d'explosion et créer les éclats
       playBreakSound();
       setTimeout(() => createDiamondShards(), 100);
       
-      message.textContent = "💥 Félicitations ! Tu as cassé le diamant ! 🌹✨";
+      message.textContent = "💥 Félicitations ! Le diamant est cassé ! 🌹✨";
       
-      // Afficher le résultat final avec un délai pour voir l'explosion
       setTimeout(() => {
         coinsResult.innerHTML = `
-          <strong>🎉 BRAVO ! 🎉</strong><br>
-          Tu as cassé le diamant !<br>
+          <strong>🎉 DIAMANT DÉTRUIT ! 🎉</strong><br>
+          Cassé grâce à ${rosesReceived} roses TikTok !<br>
           <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
-          <strong>Ta récompense : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
+          <strong>Récompense finale : ${recompense} pièces !</strong><br>
+          <small>Merci à tous les participants du Live !</small>
         `;
         resultContainer.classList.remove("hidden");
       }, 500);
     }
 
-    function setAttackMode(mode) {
-      attackMode = mode;
-      
-      // Mettre à jour l'interface
-      document.getElementById('mode1').classList.toggle('active', mode === 1);
-      document.getElementById('mode10').classList.toggle('active', mode === 10);
-      document.getElementById('mode100').classList.toggle('active', mode === 100);
-      
-      // Mettre à jour le texte du bouton d'attaque
-      attackBtn.textContent = `Attaquer (${mode} coup${mode > 1 ? 's' : ''})`;
+    // Gestion des boutons
+    function toggleConnection() {
+      if (isConnected) {
+        disconnectFromTikFinity();
+      } else {
+        connectToTikFinity();
+      }
     }
 
     // Événements
-    document.getElementById("attackBtn").addEventListener("click", attack);
+    document.getElementById("connectBtn").addEventListener("click", toggleConnection);
     document.getElementById("resetBtn").addEventListener("click", initGame);
-    document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
-    document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
-    document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
 
     // Raccourcis clavier
     document.addEventListener('keydown', (e) => {
       switch(e.key) {
-        case ' ':
-        case 'Enter':
-          e.preventDefault();
-          attack();
-          break;
-        case '1':
-          setAttackMode(1);
-          break;
-        case '2':
-          setAttackMode(10);
-          break;
-        case '3':
-          setAttackMode(100);
+        case 'c':
+        case 'C':
+          toggleConnection();
           break;
         case 'r':
         case 'R':
           initGame();
           break;
+        case 't':
+        case 'T':
+          // Test : simuler une rose (uniquement en mode développement)
+          if (isConnected) {
+            handleTikFinityEvent({
+              type: 'gift',
+              giftName: 'Rose',
+              giftId: 5655,
+              repeatCount: 1,
+              uniqueId: 'TestUser'
+            });
+          } else {
+            // Si pas connecté, activer le mode simulation
+            simulateTikTokConnection();
+          }
+          break;
       }
     });
 
+    // API TikFinity pour récupérer les événements
+    async function fetchTikFinityEvents() {
+      try {
+        const response = await fetch(`http://localhost:${TIKFINITY_CONFIG.httpPort}/api/events`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const events = await response.json();
+          events.forEach(event => handleTikFinityEvent(event));
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des événements:', error);
+      }
+    }
+
+    // Polling des événements (fallback si WebSocket ne fonctionne pas)
+    function startEventPolling() {
+      setInterval(() => {
+        if (isConnected) {
+          fetchTikFinityEvents();
+        }
+      }, 2000);
+    }
+
+    // Initialiser le jeu au chargement
     initGame();
+    
+    // Démarrer le polling des événements
+    startEventPolling();
+
+    // Auto-connexion au démarrage (optionnel)
+    setTimeout(() => {
+      if (!isConnected) {
+        connectToTikFinity();
+      }
+    }, 1000);
   </script>
 </body>
 </html>
