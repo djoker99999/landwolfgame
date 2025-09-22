@@ -1,1016 +1,555 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💎 Casse le Diamant</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plinko Premium — RTP ciblé 25%</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root{
+      --bg-start:#0a0e1f;--bg-end:#1a1f35;--panel:#0f1428;--accent:#ff4757;--accent-hover:#ff3742;
+      --success:#2ed573;--gold:#ffa502;--muted:#6c7293;--bright:#ffffff;--glass:rgba(255,255,255,0.08);
     }
-
-    body {
-      font-family: 'Arial', sans-serif;
-      background-image: url('https://img.freepik.com/premium-photo/cherry-blossoms-forest_1091302-2482.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      color: #fff;
-      text-align: center;
-      min-height: 100vh;
-      padding: 20px;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 10px;
+    
+    * { box-sizing: border-box; }
+    html,body{height:100%;margin:0;font-family:'Inter', -apple-system, system-ui, sans-serif;
+      background:linear-gradient(135deg,var(--bg-start) 0%, var(--bg-end) 100%);
+      color:var(--bright);overflow-x:hidden}
+    
+    .wrap{max-width:1100px;margin:20px auto;padding:24px;
+      background:linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border-radius:20px;border:1px solid rgba(255,255,255,0.1);
+      box-shadow:0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)}
+    
+    header{text-align:center;margin-bottom:24px}
+    h1{margin:0;font-size:28px;font-weight:700;background:linear-gradient(135deg, #ff4757, #ffa502);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .subtitle{color:var(--muted);font-size:14px;margin-top:8px}
+    
+    .controls{display:flex;gap:12px;margin-bottom:24px;align-items:center;flex-wrap:wrap;justify-content:center}
+    .btn-group{display:flex;gap:8px;background:rgba(255,255,255,0.03);padding:4px;border-radius:12px;border:1px solid rgba(255,255,255,0.1)}
+    
+    button{background:linear-gradient(135deg, var(--accent), var(--accent-hover));border:none;color:white;
+      padding:12px 20px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;
+      transition:all 0.3s ease;position:relative;overflow:hidden}
+    button:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,71,87,0.3)}
+    button:active{transform:translateY(0)}
+    button[disabled]{opacity:0.5;cursor:not-allowed;transform:none !important}
+    
+    .btn-multi{background:linear-gradient(135deg, var(--gold), #ff7675);padding:10px 16px}
+    .btn-multi:hover{box-shadow:0 8px 25px rgba(255,165,2,0.3)}
+    
+    .btn-reset{background:linear-gradient(135deg, #6c5ce7, #a29bfe);padding:10px 16px;margin-left:8px}
+    .btn-reset:hover{box-shadow:0 8px 25px rgba(108,92,231,0.3)}
+    
+    .stats{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}
+    .stat{background:var(--glass);padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)}
+    .stat-value{font-weight:700;color:var(--success)}
+    
+    .game{display:flex;gap:24px;align-items:flex-start}
+    
+    .board{width:680px;height:560px;
+      background:linear-gradient(180deg,rgba(15,20,40,0.8), rgba(10,15,30,0.9));
+      border-radius:16px;padding:20px;position:relative;overflow:hidden;
+      border:2px solid rgba(255,255,255,0.1);
+      box-shadow:inset 0 4px 20px rgba(0,0,0,0.3)}
+    
+    canvas{background:transparent;display:block;margin:0 auto;border-radius:8px}
+    
+    .sidebar{flex:1;min-width:280px}
+    .info{background:var(--glass);padding:20px;border-radius:16px;border:1px solid rgba(255,255,255,0.1)}
+    .info h3{margin:0 0 16px 0;font-size:18px;color:var(--gold)}
+    
+    .bins{position:absolute;left:16px;right:16px;bottom:20px;height:100px;
+      display:flex;align-items:flex-end;justify-content:space-between;gap:2px}
+    .bin{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      padding:8px 4px;border-radius:8px 8px 4px 4px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden}
+    
+    .bin::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg, var(--accent), var(--gold))}
+    
+    .bin .mult{background:rgba(255,255,255,0.15);padding:4px 6px;border-radius:6px;
+      font-weight:700;font-size:11px;color:var(--bright);
+      box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+    
+    .results{max-height:280px;overflow-y:auto;margin-top:16px;
+      background:rgba(0,0,0,0.2);padding:12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,0.05)}
+    
+    .result-line{padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;
+      display:flex;justify-content:space-between;align-items:center}
+    .result-line:last-child{border-bottom:none}
+    .result-win{color:var(--success);font-weight:600}
+    .result-loss{color:var(--accent);opacity:0.7}
+    
+    .slot-legend{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+    .chip{padding:8px 12px;border-radius:10px;background:var(--glass);
+      font-size:12px;border:1px solid rgba(255,255,255,0.1);text-align:center}
+    
+    .meter{margin-top:16px;padding:12px;background:rgba(0,0,0,0.2);border-radius:10px}
+    .meter-label{font-size:13px;color:var(--muted);margin-bottom:4px}
+    .meter-value{font-size:18px;font-weight:700;color:var(--success)}
+    
+    .progress{margin-top:8px}
+    .progress-bar{height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg, var(--accent), var(--success));
+      border-radius:3px;transition:width 0.3s ease}
+    
+    /* Animations pour les boules */
+    .ball{position:absolute;width:20px;height:20px;border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, #fff 0%, #fff8 20%, var(--gold) 60%, var(--accent) 100%);
+      box-shadow:0 4px 15px rgba(255,71,87,0.4);z-index:10;
+      animation:ballGlow 0.1s ease-in-out infinite alternate}
+    
+    @keyframes ballGlow{
+      from{box-shadow:0 4px 15px rgba(255,71,87,0.4)}
+      to{box-shadow:0 6px 20px rgba(255,71,87,0.6)}
     }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: -1;
+    
+    .multi-progress{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+      background:rgba(0,0,0,0.9);padding:20px;border-radius:16px;z-index:1000;
+      border:1px solid rgba(255,255,255,0.2)}
+    .multi-progress.active{display:block}
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .game{flex-direction:column}
+      .board{width:100%;max-width:600px}
+      .controls{justify-content:center}
+      .stats{justify-content:center}
     }
-
-    .widget-left {
-      width: 200px;
-      height: 400px;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 15px;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .widget-left iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .widget-right {
-      width: 200px;
-      height: 400px;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 15px;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      position: relative;
-    }
-
-    .widget-right iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .timer-widget-right {
-      position: absolute;
-      bottom: -80px;
-      left: 0;
-      width: 100%;
-      height: 60px;
-      z-index: 15;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-right iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .game-container {
-      max-width: 500px;
-      flex: 1;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 20px;
-      padding: 30px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-      margin: 0 5px;
-    }
-
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 30px;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .instructions {
-      margin: 30px 0;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-    }
-
-    .instructions h2 {
-      font-size: 1.8em;
-      margin-bottom: 10px;
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .instructions p {
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #feca57;
-    }
-
-    .diamond-container {
-      position: relative;
-      margin: 30px auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-    }
-
-    .coindrop-widget {
-      position: absolute;
-      top: -50px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 300px;
-      height: 100px;
-      pointer-events: none;
-      z-index: 10;
-    }
-
-    .timer-widget {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 150px;
-      height: 60px;
-      z-index: 15;
-      border: none;
-      background: transparent;
-      display: none;
-    }
-
-    .timer-widget iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .actions-widget {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 180px;
-      height: 80px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .firework-widget-bottom {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 400px;
-      height: 300px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .firework-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-bottom {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 150px;
-      height: 60px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .coindrop-widget-bottom {
-      position: fixed;
-      bottom: 200px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 400px;
-      height: 200px;
-      z-index: 500;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .coindrop-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .actions-widget iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .diamond {
-      width: 200px;
-      height: 200px;
-      margin: 0 auto;
-      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48e.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      position: relative;
-      transition: all 0.3s ease;
-      filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) brightness(1.2) contrast(1.1);
-      z-index: 5;
-    }
-
-    .diamond.hit {
-      animation: shake 0.3s ease-in-out;
-    }
-
-    .diamond.cracked {
-      filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)) hue-rotate(0deg);
-      animation: redPulse 1s infinite;
-    }
-
-    .diamond.broken {
-      opacity: 0.3;
-      filter: grayscale(100%) brightness(0.3);
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-10px) rotate(-2deg); }
-      75% { transform: translateX(10px) rotate(2deg); }
-    }
-
-    @keyframes redPulse {
-      0%, 100% { filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)); }
-      50% { filter: brightness(0.5) drop-shadow(0 0 40px rgba(255, 0, 0, 1)); }
-    }
-
-    .controls {
-      margin: 20px 0;
-    }
-
-    button {
-      padding: 15px 30px;
-      margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 25px;
-      background: linear-gradient(45deg, #ff6b9d, #c44569);
-      color: #fff;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      text-transform: uppercase;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-      background: linear-gradient(45deg, #feca57, #ff6b9d);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    button:disabled {
-      background: linear-gradient(45deg, #555, #777);
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    #resetBtn {
-      background: linear-gradient(45deg, #555, #777);
-    }
-
-    #resetBtn:hover {
-      background: linear-gradient(45deg, #777, #999);
-    }
-
-    #message {
-      margin: 20px 0;
-      font-size: 1.2em;
-      font-weight: bold;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-      min-height: 30px;
-    }
-
-    .status-info {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      padding: 15px;
-      margin: 20px 0;
-      backdrop-filter: blur(10px);
-    }
-
-    .status-info p {
-      margin: 5px 0;
-      color: #feca57;
-    }
-
-    .result-box {
-      background: linear-gradient(135deg, rgba(255, 107, 157, 0.9), rgba(254, 202, 87, 0.9));
-      padding: 20px;
-      border-radius: 15px;
-      margin: 20px 0;
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(10px);
-      animation: fadeInUp 0.5s ease;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .coins-display {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: gold;
-      color: black;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-weight: bold;
-      animation: coinPop 1s ease;
-      pointer-events: none;
-    }
-
-    @keyframes coinPop {
-      0% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px) scale(0.5);
-      }
-      50% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(-10px) scale(1.2);
-      }
-      100% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-30px) scale(1);
-      }
-    }
-
-    @media (max-width: 1200px) {
-      body {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .widget-left, .widget-right {
-        width: 100%;
-        max-width: 500px;
-        height: 300px;
-        margin-bottom: 15px;
-      }
-      
-      .game-container {
-        margin: 0;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .game-container {
-        padding: 20px;
-        margin: 10px;
-      }
-      
-      .diamond {
-        width: 150px;
-        height: 150px;
-      }
-      
-      h1 {
-        font-size: 2em;
-      }
-      
-      .widget-left, .widget-right {
-        height: 250px;
-      }
-    }
+    
+    /* Scrollbar styling */
+    .results::-webkit-scrollbar{width:6px}
+    .results::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:3px}
+    .results::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
   </style>
 </head>
 <body>
-  <div class="actions-widget">
-    <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=2260505&screen=1" frameborder="0"></iframe>
-  </div>
-  
-  <div class="coindrop-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/coindrop?cid=2260505" frameborder="0"></iframe>
-  </div>
-  
-  <div class="firework-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/firework?cid=2260505" frameborder="0"></iframe>
-  </div>
-  
-  <div class="timer-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2260505" frameborder="0"></iframe>
-  </div>
-  
-  <div class="widget-left">
-    <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=2260505" frameborder="0"></iframe>
-  </div>
-
-  <div class="game-container">
-    <div class="timer-widget">
-      <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2260505" frameborder="0"></iframe>
-    </div>
-
-    <h1>💎 Casse le Diamant !</h1>
-    
-    <div class="diamond-container">
-      <div class="diamond" id="diamond"></div>
-    </div>
-
-    <div class="instructions">
-      <h2>🌹 Casse le Diamant et Gagne le Cadeau ! 🌹</h2>
-      <p>Une Rose TikTok - Un Coup automatique</p>
-    </div>
-
-    <div class="status-info">
-      <p>💎 PV du Diamant: <span id="hpDisplay">???/???</span></p>
-      <p>🌹 Roses reçues: <span id="rosesReceived">0</span></p>
-      <p>⚔️ Attaques effectuées: <span id="attacksCount">0</span></p>
-      <p>📡 Statut: <span id="connectionStatus">En attente de connexion...</span></p>
-    </div>
+  <div class="wrap">
+    <header>
+      <h1>🎯 Plinko Premium</h1>
+      <div class="subtitle">Configuration RTP 25% — Simulation avancée</div>
+    </header>
 
     <div class="controls">
-      <button id="connectBtn">🔗 Se connecter à TikTok Live</button>
-      <button id="resetBtn">Nouveau Diamant</button>
+      <div class="btn-group">
+        <button id="dropBtn">🌹 Lancer 1 coup</button>
+        <button id="drop10Btn" class="btn-multi">⚡ 10 coups</button>
+        <button id="drop100Btn" class="btn-multi">🚀 100 coups</button>
+      </div>
+      
+      <button id="resetBtn" class="btn-reset">🔄 Reset</button>
+      
+      <div class="stats">
+        <div class="stat">Total investi: <span class="stat-value" id="totalInvested">0</span> 🌹</div>
+        <div class="stat">Total gagné: <span class="stat-value" id="totalWon">0</span> 🌹</div>
+        <div class="stat">Résultat net: <span class="stat-value" id="netResult">0</span> 🌹</div>
+        <div class="stat">Coups joués: <span class="stat-value" id="totalPlayed">0</span></div>
+      </div>
     </div>
 
-    <p id="message"></p>
+    <div class="game">
+      <div class="board" id="board">
+        <canvas id="pegs" width="640" height="420"></canvas>
+        <div class="bins" id="bins"></div>
+      </div>
 
-    <div id="resultContainer" class="hidden result-box">
-      <h3>🎉 Diamant Détruit ! 🎉</h3>
-      <p id="coinsResult">Vous avez gagné 0 pièce !</p>
+      <div class="sidebar">
+        <div class="info">
+          <h3>📊 Configuration des gains</h3>
+          <div class="slot-legend" id="legend"></div>
+          
+          <div class="meter">
+            <div class="meter-label">RTP Actuel</div>
+            <div class="meter-value" id="currentRTP">—</div>
+            <div class="progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="rtpProgress"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="results" id="results">
+            <div style="text-align:center;color:var(--muted);padding:20px;">
+              Lancez votre première balle pour voir les résultats !
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="widget-right">
-    <iframe src="https://tikfinity.zerody.one/widget/ranking?cid=2260505" frameborder="0"></iframe>
-    <div class="timer-widget-right">
-      <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2260505" frameborder="0"></iframe>
+  <!-- Progress modal for multi-drops -->
+  <div class="multi-progress" id="multiProgress">
+    <h3>🎯 Lancement en cours...</h3>
+    <div class="progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="multiProgressFill"></div>
+      </div>
     </div>
+    <div id="multiProgressText">0 / 0 coups</div>
   </div>
 
   <script>
-    let maxHP, currentHP, coupCounter, totalHits;
-    let rosesReceived = 0;
-    let attacksCount = 0;
-    let isConnected = false;
-    let tikfinitySocket = null;
+    // --- Configuration ---
+    const TARGET_RTP = 0.25;
+    const multipliers = [0, 0.25, 0.6, 2.5, 10];
+    let weights = [null, 0.17, 0.08, 0.02, 0.01];
+    
+    // Game state
+    let totalInvested = 0;
+    let totalWon = 0;
+    let totalPlayed = 0;
+    let isRunning = false;
+    
+    function computeWeights() {
+      const m = multipliers;
+      let numerator = 0;
+      for (let i = 1; i < m.length; i++) {
+        numerator += weights[i] * (m[i] - TARGET_RTP);
+      }
+      const denom = (m[0] - TARGET_RTP);
+      const w0 = -numerator / denom;
+      
+      if (!isFinite(w0) || w0 <= 0) {
+        let scale = 1.0;
+        for (let attempt = 0; attempt < 200; attempt++) {
+          numerator = 0;
+          for (let i = 1; i < m.length; i++) {
+            numerator += (weights[i] * scale) * (m[i] - TARGET_RTP);
+          }
+          const tryw0 = -numerator / denom;
+          if (tryw0 > 0 && isFinite(tryw0)) {
+            weights[0] = tryw0;
+            return;
+          }
+          scale *= 1.06;
+        }
+        weights[0] = 1.0;
+      } else {
+        weights[0] = w0;
+      }
+    }
 
-    const diamond = document.getElementById("diamond");
-    const message = document.getElementById("message");
-    const connectBtn = document.getElementById("connectBtn");
-    const resultContainer = document.getElementById("resultContainer");
-    const coinsResult = document.getElementById("coinsResult");
-    const hpDisplay = document.getElementById("hpDisplay");
-    const rosesDisplay = document.getElementById("rosesReceived");
-    const attacksDisplay = document.getElementById("attacksCount");
-    const statusDisplay = document.getElementById("connectionStatus");
+    function getProbabilities() {
+      const sum = weights.reduce((a, b) => a + b, 0);
+      return weights.map(w => w / sum);
+    }
 
-    // Configuration TikFinity
-    const TIKFINITY_CONFIG = {
-      channelId: '2260505', // Votre ID de chaîne TikFinity
-      websocketUrl: 'ws://localhost:8832/', // Port correct pour TikFinity
-      httpPort: 8832 // Port HTTP pour l'API REST
+    function computeRTP() {
+      const probs = getProbabilities();
+      let r = 0;
+      for (let i = 0; i < multipliers.length; i++) r += probs[i] * multipliers[i];
+      return r;
+    }
+
+    // Initialize
+    computeWeights();
+    const VISIBLE_BINS = 9;
+
+    // UI Elements
+    const elements = {
+      bins: document.getElementById('bins'),
+      legend: document.getElementById('legend'),
+      results: document.getElementById('results'),
+      currentRTP: document.getElementById('currentRTP'),
+      totalInvested: document.getElementById('totalInvested'),
+      totalWon: document.getElementById('totalWon'),
+      netResult: document.getElementById('netResult'),
+      totalPlayed: document.getElementById('totalPlayed'),
+      rtpProgress: document.getElementById('rtpProgress'),
+      dropBtn: document.getElementById('dropBtn'),
+      drop10Btn: document.getElementById('drop10Btn'),
+      drop100Btn: document.getElementById('drop100Btn'),
+      multiProgress: document.getElementById('multiProgress'),
+      multiProgressFill: document.getElementById('multiProgressFill'),
+      multiProgressText: document.getElementById('multiProgressText'),
+      resetBtn: document.getElementById('resetBtn')
     };
 
-    // Connexion WebSocket au serveur du jeu
-    function connectToTikFinity() {
-      try {
-        statusDisplay.textContent = "Connexion en cours...";
-        
-        console.log('Tentative de connexion à:', TIKFINITY_CONFIG.gameWebSocketUrl);
-        gameSocket = new WebSocket(TIKFINITY_CONFIG.gameWebSocketUrl);
-        
-        gameSocket.onopen = function() {
-          isConnected = true;
-          statusDisplay.textContent = "✅ Connecté au serveur de jeu";
-          connectBtn.textContent = "🔌 Déconnexion";
-          connectBtn.style.background = "linear-gradient(45deg, #27ae60, #2ecc71)";
-          console.log('✅ Connecté au serveur de jeu sur port 8833');
-          
-          // Envoyer un ping de test
-          gameSocket.send(JSON.stringify({
-            type: 'ping',
-            message: 'Jeu connecté depuis le navigateur'
-          }));
-        };
+    // Update displays
+    function updateStats() {
+      elements.totalInvested.textContent = totalInvested.toFixed(2);
+      elements.totalWon.textContent = totalWon.toFixed(2);
+      const net = totalWon - totalInvested;
+      elements.netResult.textContent = net.toFixed(2);
+      elements.netResult.style.color = net >= 0 ? 'var(--success)' : 'var(--accent)';
+      elements.totalPlayed.textContent = totalPlayed;
+      
+      const actualRTP = totalInvested > 0 ? (totalWon / totalInvested) : 0;
+      elements.currentRTP.textContent = (actualRTP * 100).toFixed(2) + '%';
+      elements.rtpProgress.style.width = Math.min(100, actualRTP * 400) + '%';
+    }
 
-        gameSocket.onmessage = function(event) {
-          try {
-            const data = JSON.parse(event.data);
-            console.log('📨 Message du serveur:', data);
-            handleServerMessage(data);
-          } catch (e) {
-            console.error('Erreur parsing WebSocket:', e);
-          }
-        };
-
-        gameSocket.onclose = function(event) {
-          isConnected = false;
-          statusDisplay.textContent = "❌ Connexion fermée";
-          connectBtn.textContent = "🔗 Se connecter au serveur";
-          connectBtn.style.background = "linear-gradient(45deg, #ff6b9d, #c44569)";
-          console.log('❌ Connexion fermée. Code:', event.code, 'Raison:', event.reason);
-        };
-
-        gameSocket.onerror = function(error) {
-          console.error('❌ Erreur WebSocket:', error);
-          statusDisplay.textContent = "⚠️ Erreur de connexion";
-        };
-
-      } catch (error) {
-        console.error('❌ Erreur lors de la connexion:', error);
-        statusDisplay.textContent = "❌ Serveur non disponible";
+    // Build bins
+    function buildBins() {
+      elements.bins.innerHTML = '';
+      for (let i = 0; i < VISIBLE_BINS; i++) {
+        const bin = document.createElement('div');
+        bin.className = 'bin';
+        const multSpan = document.createElement('div');
+        multSpan.className = 'mult';
+        multSpan.textContent = '—';
+        bin.appendChild(multSpan);
+        elements.bins.appendChild(bin);
       }
     }
 
-    // Fonction de simulation pour les tests (à supprimer en production)
-    function simulateTikTokConnection() {
-      isConnected = true;
-      statusDisplay.textContent = "🧪 Mode simulation activé";
-      connectBtn.textContent = "🔌 Déconnexion (Simulation)";
-      connectBtn.style.background = "linear-gradient(45deg, #f39c12, #e67e22)";
+    // Build legend
+    function buildLegend() {
+      elements.legend.innerHTML = '';
+      const probs = getProbabilities();
+      for (let i = 0; i < multipliers.length; i++) {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.innerHTML = `<div>x${multipliers[i]}</div><div>${(probs[i] * 100).toFixed(1)}%</div>`;
+        elements.legend.appendChild(chip);
+      }
+    }
+
+    // Draw pegs
+    function drawPegs() {
+      const canvas = document.getElementById('pegs');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Simuler des roses automatiques pour tester
-      let testCounter = 0;
-      const testInterval = setInterval(() => {
-        if (isConnected && currentHP > 0) {
-          testCounter++;
-          const randomRoses = Math.floor(Math.random() * 3) + 1;
-          handleTikFinityEvent({
-            type: 'gift',
-            giftName: 'Rose',
-            giftId: 5655,
-            repeatCount: randomRoses,
-            uniqueId: `TestUser${testCounter}`
-          });
-        } else if (!isConnected) {
-          clearInterval(testInterval);
+      // Gradient pegs
+      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 6);
+      gradient.addColorStop(0, 'rgba(255,255,255,0.3)');
+      gradient.addColorStop(1, 'rgba(255,255,255,0.05)');
+      ctx.fillStyle = gradient;
+      
+      const rows = 8;
+      const cols = 10;
+      const spacingX = canvas.width / (cols + 1);
+      const spacingY = canvas.height / (rows + 2);
+      
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = (c + 1) * spacingX + (r % 2 ? spacingX / 2 : 0);
+          const y = 40 + r * spacingY;
+          
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(0, 0, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
         }
-      }, 3000);
-    }
-
-    function disconnectFromTikFinity() {
-      if (gameSocket) {
-        gameSocket.close();
-      }
-      isConnected = false;
-      statusDisplay.textContent = "⚪ Déconnecté";
-      connectBtn.textContent = "🔗 Se connecter au serveur";
-      connectBtn.style.background = "linear-gradient(45deg, #ff6b9d, #c44569)";
-    }
-
-    // Envoyer les statistiques au serveur
-    function sendStatsToServer() {
-      if (gameSocket && gameSocket.readyState === WebSocket.OPEN) {
-        gameSocket.send(JSON.stringify({
-          type: 'update_stats',
-          stats: {
-            diamondHP: currentHP,
-            maxHP: maxHP,
-            rosesReceived: rosesReceived,
-            isActive: currentHP > 0
-          }
-        }));
       }
     }
 
-    // Gestion des messages du serveur
-    function handleServerMessage(data) {
-      console.log('📥 Message serveur reçu:', data);
-      
-      switch(data.type) {
-        case 'attack':
-          // Attaque reçue de TikFinity!
-          const attackCount = data.attacks || 1;
-          const playerName = data.player || 'Anonyme';
-          
-          console.log(`⚔️ Attaque reçue: ${attackCount} coups par ${playerName}`);
-          message.textContent = `💥 ${playerName} attaque avec ${attackCount} coup${attackCount > 1 ? 's' : ''} !`;
-          
-          // Effectuer les attaques
-          for (let i = 0; i < attackCount; i++) {
-            setTimeout(() => {
-              if (currentHP > 0) {
-                performAttack(playerName);
-              }
-            }, i * 300); // Délai entre chaque attaque
-          }
-          break;
-          
-        case 'reset':
-          // Nouveau diamant depuis TikFinity
-          maxHP = data.newHP || 1000;
-          initGame();
-          message.textContent = `💎 ${data.player} a créé un nouveau diamant !`;
-          console.log(`💎 Nouveau diamant créé par ${data.player}`);
-          break;
-          
-        case 'game_stats':
-          // Statistiques du jeu
-          console.log('📊 Stats du jeu reçues:', data.data);
-          break;
-          
-        case 'test':
-          // Message de test du serveur
-          console.log('🧪 Test du serveur:', data.message);
-          message.textContent = `✅ ${data.message}`;
-          break;
-          
-        default:
-          console.log('❓ Type de message inconnu:', data.type);
+    // Weighted selection
+    function weightedChoice() {
+      const ps = getProbabilities();
+      const r = Math.random();
+      let acc = 0;
+      for (let i = 0; i < ps.length; i++) {
+        acc += ps[i];
+        if (r <= acc) return i;
       }
+      return ps.length - 1;
     }
 
-    // Gestion de la réception des roses
-    function handleRoseReceived(count, username = "Anonyme") {
-      if (currentHP <= 0) return;
-      
-      rosesReceived += count;
-      rosesDisplay.textContent = rosesReceived;
-      
-      console.log(`${username} a envoyé ${count} rose(s)`);
-      
-      // Effectuer les attaques automatiquement
-      for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-          if (currentHP > 0) {
-            performAutomaticAttack(username);
-          }
-        }, i * 200); // Délai entre chaque attaque
+    // Map to visual bin
+    function logicalToVisualIndex(slot) {
+      const cumulative = [];
+      const ps = getProbabilities();
+      let s = 0;
+      for (let i = 0; i < ps.length; i++) {
+        s += ps[i];
+        cumulative.push(s);
       }
-      
-      // Afficher l'animation des roses reçues
-      showRoseReceived(count, username);
+      const r = cumulative[slot] - ps[slot] / 2;
+      return Math.min(VISIBLE_BINS - 1, Math.floor(r * VISIBLE_BINS));
     }
 
-    // Effectuer une attaque
-    function performAttack(playerName = "Joueur") {
-      if (currentHP <= 0) return;
+    // Animate ball
+    function animateBallTo(binIndex, onComplete, fast = false) {
+      const boardRect = document.getElementById('board').getBoundingClientRect();
+      const bins = document.querySelectorAll('.bin');
+      const targetBin = bins[binIndex];
+      const targetRect = targetBin.getBoundingClientRect();
+      const boardEl = document.getElementById('board');
+
+      const ball = document.createElement('div');
+      ball.className = 'ball';
+      boardEl.appendChild(ball);
+
+      const startX = boardRect.width / 2 - 10;
+      const startY = 10;
+      const endX = targetRect.left - boardRect.left + targetRect.width / 2 - 10;
+      const endY = boardRect.height - targetRect.height - 20;
+
+      ball.style.left = startX + 'px';
+      ball.style.top = startY + 'px';
+
+      const duration = fast ? 300 + Math.random() * 200 : 1200 + Math.random() * 400;
+      const start = performance.now();
       
-      attacksCount++;
-      attacksDisplay.textContent = attacksCount;
-      coupCounter++;
-      
-      // Jouer le son de frappe
-      playHitSound();
-      
-      // Ajouter effet visuel de frappe
-      diamond.classList.add('hit');
-      setTimeout(() => diamond.classList.remove('hit'), 300);
-      
-      // Créer des particules de coup
-      createHitParticles();
-      
-      // Tous les 2 coups -> -1 PV
-      if (coupCounter >= 2) {
-        coupCounter = 0;
-        currentHP--;
-        updateUI();
+      function frame(now) {
+        const p = Math.min(1, (now - start) / duration);
+        const easeP = p * p;
         
-        // Envoyer les stats mises à jour au serveur
-        sendStatsToServer();
-      }
-      
-      if (currentHP <= 0) {
-        endGame();
-      }
-    }
-
-    // Afficher les roses reçues
-    function showRoseReceived(count, username) {
-      const roseDisplay = document.createElement('div');
-      roseDisplay.className = 'coins-display';
-      roseDisplay.textContent = `${username}: +${count} 🌹`;
-      roseDisplay.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
-      roseDisplay.style.color = 'white';
-      roseDisplay.style.fontSize = '14px';
-      roseDisplay.style.padding = '8px 15px';
-      diamond.parentElement.appendChild(roseDisplay);
-      
-      setTimeout(() => {
-        roseDisplay.remove();
-      }, 2000);
-    }
-
-    // Création des sons avec Web Audio API
-    function createSound(frequency, duration, type = 'sine') {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.value = frequency;
-      oscillator.type = type;
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + duration);
-    }
-
-    function playHitSound() {
-      createSound(800, 0.1, 'square');
-      setTimeout(() => createSound(400, 0.05, 'triangle'), 50);
-    }
-
-    function playCrackSound() {
-      createSound(200, 0.3, 'sawtooth');
-      setTimeout(() => createSound(150, 0.2, 'sawtooth'), 100);
-    }
-
-    function playBreakSound() {
-      createSound(100, 0.5, 'sawtooth');
-      setTimeout(() => createSound(300, 0.3, 'square'), 100);
-      setTimeout(() => createSound(600, 0.2, 'sine'), 200);
-    }
-
-    // Créer des éclats de diamant
-    function createDiamondShards() {
-      const container = diamond.parentElement;
-      
-      for (let i = 0; i < 12; i++) {
-        const shard = document.createElement('div');
-        shard.style.cssText = `
-          position: absolute;
-          width: 8px;
-          height: 8px;
-          background: linear-gradient(45deg, #4fc3f7, #29b6f6, #0288d1);
-          transform: rotate(45deg);
-          pointer-events: none;
-          left: 50%;
-          top: 50%;
-          z-index: 1000;
-        `;
+        const y = startY + (endY - startY) * easeP;
+        const wobble = Math.sin(p * 15) * 8 * (1 - p);
+        const x = startX + (endX - startX) * p + wobble;
         
-        container.appendChild(shard);
+        ball.style.left = x + 'px';
+        ball.style.top = y + 'px';
+        ball.style.transform = `scale(${1 - p * 0.1})`;
         
-        const angle = (i / 12) * Math.PI * 2;
-        const distance = 100 + Math.random() * 100;
-        const duration = 800 + Math.random() * 400;
-        
-        shard.animate([
-          {
-            transform: 'translate(-50%, -50%) rotate(45deg) scale(1)',
-            opacity: 1
-          },
-          {
-            transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) rotate(${45 + Math.random() * 360}deg) scale(0)`,
-            opacity: 0
-          }
-        ], {
-          duration: duration,
-          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        }).onfinish = () => shard.remove();
-      }
-    }
-
-    function createHitParticles() {
-      const container = diamond.parentElement;
-      
-      for (let i = 0; i < 6; i++) {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background: #feca57;
-          border-radius: 50%;
-          pointer-events: none;
-          left: ${45 + Math.random() * 10}%;
-          top: ${45 + Math.random() * 10}%;
-          z-index: 999;
-        `;
-        
-        container.appendChild(particle);
-        
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 30 + Math.random() * 30;
-        
-        particle.animate([
-          {
-            transform: 'scale(1)',
-            opacity: 1
-          },
-          {
-            transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
-            opacity: 0
-          }
-        ], {
-          duration: 400,
-          easing: 'ease-out'
-        }).onfinish = () => particle.remove();
-      }
-    }
-
-    function initGame() {
-      maxHP = Math.floor(Math.random() * (2000 - 200 + 1)) + 200;
-      currentHP = maxHP;
-      coupCounter = 0;
-      attacksCount = 0;
-      rosesReceived = 0;
-      
-      updateDisplays();
-      
-      diamond.className = "diamond";
-      message.textContent = `En attente de roses TikTok pour attaquer...`;
-      resultContainer.classList.add("hidden");
-    }
-
-    function updateDisplays() {
-      hpDisplay.textContent = `${currentHP}/${maxHP}`;
-      rosesDisplay.textContent = rosesReceived;
-      attacksDisplay.textContent = attacksCount;
-    }
-
-    function updateUI() {
-      updateDisplays();
-      
-      if (currentHP === 0) {
-        diamond.className = "diamond broken";
-        message.textContent = "💥 Le diamant s'est brisé !";
-      } else {
-        if (maxHP - currentHP >= 20) {
-          diamond.classList.add("cracked");
-          if (!diamond.classList.contains('cracked')) {
-            playCrackSound();
-          }
-          message.textContent = "⚠️ Le diamant commence à se fissurer...";
+        if (p < 1) {
+          requestAnimationFrame(frame);
         } else {
-          diamond.classList.remove("cracked");
-          message.textContent = "En attente de roses TikTok...";
+          setTimeout(() => {
+            ball.remove();
+            if (onComplete) onComplete();
+          }, fast ? 100 : 300);
         }
       }
+      requestAnimationFrame(frame);
     }
 
-    function endGame() {
-      let recompense = Math.floor(maxHP / 2);
+    // Add result to log
+    function logResult(slot, multiplier, win) {
+      const line = document.createElement('div');
+      line.className = 'result-line';
       
-      playBreakSound();
-      setTimeout(() => createDiamondShards(), 100);
+      const left = document.createElement('span');
+      left.textContent = `Slot ${slot} (x${multiplier})`;
       
-      message.textContent = "💥 Félicitations ! Le diamant est cassé ! 🌹✨";
+      const right = document.createElement('span');
+      right.className = win > 0 ? 'result-win' : 'result-loss';
+      right.textContent = win > 0 ? `+${win.toFixed(2)}` : '0';
       
-      setTimeout(() => {
-        coinsResult.innerHTML = `
-          <strong>🎉 DIAMANT DÉTRUIT ! 🎉</strong><br>
-          Cassé grâce à ${rosesReceived} roses TikTok !<br>
-          <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
-          <strong>Récompense finale : ${recompense} pièces !</strong><br>
-          <small>Merci à tous les participants du Live !</small>
-        `;
-        resultContainer.classList.remove("hidden");
-      }, 500);
-    }
-
-    // Gestion des boutons
-    function toggleConnection() {
-      if (isConnected) {
-        disconnectFromTikFinity();
-      } else {
-        connectToTikFinity();
+      line.appendChild(left);
+      line.appendChild(right);
+      
+      // Clear placeholder
+      if (elements.results.children[0]?.textContent?.includes('Lancez votre première')) {
+        elements.results.innerHTML = '';
+      }
+      
+      elements.results.prepend(line);
+      
+      // Keep max 50 results
+      while (elements.results.children.length > 50) {
+        elements.results.removeChild(elements.results.lastChild);
       }
     }
 
-    // Événements
-    document.getElementById("connectBtn").addEventListener("click", toggleConnection);
-    document.getElementById("resetBtn").addEventListener("click", initGame);
+    // Handle single drop
+    function handleDrop(fast = false, onComplete = null) {
+      const slot = weightedChoice();
+      const vindex = logicalToVisualIndex(slot);
+      
+      animateBallTo(vindex, () => {
+        const winMultiplier = multipliers[slot];
+        const win = winMultiplier; // 1 rose base bet
+        
+        totalInvested += 1;
+        totalWon += win;
+        totalPlayed += 1;
+        
+        updateStats();
+        logResult(slot, winMultiplier, win);
+        
+        if (onComplete) onComplete();
+      }, fast);
+    }
 
-    // Raccourcis clavier
-    document.addEventListener('keydown', (e) => {
-      switch(e.key) {
-        case 'c':
-        case 'C':
-          toggleConnection();
-          break;
-        case 'r':
-        case 'R':
-          initGame();
-          break;
-        case 't':
-        case 'T':
-          // Test : simuler une rose (uniquement en mode développement)
-          if (isConnected) {
-            handleTikFinityEvent({
-              type: 'gift',
-              giftName: 'Rose',
-              giftId: 5655,
-              repeatCount: 1,
-              uniqueId: 'TestUser'
-            });
+    // Handle multiple drops
+    function handleMultipleDrop(count) {
+      if (isRunning) return;
+      isRunning = true;
+      
+      elements.multiProgress.classList.add('active');
+      elements.multiProgressText.textContent = `0 / ${count} coups`;
+      elements.multiProgressFill.style.width = '0%';
+      
+      // Disable buttons
+      [elements.dropBtn, elements.drop10Btn, elements.drop100Btn].forEach(btn => {
+        btn.disabled = true;
+      });
+      
+      let completed = 0;
+      
+      function dropNext() {
+        if (completed >= count) {
+          elements.multiProgress.classList.remove('active');
+          isRunning = false;
+          [elements.dropBtn, elements.drop10Btn, elements.drop100Btn].forEach(btn => {
+            btn.disabled = false;
+          });
+          return;
+        }
+        
+        handleDrop(true, () => {
+          completed++;
+          const progress = (completed / count) * 100;
+          elements.multiProgressFill.style.width = progress + '%';
+          elements.multiProgressText.textContent = `${completed} / ${count} coups`;
+          
+          if (completed < count) {
+            setTimeout(dropNext, 50); // Small delay between drops
           } else {
-            // Si pas connecté, activer le mode simulation
-            simulateTikTokConnection();
-          }
-          break;
-      }
-    });
-
-    // API TikFinity pour récupérer les événements
-    async function fetchTikFinityEvents() {
-      try {
-        const response = await fetch(`http://localhost:${TIKFINITY_CONFIG.httpPort}/api/events`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
+            setTimeout(() => {
+              elements.multiProgress.classList.remove('active');
+              isRunning = false;
+              [elements.dropBtn, elements.drop10Btn, elements.drop100Btn].forEach(btn => {
+                btn.disabled = false;
+              });
+            }, 500);
           }
         });
-        
-        if (response.ok) {
-          const events = await response.json();
-          events.forEach(event => handleTikFinityEvent(event));
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération des événements:', error);
       }
+      
+      dropNext();
     }
 
-    // Polling des événements (fallback si WebSocket ne fonctionne pas)
-    function startEventPolling() {
-      setInterval(() => {
-        if (isConnected) {
-          fetchTikFinityEvents();
-        }
-      }, 2000);
-    }
+    // Event listeners
+    elements.dropBtn.addEventListener('click', () => {
+      if (isRunning) return;
+      isRunning = true;
+      elements.dropBtn.disabled = true;
+      handleDrop(false, () => {
+        isRunning = false;
+        elements.dropBtn.disabled = false;
+      });
+    });
 
-    // Initialiser le jeu au chargement
-    initGame();
-    
-    // Démarrer le polling des événements
-    startEventPolling();
+    elements.drop10Btn.addEventListener('click', () => handleMultipleDrop(10));
+    elements.drop100Btn.addEventListener('click', () => handleMultipleDrop(100));
 
-    // Auto-connexion au démarrage (optionnel)
-    setTimeout(() => {
-      if (!isConnected) {
-        connectToTikFinity();
+    // Reset button
+    elements.resetBtn.addEventListener('click', () => {
+      if (isRunning) return;
+      
+      if (totalPlayed > 0 && !confirm('Êtes-vous sûr de vouloir remettre à zéro toutes les statistiques ?')) {
+        return;
       }
-    }, 1000);
+      
+      // Reset all stats
+      totalInvested = 0;
+      totalWon = 0;
+      totalPlayed = 0;
+      
+      // Clear results
+      elements.results.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">Lancez votre première balle pour voir les résultats !</div>';
+      
+      // Update displays
+      updateStats();
+    });
+
+    // Initialize UI
+    buildBins();
+    buildLegend();
+    drawPegs();
+    updateStats();
   </script>
 </body>
 </html>
