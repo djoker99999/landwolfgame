@@ -571,14 +571,14 @@
       // Récompense basée sur les PV max (comme le diamant)
       let recompense = Math.floor(maxHP / 2);
       
-      message.textContent = "🥊 Félicitations ! Tu as mis KO le boxeur ! 🌹✨";
+      message.textContent = "🥊 Félicitations ! Tu as mis KO le boxeur et gagné un cadeau ! 🎁✨";
       
       setTimeout(() => {
         coinsResult.innerHTML = `
           <strong>🎉 BRAVO ! 🎉</strong><br>
-          Tu as mis KO le boxeur !<br>
-          <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
-          <strong>Ta récompense : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
+          Tu as mis KO le boxeur et gagné un cadeau !<br>
+          <div style="font-size: 4em; margin: 10px 0; color: #feca57;">🎁</div>
+          <strong>Ton cadeau : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
         `;
         resultContainer.classList.remove("hidden");
       }, 500);
