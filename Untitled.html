@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💎 Casse le Diamant</title>
+  <title>🥊 Combat de Boxeur Premium</title>
   <style>
     * {
       margin: 0;
@@ -13,18 +13,15 @@
 
     body {
       font-family: 'Arial', sans-serif;
-      background-image: url('https://img.freepik.com/premium-photo/cherry-blossoms-forest_1091302-2482.jpg');
+      background: url('https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/07/ab/9d/5b.jpg') no-repeat center center fixed;
       background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
       color: #fff;
-      text-align: center;
       min-height: 100vh;
-      padding: 20px;
-      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px;
+      position: relative;
     }
 
     body::before {
@@ -34,21 +31,20 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(2px);
       z-index: -1;
     }
 
-
-
     .game-container {
-      max-width: 500px;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 20px;
-      padding: 30px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(145deg, rgba(0,0,0,0.9), rgba(20,20,50,0.85));
+      border-radius: 30px;
+      padding: 40px;
+      width: 500px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.9);
       position: relative;
       border: 2px solid rgba(255, 215, 0, 0.3);
+      backdrop-filter: blur(15px);
     }
 
     .game-container::before {
@@ -59,7 +55,7 @@
       right: -2px;
       bottom: -2px;
       background: linear-gradient(45deg, #ffd700, #ff6b9d, #c44569, #ffd700);
-      border-radius: 22px;
+      border-radius: 32px;
       z-index: -1;
       animation: borderGlow 3s linear infinite;
     }
@@ -70,158 +66,60 @@
     }
 
     h1 {
-      font-size: 2.5em;
-      margin-bottom: 30px;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      font-size: 2.8em;
+      margin-bottom: 25px;
+      color: #ffd700;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+      text-align: center;
+      background: linear-gradient(45deg, #ffd700, #ffed4a, #ffd700);
+      background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
 
-    .instructions {
-      margin: 30px 0;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-    }
-
-    .instructions h2 {
-      font-size: 1.8em;
-      margin-bottom: 10px;
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .instructions p {
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #feca57;
-    }
-
-    .diamond-container {
+    .boxer-container {
       position: relative;
-      margin: 30px auto;
+      height: 220px;
+      margin: 30px 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      border-radius: 25px;
+      border: 2px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
     }
 
-    .actions-widget {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 180px;
-      height: 80px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .firework-widget-bottom {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 400px;
-      height: 300px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .firework-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-bottom {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 150px;
-      height: 60px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .coindrop-widget-bottom {
-      position: fixed;
-      bottom: 200px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 400px;
-      height: 200px;
-      z-index: 500;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .coindrop-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .actions-widget iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .diamond {
+    .boxer {
       width: 200px;
       height: 200px;
-      margin: 0 auto;
-      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48e.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      position: relative;
       transition: all 0.3s ease;
-      filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) brightness(1.2) contrast(1.1);
-      z-index: 5;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 0 20px rgba(255,215,0,0.5));
+      border-radius: 20px;
     }
 
-    .diamond.hit {
+    .boxer img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 20px;
+    }
+
+    .boxer.hit {
       animation: lightHit 0.4s ease-out;
     }
 
-    .diamond.heavy-hit {
+    .boxer.heavy-hit {
       animation: heavyHit 0.6s ease-out;
     }
 
-    .diamond.critical-hit {
+    .boxer.critical-hit {
       animation: criticalHit 0.8s ease-out;
     }
 
-    .diamond.cracked {
-      filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)) hue-rotate(0deg);
-      animation: redPulse 1s infinite;
-    }
-
-    .diamond.broken {
-      opacity: 0.3;
-      filter: grayscale(100%) brightness(0.3);
+    .boxer.broken {
       animation: knockout 1.5s ease-out forwards;
     }
 
@@ -260,21 +158,6 @@
       100% { transform: translateY(80px) rotate(-120deg) scale(0.6); opacity: 0.4; }
     }
 
-    @keyframes redPulse {
-      0%, 100% { filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)); }
-      50% { filter: brightness(0.5) drop-shadow(0 0 40px rgba(255, 0, 0, 1)); }
-    }
-
-    .screen-shake {
-      animation: screenShake 0.4s ease-out;
-    }
-
-    @keyframes screenShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
     .impact-effect {
       position: absolute;
       font-size: 2.5em;
@@ -291,106 +174,131 @@
       100% { opacity: 0; transform: scale(1) translateY(-50px); }
     }
 
+    .screen-shake {
+      animation: screenShake 0.4s ease-out;
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
     .attack-modes {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin: 20px 0;
+      gap: 12px;
+      margin: 30px 0;
       flex-wrap: wrap;
     }
 
     .attack-mode-btn {
-      padding: 12px 20px;
-      font-size: 14px;
+      padding: 15px 25px;
+      border-radius: 30px;
+      border: 2px solid rgba(255,215,0,0.3);
+      background: linear-gradient(45deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1));
+      color: white;
+      font-weight: bold;
       cursor: pointer;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 25px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(5px);
-    }
-
-    .attack-mode-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
+      transition: all 0.3s;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      font-size: 1.1em;
+      backdrop-filter: blur(10px);
     }
 
     .attack-mode-btn.active {
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      border-color: #fff;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      background: linear-gradient(45deg, #ffd700, #ffed4a);
+      color: black;
+      border-color: #ffd700;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
     }
 
     .controls {
-      margin: 20px 0;
+      text-align: center;
+      margin: 30px 0;
     }
 
     button {
-      padding: 15px 30px;
+      padding: 18px 35px;
       margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
       border: none;
-      border-radius: 25px;
+      border-radius: 30px;
       background: linear-gradient(45deg, #ff6b9d, #c44569);
       color: #fff;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      text-transform: uppercase;
       font-weight: bold;
-      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      font-size: 1.2em;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
     button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-      background: linear-gradient(45deg, #feca57, #ff6b9d);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(255, 107, 157, 0.4);
     }
 
     button:active {
-      transform: translateY(0);
+      transform: translateY(-1px);
     }
 
     #resetBtn {
-      background: linear-gradient(45deg, #555, #777);
+      background: linear-gradient(45deg, #667eea, #764ba2);
     }
 
     #resetBtn:hover {
-      background: linear-gradient(45deg, #777, #999);
+      box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
     }
 
     #message {
-      margin: 20px 0;
-      font-size: 1.2em;
-      font-weight: bold;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-      min-height: 30px;
+      font-size: 1.4em;
+      margin: 25px 0;
+      min-height: 50px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      text-align: center;
+      color: #fff;
+      line-height: 1.4;
     }
 
     .result-box {
-      background: linear-gradient(135deg, rgba(255, 107, 157, 0.9), rgba(254, 202, 87, 0.9));
-      padding: 20px;
-      border-radius: 15px;
-      margin: 20px 0;
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(10px);
-      animation: fadeInUp 0.5s ease;
+      margin-top: 30px;
+      padding: 30px;
+      background: linear-gradient(45deg, rgba(255,215,0,0.2), rgba(255,107,157,0.2));
+      border-radius: 25px;
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .hidden {
+    .combo-indicator {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      padding: 10px 18px;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 1em;
       display: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .roses-counter {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffd700;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9em;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,215,0,0.3);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
     }
 
     .coins-display {
@@ -423,66 +331,44 @@
       }
     }
 
-    .combo-indicator {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: linear-gradient(45deg, #ff6b9d, #c44569);
-      padding: 10px 18px;
-      border-radius: 25px;
-      font-weight: bold;
-      font-size: 1em;
+    .hidden {
       display: none;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      border: 2px solid rgba(255,255,255,0.2);
     }
 
     @media (max-width: 480px) {
       .game-container {
         padding: 20px;
         margin: 10px;
+        width: auto;
+        max-width: 450px;
       }
       
-      .diamond {
+      .boxer {
         width: 150px;
         height: 150px;
       }
       
+      .boxer-container {
+        height: 180px;
+      }
+      
       h1 {
-        font-size: 2em;
+        font-size: 2.2em;
       }
     }
   </style>
 </head>
 <body>
-  <div class="actions-widget">
-    <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=2260505&screen=1" frameborder="0"></iframe>
-  </div>
-  
-  <div class="coindrop-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/coindrop?cid=2260505" frameborder="0"></iframe>
-  </div>
-  
-  <div class="firework-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/firework?cid=2260505" frameborder="0"></iframe>
-  </div>
-  
-  <div class="timer-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2260505" frameborder="0"></iframe>
-  </div>
-
   <div class="game-container" id="gameContainer">
-    <div class="combo-indicator" id="comboIndicator">COMBO x0</div>
-
-    <h1>💎 Casse le Diamant !</h1>
+    <h1>🥊 COMBAT ROYAL</h1>
     
-    <div class="diamond-container">
-      <div class="diamond" id="diamond"></div>
-    </div>
-
-    <div class="instructions">
-      <h2>🌹 Casse le Diamant et Gagne le Cadeau ! 🌹</h2>
-      <p>Une Rose - Un Coup</p>
+    <div class="roses-counter" id="rosesCounter">🌹 0 roses</div>
+    <div class="combo-indicator" id="comboIndicator">COMBO x0</div>
+    
+    <div class="boxer-container">
+      <div class="boxer" id="boxer">
+        <img src="https://pa1.narvii.com/6849/5ec01198439f51b144b65127316bfd2f6f333464_hq.gif" alt="Boxeur" id="boxerImg">
+      </div>
     </div>
 
     <div class="attack-modes">
@@ -492,37 +378,43 @@
     </div>
 
     <div class="controls">
-      <button id="attackBtn">Attaquer (1 coup)</button>
-      <button id="resetBtn">Nouveau Diamant</button>
+      <button id="attackBtn">🥊 FRAPPER</button>
+      <button id="resetBtn">🔄 NOUVEAU COMBAT</button>
     </div>
 
-    <p id="message"></p>
+    <p id="message">Ce boxeur arrogant te provoque ! Montre-lui qui est le patron !</p>
 
-    <div id="resultContainer" class="hidden result-box">
-      <h3>🎉 Diamant Détruit ! 🎉</h3>
-      <p id="coinsResult">Vous avez gagné 0 pièce !</p>
+    <div id="resultContainer" class="result-box hidden">
+      <h2>🏆 VICTOIRE ! 🏆</h2>
+      <p id="coinsResult"></p>
     </div>
   </div>
 
   <script>
-    let maxHP, currentHP, coupCounter, totalHits;
-    let hitsUntilCoin = 4;
-    let attackMode = 1;
-    let rosesEarnedThisDiamond = 0;
-    let combo = 0;
-    let lastHitTime = 0;
+    let maxHP, currentHP, coupCounter, totalHits, attackMode, combo, lastHitTime;
+    let hitsUntilRose = 4;
+    let currentGifIndex = 0;
+    let rosesEarnedThisFight = 0;
 
-    const diamond = document.getElementById("diamond");
+    const boxer = document.getElementById("boxer");
+    const boxerImg = document.getElementById("boxerImg");
     const message = document.getElementById("message");
-    const attackBtn = document.getElementById("attackBtn");
     const resultContainer = document.getElementById("resultContainer");
     const coinsResult = document.getElementById("coinsResult");
+    const attackBtn = document.getElementById("attackBtn");
     const gameContainer = document.getElementById("gameContainer");
     const comboIndicator = document.getElementById("comboIndicator");
+    const rosesCounter = document.getElementById("rosesCounter");
+
+    const boxerGifs = [
+      "https://pa1.narvii.com/6849/5ec01198439f51b144b65127316bfd2f6f333464_hq.gif",
+      "https://media1.tenor.com/images/cb9e19ad0133a2a24587dad94b717fc8/tenor.gif?itemid=5247347",
+      "https://media1.tenor.com/images/1980d6bce0826a7fa0b00a98212b287a/tenor.gif?itemid=11929671",
+      "https://media.tenor.com/JwHqAKX-wtUAAAAM/dempsey-roll.gif"
+    ];
 
     const impactEffects = ["💥", "🔥", "⭐", "💫", "✨", "💢"];
 
-    // Création des sons avec Web Audio API
     function createSound(frequency, duration, type = 'sine') {
       try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -545,103 +437,77 @@
       }
     }
 
-    // Son de frappe
     function playHitSound() {
       createSound(800, 0.1, 'square');
       setTimeout(() => createSound(400, 0.05, 'triangle'), 50);
     }
 
-    // Son de fissure
     function playCrackSound() {
       createSound(200, 0.3, 'sawtooth');
       setTimeout(() => createSound(150, 0.2, 'sawtooth'), 100);
     }
 
-    // Son d'explosion
     function playBreakSound() {
       createSound(100, 0.5, 'sawtooth');
       setTimeout(() => createSound(300, 0.3, 'square'), 100);
       setTimeout(() => createSound(600, 0.2, 'sine'), 200);
     }
 
-    // Créer des éclats de diamant
-    function createDiamondShards() {
-      const container = diamond.parentElement;
+    function initGame() {
+      maxHP = Math.floor(Math.random() * (2000 - 200 + 1)) + 200;
+      currentHP = maxHP;
+      coupCounter = 0;
+      totalHits = 0;
+      attackMode = 1;
+      combo = 0;
+      lastHitTime = 0;
+      currentGifIndex = 0;
+      hitsUntilRose = 4;
+      rosesEarnedThisFight = 0;
       
-      for (let i = 0; i < 12; i++) {
-        const shard = document.createElement('div');
-        shard.style.cssText = `
-          position: absolute;
-          width: 8px;
-          height: 8px;
-          background: linear-gradient(45deg, #4fc3f7, #29b6f6, #0288d1);
-          transform: rotate(45deg);
-          pointer-events: none;
-          left: 50%;
-          top: 50%;
-          z-index: 1000;
-        `;
-        
-        container.appendChild(shard);
-        
-        // Animation d'explosion aléatoire
-        const angle = (i / 12) * Math.PI * 2;
-        const distance = 100 + Math.random() * 100;
-        const duration = 800 + Math.random() * 400;
-        
-        shard.animate([
-          {
-            transform: 'translate(-50%, -50%) rotate(45deg) scale(1)',
-            opacity: 1
-          },
-          {
-            transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) rotate(${45 + Math.random() * 360}deg) scale(0)`,
-            opacity: 0
-          }
-        ], {
-          duration: duration,
-          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        }).onfinish = () => shard.remove();
-      }
+      updateUI();
+      resultContainer.classList.add("hidden");
+      comboIndicator.style.display = "none";
+      boxerImg.src = boxerGifs[currentGifIndex];
+      boxerImg.style.filter = "none";
+      boxerImg.style.opacity = 1;
+      boxerImg.style.transform = "rotate(0deg)";
+      boxer.className = "boxer";
+      message.textContent = "Ce boxeur arrogant te provoque ! Montre-lui qui est le patron !";
+      rosesCounter.textContent = "🌹 0 roses";
     }
 
-    // Effet de particules pour les coups
-    function createHitParticles() {
-      const container = diamond.parentElement;
-      
-      for (let i = 0; i < 6; i++) {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background: #feca57;
-          border-radius: 50%;
-          pointer-events: none;
-          left: ${45 + Math.random() * 10}%;
-          top: ${45 + Math.random() * 10}%;
-          z-index: 999;
-        `;
-        
-        container.appendChild(particle);
-        
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 30 + Math.random() * 30;
-        
-        particle.animate([
-          {
-            transform: 'scale(1)',
-            opacity: 1
-          },
-          {
-            transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
-            opacity: 0
-          }
-        ], {
-          duration: 400,
-          easing: 'ease-out'
-        }).onfinish = () => particle.remove();
+    function updateUI() {
+      const newGifIndex = Math.floor(totalHits / 100) % boxerGifs.length;
+      if (newGifIndex !== currentGifIndex && currentHP > 0) {
+        currentGifIndex = newGifIndex;
+        boxerImg.src = boxerGifs[currentGifIndex];
       }
+
+      const damagePercent = (maxHP - currentHP) / maxHP;
+      
+      if (currentHP <= 0) {
+        boxer.className = "boxer broken";
+        boxerImg.style.filter = "grayscale(100%) brightness(0.3)";
+        boxerImg.style.opacity = 0.3;
+      } else if (damagePercent >= 0.8) {
+        boxerImg.style.filter = "hue-rotate(270deg) saturate(0.2)";
+        boxerImg.style.opacity = 0.7;
+      } else if (damagePercent >= 0.6) {
+        boxerImg.style.filter = "hue-rotate(180deg) saturate(0.4)";
+        boxerImg.style.opacity = 0.8;
+      } else if (damagePercent >= 0.4) {
+        boxerImg.style.filter = "hue-rotate(90deg) saturate(0.6)";
+        boxerImg.style.opacity = 0.9;
+      } else if (damagePercent >= 0.2) {
+        boxerImg.style.filter = "hue-rotate(60deg) saturate(0.8)";
+        boxerImg.style.opacity = 0.95;
+      } else if (damagePercent > 0) {
+        boxerImg.style.filter = "hue-rotate(30deg)";
+        boxerImg.style.opacity = 1;
+      }
+
+      rosesCounter.textContent = `🌹 ${rosesEarnedThisFight} roses`;
     }
 
     function createImpactEffect() {
@@ -651,10 +517,21 @@
       effect.style.left = (Math.random() * 80 + 10) + '%';
       effect.style.top = (Math.random() * 60 + 20) + '%';
       
-      document.querySelector('.diamond-container').appendChild(effect);
+      document.querySelector('.boxer-container').appendChild(effect);
       
       setTimeout(() => {
         effect.remove();
+      }, 1000);
+    }
+
+    function showRoseGain(amount) {
+      const roseDisplay = document.createElement('div');
+      roseDisplay.className = 'coins-display';
+      roseDisplay.textContent = `+${amount} 🌹`;
+      document.querySelector('.boxer-container').appendChild(roseDisplay);
+      
+      setTimeout(() => {
+        roseDisplay.remove();
       }, 1000);
     }
 
@@ -672,40 +549,42 @@
       }
     }
 
-    function initGame() {
-      // PV aléatoires entre 1000 et 10000
-      maxHP = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000;
-      currentHP = maxHP;
-      coupCounter = 0;
-      totalHits = 0;
-      hitsUntilCoin = 4;
-      rosesEarnedThisDiamond = 0;
-      combo = 0;
-      lastHitTime = 0;
-      
-      diamond.className = "diamond";
-      message.textContent = `À tout moment le diamant peut se briser...`;
-      resultContainer.classList.add("hidden");
-      comboIndicator.style.display = "none";
-    }
-
     function attack() {
       if (currentHP <= 0) return;
-      
+
       let hits = attackMode;
       let actualHits = 0;
       let rosesEarned = 0;
-      let wasCracked = diamond.classList.contains('cracked');
-      
-      // Jouer le son de frappe
+
       playHitSound();
-      
-      // Créer des particules de coup et effets d'impact
-      createHitParticles();
-      createImpactEffect();
+
+      for (let i = 0; i < hits && currentHP > 0; i++) {
+        coupCounter++;
+        actualHits++;
+        totalHits++;
+
+        if (coupCounter >= 2) {
+          coupCounter = 0;
+          currentHP--;
+        }
+
+        hitsUntilRose--;
+        if (hitsUntilRose <= 0) {
+          rosesEarnedThisFight++;
+          rosesEarned++;
+          hitsUntilRose = 4;
+        }
+
+        if (currentHP <= 0) break;
+      }
+
+      if (rosesEarned > 0) {
+        showRoseGain(rosesEarned);
+      }
+
       updateCombo();
-      
-      // Animation selon l'intensité
+      createImpactEffect();
+
       let animationType = 'hit';
       if (attackMode >= 100) {
         animationType = 'critical-hit';
@@ -715,90 +594,43 @@
         animationType = 'heavy-hit';
       }
 
-      diamond.classList.add(animationType);
+      boxer.classList.add(animationType);
       setTimeout(() => {
-        diamond.classList.remove(animationType);
+        boxer.classList.remove(animationType);
       }, animationType === 'critical-hit' ? 800 : animationType === 'heavy-hit' ? 600 : 400);
-      
-      // Effectuer le nombre de coups selon le mode
-      for (let i = 0; i < hits && currentHP > 0; i++) {
-        coupCounter++;
-        actualHits++;
-        totalHits++;
 
-        // Tous les 2 coups -> -1 PV
-        if (coupCounter >= 2) {
-          coupCounter = 0;
-          currentHP--;
-        }
-
-        // Gestion des roses (tous les 4 coups)
-        hitsUntilCoin--;
-        if (hitsUntilCoin <= 0) {
-          rosesEarnedThisDiamond++;
-          rosesEarned++;
-          hitsUntilCoin = 4;
-        }
-      }
-      
-      // Afficher les roses gagnées
-      if (rosesEarned > 0) {
-        showRoseGain(rosesEarned);
-      }
-      
       updateUI();
-      
-      // Jouer son de fissure si le diamant devient fissuré
-      if (!wasCracked && diamond.classList.contains('cracked')) {
-        playCrackSound();
-      }
-      
+
       if (currentHP <= 0) {
         endGame();
-      }
-    }
-
-    function showRoseGain(amount) {
-      const roseDisplay = document.createElement('div');
-      roseDisplay.className = 'coins-display';
-      roseDisplay.textContent = `+${amount} 🌹`;
-      diamond.parentElement.appendChild(roseDisplay);
-      
-      setTimeout(() => {
-        roseDisplay.remove();
-      }, 1000);
-    }
-
-    function updateUI() {
-      if (currentHP === 0) {
-        diamond.className = "diamond broken";
-        message.textContent = "💥 Le diamant s'est brisé !";
       } else {
-        // Dès que le diamant a perdu 20 HP, il devient rouge et fissuré
-        if (maxHP - currentHP >= 20) {
-          diamond.classList.add("cracked");
-          message.textContent = "⚠️ Le diamant commence à se fissurer...";
-        } else {
-          diamond.classList.remove("cracked");
-          message.textContent = "À tout moment le diamant peut se briser...";
+        const damagePercent = (maxHP - currentHP) / maxHP;
+        
+        if (damagePercent >= 0.9) {
+          message.textContent = "Le boxeur titube ! Encore quelques coups !";
+        } else if (damagePercent >= 0.7) {
+          message.textContent = "Il est sérieusement touché !";
+        } else if (damagePercent >= 0.5) {
+          message.textContent = "Le boxeur commence à faiblir !";
+        } else if (damagePercent >= 0.3) {
+          message.textContent = "Il encaisse mais résiste !";
+        } else if (damagePercent > 0) {
+          message.textContent = "Le boxeur reste provocateur mais montre des signes !";
         }
       }
     }
 
     function endGame() {
+      playBreakSound();
+      
       let recompense = Math.floor(maxHP / 2);
       
-      // Jouer son d'explosion et créer les éclats
-      playBreakSound();
-      setTimeout(() => createDiamondShards(), 100);
+      message.textContent = "🥊 Félicitations ! Tu as mis KO le boxeur ! 🌹✨";
       
-      message.textContent = "💥 Félicitations ! Tu as cassé le diamant ! 🌹✨";
-      
-      // Afficher le résultat final avec un délai pour voir l'explosion
       setTimeout(() => {
         coinsResult.innerHTML = `
           <strong>🎉 BRAVO ! 🎉</strong><br>
-          Tu as cassé le diamant !<br>
+          Tu as mis KO le boxeur !<br>
           <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
           <strong>Ta récompense : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
         `;
@@ -810,24 +642,21 @@
 
     function setAttackMode(mode) {
       attackMode = mode;
-      
-      // Mettre à jour l'interface
       document.getElementById('mode1').classList.toggle('active', mode === 1);
       document.getElementById('mode10').classList.toggle('active', mode === 10);
       document.getElementById('mode100').classList.toggle('active', mode === 100);
       
-      // Mettre à jour le texte du bouton d'attaque
-      attackBtn.textContent = `Attaquer (${mode} coup${mode > 1 ? 's' : ''})`;
+      if (mode === 1) attackBtn.textContent = "🥊 FRAPPER";
+      else if (mode === 10) attackBtn.textContent = "💥 COMBO";
+      else attackBtn.textContent = "🔥 BARRAGE";
     }
 
-    // Événements
     document.getElementById("attackBtn").addEventListener("click", attack);
     document.getElementById("resetBtn").addEventListener("click", initGame);
     document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
     document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
     document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
 
-    // Raccourcis clavier
     document.addEventListener('keydown', (e) => {
       switch(e.key) {
         case ' ':
@@ -851,7 +680,6 @@
       }
     });
 
-    // Reset combo après inactivité
     setInterval(() => {
       const currentTime = Date.now();
       if (currentTime - lastHitTime > 3000 && combo > 0) {
