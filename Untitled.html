@@ -1,4 +1,4 @@
-const progressText = document.getElementById("progressText");<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -38,11 +38,12 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
 
     .main-container {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 30px;
       max-width: 1400px;
       width: 100%;
       justify-content: center;
+      min-height: 100vh;
     }
 
     .side-widget {
@@ -132,7 +133,7 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
       border-radius: 20px;
     }
 
-    .boxer.light-hit {
+    .boxer.hit {
       animation: lightHit 0.4s ease-out;
     }
 
@@ -144,7 +145,7 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
       animation: criticalHit 0.8s ease-out;
     }
 
-    .boxer.ko {
+    .boxer.broken {
       animation: knockout 1.5s ease-out forwards;
     }
 
@@ -214,12 +215,8 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
       text-align: center;
     }
 
-    .progress-text {
-      font-size: 1.4em;
-      font-weight: bold;
-      color: #ffd700;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-      margin-bottom: 10px;
+    .progress-container {
+      display: none;
     }
 
     .attack-modes {
@@ -323,22 +320,6 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
       border: 2px solid rgba(255,255,255,0.2);
     }
 
-    .damage-number {
-      position: absolute;
-      font-size: 2em;
-      font-weight: bold;
-      color: #ff3838;
-      text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
-      pointer-events: none;
-      z-index: 4;
-      animation: damageFloat 1.2s ease-out forwards;
-    }
-
-    @keyframes damageFloat {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
-    }
-
     .roses-counter {
       position: fixed;
       bottom: 20px;
@@ -353,6 +334,40 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
       border: 1px solid rgba(255,215,0,0.3);
       backdrop-filter: blur(5px);
       z-index: 1000;
+    }
+
+    .coins-display {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      animation: coinPop 1s ease;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    @keyframes coinPop {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.5);
+      }
+      50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px) scale(1);
+      }
+    }
+
+    .hidden {
+      display: none;
     }
 
     @media (max-width: 1200px) {
@@ -393,8 +408,10 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
           <img src="https://pa1.narvii.com/6849/5ec01198439f51b144b65127316bfd2f6f333464_hq.gif" alt="Boxeur" id="boxerImg">
         </div>
       </div>
-      
 
+      <div class="progress-container" style="display: none;">
+        <div class="progress-text" id="progressText">Boxeur en forme</div>
+      </div>
 
       <div class="attack-modes">
         <button id="mode1" class="attack-mode-btn active">1 coup</button>
@@ -409,7 +426,7 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
 
       <p id="message">Ce boxeur arrogant te provoque ! Montre-lui qui est le patron !</p>
 
-      <div id="resultContainer" class="result-box" style="display:none;">
+      <div id="resultContainer" class="result-box hidden">
         <h2>🏆 VICTOIRE ! 🏆</h2>
         <p id="coinsResult"></p>
       </div>
@@ -422,7 +439,10 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
   </div>
 
   <script>
-    let coupCounter, attackMode, roses, combo, lastHitTime, totalHits, boxerState, isKO, maxHits, currentGifIndex;
+    let maxHP, currentHP, coupCounter, totalHits, attackMode, combo, lastHitTime;
+    let hitsUntilRose = 4; // Compteur pour les roses (tous les 4 coups)
+    let currentGifIndex = 0;
+    let rosesEarnedThisFight = 0;
 
     const boxer = document.getElementById("boxer");
     const boxerImg = document.getElementById("boxerImg");
@@ -433,6 +453,7 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
     const gameContainer = document.getElementById("gameContainer");
     const comboIndicator = document.getElementById("comboIndicator");
     const rosesCounter = document.getElementById("rosesCounter");
+    const progressText = document.getElementById("progressText"); // Caché mais présent pour éviter l'erreur
 
     const boxerGifs = [
       "https://pa1.narvii.com/6849/5ec01198439f51b144b65127316bfd2f6f333464_hq.gif",
@@ -441,80 +462,106 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
       "https://media.tenor.com/JwHqAKX-wtUAAAAM/dempsey-roll.gif"
     ];
 
-    const boxerStates = [
-      { filter: "none", opacity: 1, threshold: 0 },
-      { filter: "hue-rotate(30deg)", opacity: 1, threshold: 0.1 },
-      { filter: "hue-rotate(60deg) saturate(0.8)", opacity: 0.95, threshold: 0.25 },
-      { filter: "hue-rotate(90deg) saturate(0.6)", opacity: 0.9, threshold: 0.4 },
-      { filter: "hue-rotate(180deg) saturate(0.4)", opacity: 0.8, threshold: 0.6 },
-      { filter: "hue-rotate(270deg) saturate(0.2)", opacity: 0.7, threshold: 0.8 },
-      { filter: "grayscale(100%) blur(2px)", opacity: 0.5, threshold: 1 }
-    ];
-
     const impactEffects = ["💥", "🔥", "⭐", "💫", "✨", "💢"];
-    const messages = [
-      "Le boxeur arrogant reste provocateur !",
-      "Il commence à s'énerver !",
-      "Le boxeur est étourdi par tes coups !",
-      "Il est sérieusement touché !",
-      "Le boxeur vacille dangereusement !",
-      "Il titube ! Encore un peu !",
-      "KO TOTAL !"
-    ];
+
+    // Création des sons avec Web Audio API
+    function createSound(frequency, duration, type = 'sine') {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        // Silence en cas d'erreur audio
+      }
+    }
+
+    // Sons
+    function playHitSound() {
+      createSound(800, 0.1, 'square');
+      setTimeout(() => createSound(400, 0.05, 'triangle'), 50);
+    }
+
+    function playCrackSound() {
+      createSound(200, 0.3, 'sawtooth');
+      setTimeout(() => createSound(150, 0.2, 'sawtooth'), 100);
+    }
+
+    function playBreakSound() {
+      createSound(100, 0.5, 'sawtooth');
+      setTimeout(() => createSound(300, 0.3, 'square'), 100);
+      setTimeout(() => createSound(600, 0.2, 'sine'), 200);
+    }
 
     function initGame() {
+      // PV aléatoires entre 200 et 2000 (comme le diamant)
+      maxHP = Math.floor(Math.random() * (2000 - 200 + 1)) + 200;
+      currentHP = maxHP;
       coupCounter = 0;
+      totalHits = 0;
       attackMode = 1;
-      roses = 0;
       combo = 0;
       lastHitTime = 0;
-      totalHits = 0;
-      boxerState = 0;
-      isKO = false;
       currentGifIndex = 0;
-      
-      // Points de vie aléatoires entre 200 et 4000
-      maxHits = Math.floor(Math.random() * (4000 - 200 + 1)) + 200;
+      hitsUntilRose = 4;
+      rosesEarnedThisFight = 0;
       
       updateUI();
-      resultContainer.style.display = "none";
+      resultContainer.classList.add("hidden");
       comboIndicator.style.display = "none";
       boxerImg.src = boxerGifs[currentGifIndex];
-      boxerImg.style.filter = boxerStates[0].filter;
-      boxerImg.style.opacity = boxerStates[0].opacity;
+      boxerImg.style.filter = "none";
+      boxerImg.style.opacity = 1;
       boxerImg.style.transform = "rotate(0deg)";
-      message.textContent = `Ce boxeur arrogant te provoque ! Il a ${maxHits} coups à encaisser !`;
+      boxer.className = "boxer";
+      message.textContent = "Ce boxeur arrogant te provoque ! Montre-lui qui est le patron !";
       rosesCounter.textContent = "🌹 0 roses";
     }
 
     function updateUI() {
       // Changer de GIF tous les 100 coups
       const newGifIndex = Math.floor(totalHits / 100) % boxerGifs.length;
-      if (newGifIndex !== currentGifIndex && !isKO) {
+      if (newGifIndex !== currentGifIndex && currentHP > 0) {
         currentGifIndex = newGifIndex;
         boxerImg.src = boxerGifs[currentGifIndex];
       }
 
-      // Mettre à jour l'état du boxeur basé sur le pourcentage de PV perdus
-      const damagePercent = totalHits / maxHits;
-      for (let i = boxerStates.length - 1; i >= 0; i--) {
-        if (damagePercent >= boxerStates[i].threshold) {
-          boxerState = i;
-          break;
-        }
+      // Appliquer effets visuels selon les dégâts (similaire au diamant)
+      const damagePercent = (maxHP - currentHP) / maxHP;
+      
+      if (currentHP <= 0) {
+        boxer.className = "boxer broken";
+        boxerImg.style.filter = "grayscale(100%) brightness(0.3)";
+        boxerImg.style.opacity = 0.3;
+      } else if (damagePercent >= 0.8) {
+        boxerImg.style.filter = "hue-rotate(270deg) saturate(0.2)";
+        boxerImg.style.opacity = 0.7;
+      } else if (damagePercent >= 0.6) {
+        boxerImg.style.filter = "hue-rotate(180deg) saturate(0.4)";
+        boxerImg.style.opacity = 0.8;
+      } else if (damagePercent >= 0.4) {
+        boxerImg.style.filter = "hue-rotate(90deg) saturate(0.6)";
+        boxerImg.style.opacity = 0.9;
+      } else if (damagePercent >= 0.2) {
+        boxerImg.style.filter = "hue-rotate(60deg) saturate(0.8)";
+        boxerImg.style.opacity = 0.95;
+      } else if (damagePercent > 0) {
+        boxerImg.style.filter = "hue-rotate(30deg)";
+        boxerImg.style.opacity = 1;
       }
 
-      // Appliquer les filtres visuels au boxeur
-      boxerImg.style.filter = boxerStates[boxerState].filter;
-      boxerImg.style.opacity = boxerStates[boxerState].opacity;
-      
-      // Si KO, arrêter l'animation
-      if (totalHits >= maxHits && !isKO) {
-        isKO = true;
-        boxerImg.style.transform = "rotate(-90deg)";
-      }
-      
-      rosesCounter.textContent = `🌹 ${roses} roses`;
+      rosesCounter.textContent = `🌹 ${rosesEarnedThisFight} roses`;
     }
 
     function createImpactEffect() {
@@ -531,25 +578,15 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
       }, 1000);
     }
 
-    function createDamageNumber() {
-      const damage = document.createElement('div');
-      damage.className = 'damage-number';
-      damage.textContent = 'COUP!';
-      damage.style.left = (Math.random() * 60 + 20) + '%';
-      damage.style.top = '10%';
-      
-      document.querySelector('.boxer-container').appendChild(damage);
+    function showRoseGain(amount) {
+      const roseDisplay = document.createElement('div');
+      roseDisplay.className = 'coins-display';
+      roseDisplay.textContent = `+${amount} 🌹`;
+      document.querySelector('.boxer-container').appendChild(roseDisplay);
       
       setTimeout(() => {
-        damage.remove();
-      }, 1200);
-    }
-
-    function getHitAnimation() {
-      const damagePercent = totalHits / maxHits;
-      if (damagePercent >= 0.8) return 'critical-hit';
-      if (damagePercent >= 0.5) return 'heavy-hit';
-      return 'light-hit';
+        roseDisplay.remove();
+      }, 1000);
     }
 
     function updateCombo() {
@@ -563,139 +600,107 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
       if (combo >= 3) {
         comboIndicator.textContent = `COMBO x${combo}`;
         comboIndicator.style.display = 'block';
-        comboIndicator.style.animation = 'none';
-        comboIndicator.offsetHeight;
-        comboIndicator.style.animation = 'impactPop 0.5s ease-out';
       }
     }
 
     function attack() {
-      if (totalHits >= maxHits) return; // Déjà KO
+      if (currentHP <= 0) return;
 
       let hits = attackMode;
-      let damageDealt = 0;
-      let effectsCreated = 0;
+      let actualHits = 0;
+      let rosesEarned = 0;
 
-      for (let i = 0; i < hits && totalHits < maxHits; i++) {
+      // Son de frappe
+      playHitSound();
+
+      for (let i = 0; i < hits && currentHP > 0; i++) {
         coupCounter++;
+        actualHits++;
         totalHits++;
 
-        // Tous les 4 coups → -1 PV (dégâts au boxeur)
-        if (coupCounter >= 4) {
+        // Tous les 2 coups → -1 PV (comme le diamant)
+        if (coupCounter >= 2) {
           coupCounter = 0;
-          damageDealt++;
-          effectsCreated++;
-          
-          setTimeout(() => createDamageNumber(), i * 50);
+          currentHP--;
         }
 
-        // Tous les 100 coups → +25 roses pour la récompense finale
-        if (totalHits % 100 === 0) {
-          roses += 25;
-          
-          // Effet spécial pour le bonus de 100 coups
-          setTimeout(() => {
-            const bonusEffect = document.createElement('div');
-            bonusEffect.className = 'impact-effect';
-            bonusEffect.textContent = '+25🌹';
-            bonusEffect.style.left = '50%';
-            bonusEffect.style.top = '30%';
-            bonusEffect.style.color = '#ffd700';
-            bonusEffect.style.fontSize = '1.5em';
-            document.querySelector('.boxer-container').appendChild(bonusEffect);
-            
-            setTimeout(() => bonusEffect.remove(), 1000);
-          }, 200);
+        // Gestion des roses (tous les 4 coups comme le diamant)
+        hitsUntilRose--;
+        if (hitsUntilRose <= 0) {
+          rosesEarnedThisFight++;
+          rosesEarned++;
+          hitsUntilRose = 4;
         }
 
-        // Combo de 50 → +1 rose
-        if (combo >= 50 && combo % 50 === 0) {
-          roses += 1;
-          
-          // Effet spécial pour le combo de 50
-          setTimeout(() => {
-            const comboEffect = document.createElement('div');
-            comboEffect.className = 'impact-effect';
-            comboEffect.textContent = 'COMBO +1🌹';
-            comboEffect.style.left = '70%';
-            comboEffect.style.top = '20%';
-            comboEffect.style.color = '#ff6b9d';
-            comboEffect.style.fontSize = '1.2em';
-            document.querySelector('.boxer-container').appendChild(comboEffect);
-            
-            setTimeout(() => comboEffect.remove(), 1000);
-          }, 300);
-        }
-
-        if (totalHits >= maxHits) break; // KO atteint
+        if (currentHP <= 0) break;
       }
 
-      if (effectsCreated > 0 || attackMode >= 10) {
-        updateCombo();
-        
-        // Screen shake pour gros coups
-        if (attackMode >= 10) {
-          gameContainer.classList.add('screen-shake');
-          setTimeout(() => gameContainer.classList.remove('screen-shake'), 400);
-        }
-
-        // Créer effets d'impact
-        for (let i = 0; i < Math.min(effectsCreated + 1, 4); i++) {
-          setTimeout(() => createImpactEffect(), i * 100);
-        }
-
-        // Animation du boxeur
-        const animationType = getHitAnimation();
-        boxer.className = `boxer ${animationType}`;
-        setTimeout(() => {
-          boxer.className = 'boxer';
-        }, animationType === 'critical-hit' ? 800 : animationType === 'heavy-hit' ? 600 : 400);
+      // Afficher les roses gagnées
+      if (rosesEarned > 0) {
+        showRoseGain(rosesEarned);
       }
+
+      // Effets visuels
+      updateCombo();
+      createImpactEffect();
+
+      // Animation du boxeur selon l'intensité
+      let animationType = 'hit';
+      if (attackMode >= 100) {
+        animationType = 'critical-hit';
+        gameContainer.classList.add('screen-shake');
+        setTimeout(() => gameContainer.classList.remove('screen-shake'), 400);
+      } else if (attackMode >= 10) {
+        animationType = 'heavy-hit';
+      }
+
+      boxer.classList.add(animationType);
+      setTimeout(() => {
+        boxer.classList.remove(animationType);
+      }, animationType === 'critical-hit' ? 800 : animationType === 'heavy-hit' ? 600 : 400);
 
       updateUI();
 
-      if (totalHits >= maxHits) {
+      // Messages selon l'état (comme le diamant)
+      if (currentHP <= 0) {
         endGame();
       } else {
-        // Mettre à jour le message selon l'état
-        const damagePercent = totalHits / maxHits;
-        const remainingHits = maxHits - totalHits;
+        const damagePercent = (maxHP - currentHP) / maxHP;
         
         if (damagePercent >= 0.9) {
-          message.textContent = `Le boxeur titube ! Plus que ${remainingHits} coups !`;
+          message.textContent = "Le boxeur titube ! Encore quelques coups !";
         } else if (damagePercent >= 0.7) {
-          message.textContent = `Il est sérieusement touché ! ${remainingHits} coups restants !`;
+          message.textContent = "Il est sérieusement touché !";
         } else if (damagePercent >= 0.5) {
-          message.textContent = `Le boxeur commence à faiblir ! ${remainingHits} coups !`;
+          message.textContent = "Le boxeur commence à faiblir !";
         } else if (damagePercent >= 0.3) {
-          message.textContent = `Il encaisse mais résiste ! ${remainingHits} coups !`;
-        } else {
-          message.textContent = `Le boxeur reste provocateur ! ${remainingHits} coups !`;
+          message.textContent = "Il encaisse mais résiste !";
+        } else if (damagePercent > 0) {
+          message.textContent = "Le boxeur reste provocateur mais montre des signes !";
         }
       }
     }
 
     function endGame() {
-      boxer.classList.add('ko');
-      message.textContent = "KO MAGISTRAL ! Le boxeur arrogant est enfin à terre !";
+      // Son d'explosion et effets comme le diamant
+      playBreakSound();
       
-      coinsResult.textContent = `🎉 Récompense finale : ${roses} roses !`;
-      resultContainer.style.display = "block";
+      // Récompense basée sur les PV max (comme le diamant)
+      let recompense = Math.floor(maxHP / 2);
+      
+      message.textContent = "🥊 Félicitations ! Tu as mis KO le boxeur ! 🌹✨";
+      
+      setTimeout(() => {
+        coinsResult.innerHTML = `
+          <strong>🎉 BRAVO ! 🎉</strong><br>
+          Tu as mis KO le boxeur !<br>
+          <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
+          <strong>Ta récompense : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
+        `;
+        resultContainer.classList.remove("hidden");
+      }, 500);
+      
       comboIndicator.style.display = "none";
-      
-      // Effets de célébration
-      for (let i = 0; i < 8; i++) {
-        setTimeout(() => {
-          const celebration = document.createElement('div');
-          celebration.className = 'impact-effect';
-          celebration.textContent = ['🎉', '🏆', '⭐', '🔥'][Math.floor(Math.random() * 4)];
-          celebration.style.left = (Math.random() * 100) + '%';
-          celebration.style.top = (Math.random() * 100) + '%';
-          document.querySelector('.game-container').appendChild(celebration);
-          
-          setTimeout(() => celebration.remove(), 1000);
-        }, i * 150);
-      }
     }
 
     function setAttackMode(mode) {
@@ -715,6 +720,30 @@ const progressText = document.getElementById("progressText");<!DOCTYPE html>
     document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
     document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
     document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
+
+    // Raccourcis clavier
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case ' ':
+        case 'Enter':
+          e.preventDefault();
+          attack();
+          break;
+        case '1':
+          setAttackMode(1);
+          break;
+        case '2':
+          setAttackMode(10);
+          break;
+        case '3':
+          setAttackMode(100);
+          break;
+        case 'r':
+        case 'R':
+          initGame();
+          break;
+      }
+    });
 
     // Reset combo après inactivité
     setInterval(() => {
