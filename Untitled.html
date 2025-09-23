@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🥊 Combat de Boxeur Premium</title>
+  <title>💎 Casse le Diamant</title>
   <style>
     * {
       margin: 0;
@@ -13,15 +13,19 @@
 
     body {
       font-family: 'Arial', sans-serif;
-      background: url('https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/07/ab/9d/5b.jpg') no-repeat center center fixed;
+      background-image: url('https://img.freepik.com/premium-photo/cherry-blossoms-forest_1091302-2482.jpg');
       background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
       color: #fff;
+      text-align: center;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       padding: 20px;
       position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 10px;
     }
 
     body::before {
@@ -31,29 +35,72 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(2px);
+      background: rgba(0, 0, 0, 0.4);
       z-index: -1;
     }
 
-    .main-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      max-width: 1400px;
+    .widget-left {
+      width: 200px;
+      height: 400px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .widget-left iframe {
       width: 100%;
-      min-height: 100vh;
+      height: 100%;
+      border: none;
+    }
+
+    .widget-right {
+      width: 200px;
+      height: 400px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .widget-right iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .timer-widget-right {
+      position: absolute;
+      bottom: -80px;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      z-index: 15;
+      border: none;
+      background: transparent;
+    }
+
+    .timer-widget-right iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
     }
 
     .game-container {
-      background: linear-gradient(145deg, rgba(0,0,0,0.9), rgba(20,20,50,0.85));
-      border-radius: 30px;
-      padding: 40px;
-      width: 500px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.9);
+      max-width: 500px;
+      flex: 1;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      margin: 0 5px;
       position: relative;
       border: 2px solid rgba(255, 215, 0, 0.3);
-      backdrop-filter: blur(15px);
     }
 
     .game-container::before {
@@ -64,7 +111,7 @@
       right: -2px;
       bottom: -2px;
       background: linear-gradient(45deg, #ffd700, #ff6b9d, #c44569, #ffd700);
-      border-radius: 32px;
+      border-radius: 22px;
       z-index: -1;
       animation: borderGlow 3s linear infinite;
     }
@@ -75,60 +122,193 @@
     }
 
     h1 {
-      font-size: 2.8em;
-      margin-bottom: 25px;
-      color: #ffd700;
-      text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
-      text-align: center;
-      background: linear-gradient(45deg, #ffd700, #ffed4a, #ffd700);
-      background-clip: text;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .boxer-container {
-      position: relative;
-      height: 220px;
+    .squirrel-logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px;
+      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43f.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+      animation: squirrelBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes squirrelBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.05); }
+    }
+
+    .instructions {
       margin: 30px 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-      border-radius: 25px;
-      border: 2px solid rgba(255,255,255,0.2);
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
       backdrop-filter: blur(10px);
     }
 
-    .boxer {
-      width: 200px;
-      height: 200px;
-      transition: all 0.3s ease;
-      position: relative;
-      z-index: 2;
-      filter: drop-shadow(0 0 20px rgba(255,215,0,0.5));
-      border-radius: 20px;
+    .instructions h2 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .boxer img {
+    .instructions p {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #feca57;
+    }
+
+    .diamond-container {
+      position: relative;
+      margin: 30px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .actions-widget {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 180px;
+      height: 80px;
+      z-index: 1000;
+      border: none;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .firework-widget-bottom {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 300px;
+      z-index: 1000;
+      border: none;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .firework-widget-bottom iframe {
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      border-radius: 20px;
+      border: none;
+      background: transparent;
     }
 
-    .boxer.hit {
+    .timer-widget-bottom {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 150px;
+      height: 60px;
+      z-index: 1000;
+      border: none;
+      background: transparent;
+    }
+
+    .timer-widget-bottom iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+    }
+
+    .coindrop-widget-bottom {
+      position: fixed;
+      bottom: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 200px;
+      z-index: 500;
+      border: none;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .coindrop-widget-bottom iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+    }
+
+    .actions-widget iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+    }
+
+    .diamond {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48e.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: relative;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) brightness(1.2) contrast(1.1);
+      z-index: 5;
+    }
+
+    .diamond.pink {
+      filter: drop-shadow(0 0 30px rgba(255, 105, 180, 0.8)) brightness(1.2) contrast(1.1) hue-rotate(15deg) saturate(1.5);
+      animation: pinkGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes pinkGlow {
+      0% { filter: drop-shadow(0 0 30px rgba(255, 105, 180, 0.8)) brightness(1.2) contrast(1.1) hue-rotate(15deg) saturate(1.5); }
+      100% { filter: drop-shadow(0 0 40px rgba(255, 20, 147, 1)) brightness(1.4) contrast(1.2) hue-rotate(25deg) saturate(1.8); }
+    }
+
+    .diamond.hit {
       animation: lightHit 0.4s ease-out;
     }
 
-    .boxer.heavy-hit {
+    .diamond.heavy-hit {
       animation: heavyHit 0.6s ease-out;
     }
 
-    .boxer.critical-hit {
+    .diamond.critical-hit {
       animation: criticalHit 0.8s ease-out;
     }
 
-    .boxer.broken {
+    .diamond.mega-hit {
+      animation: megaHit 1.2s ease-out;
+    }
+
+    .diamond.ultra-hit {
+      animation: ultraHit 1.5s ease-out;
+    }
+
+    .diamond.cracked {
+      filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)) hue-rotate(0deg);
+      animation: redPulse 1s infinite;
+    }
+
+    .diamond.broken {
+      opacity: 0.3;
+      filter: grayscale(100%) brightness(0.3);
       animation: knockout 1.5s ease-out forwards;
     }
 
@@ -160,11 +340,97 @@
       100% { transform: translateX(0) rotate(0deg) scale(1); }
     }
 
+    @keyframes megaHit {
+      0% { transform: translateX(0) rotate(0deg) scale(1); }
+      10% { transform: translateX(-45px) rotate(-35deg) scale(0.8); }
+      20% { transform: translateX(30px) rotate(20deg) scale(1.15); }
+      30% { transform: translateX(-25px) rotate(-15deg) scale(0.85); }
+      40% { transform: translateX(15px) rotate(10deg) scale(1.1); }
+      50% { transform: translateX(-10px) rotate(-8deg) scale(0.9); }
+      60% { transform: translateX(8px) rotate(5deg) scale(1.05); }
+      70% { transform: translateX(-4px) rotate(-3deg) scale(0.97); }
+      80% { transform: translateX(2px) rotate(2deg) scale(1.02); }
+      90% { transform: translateX(-1px) rotate(-1deg) scale(0.99); }
+      100% { transform: translateX(0) rotate(0deg) scale(1); }
+    }
+
+    @keyframes ultraHit {
+      0% { transform: translateX(0) rotate(0deg) scale(1); }
+      8% { transform: translateX(-55px) rotate(-45deg) scale(0.7); }
+      16% { transform: translateX(40px) rotate(25deg) scale(1.2); }
+      24% { transform: translateX(-35px) rotate(-20deg) scale(0.8); }
+      32% { transform: translateX(25px) rotate(15deg) scale(1.15); }
+      40% { transform: translateX(-18px) rotate(-12deg) scale(0.85); }
+      48% { transform: translateX(12px) rotate(8deg) scale(1.1); }
+      56% { transform: translateX(-8px) rotate(-6deg) scale(0.9); }
+      64% { transform: translateX(6px) rotate(4deg) scale(1.05); }
+      72% { transform: translateX(-4px) rotate(-3deg) scale(0.97); }
+      80% { transform: translateX(2px) rotate(2deg) scale(1.02); }
+      88% { transform: translateX(-1px) rotate(-1deg) scale(0.99); }
+      96% { transform: translateX(0.5px) rotate(0.5deg) scale(1.01); }
+      100% { transform: translateX(0) rotate(0deg) scale(1); }
+    }
+
     @keyframes knockout {
       0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
       30% { transform: translateY(-15px) rotate(-20deg) scale(0.9); opacity: 0.9; }
       70% { transform: translateY(60px) rotate(-120deg) scale(0.7); opacity: 0.7; }
       100% { transform: translateY(80px) rotate(-120deg) scale(0.6); opacity: 0.4; }
+    }
+
+    @keyframes redPulse {
+      0%, 100% { filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)); }
+      50% { filter: brightness(0.5) drop-shadow(0 0 40px rgba(255, 0, 0, 1)); }
+    }
+
+    .screen-shake {
+      animation: screenShake 0.4s ease-out;
+    }
+
+    .mega-shake {
+      animation: megaShake 0.8s ease-out;
+    }
+
+    .ultra-shake {
+      animation: ultraShake 1.2s ease-out;
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    @keyframes megaShake {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      10% { transform: translateX(-8px) translateY(-3px); }
+      20% { transform: translateX(8px) translateY(3px); }
+      30% { transform: translateX(-6px) translateY(-2px); }
+      40% { transform: translateX(6px) translateY(2px); }
+      50% { transform: translateX(-4px) translateY(-1px); }
+      60% { transform: translateX(4px) translateY(1px); }
+      70% { transform: translateX(-2px) translateY(-0.5px); }
+      80% { transform: translateX(2px) translateY(0.5px); }
+    }
+
+    @keyframes ultraShake {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      5% { transform: translateX(-12px) translateY(-5px); }
+      10% { transform: translateX(12px) translateY(5px); }
+      15% { transform: translateX(-10px) translateY(-4px); }
+      20% { transform: translateX(10px) translateY(4px); }
+      25% { transform: translateX(-8px) translateY(-3px); }
+      30% { transform: translateX(8px) translateY(3px); }
+      35% { transform: translateX(-6px) translateY(-2px); }
+      40% { transform: translateX(6px) translateY(2px); }
+      45% { transform: translateX(-4px) translateY(-1px); }
+      50% { transform: translateX(4px) translateY(1px); }
+      55% { transform: translateX(-3px) translateY(-1px); }
+      60% { transform: translateX(3px) translateY(1px); }
+      65% { transform: translateX(-2px) translateY(-0.5px); }
+      70% { transform: translateX(2px) translateY(0.5px); }
+      75% { transform: translateX(-1px) translateY(-0.2px); }
+      80% { transform: translateX(1px) translateY(0.2px); }
     }
 
     .impact-effect {
@@ -183,105 +449,138 @@
       100% { opacity: 0; transform: scale(1) translateY(-50px); }
     }
 
-    .screen-shake {
-      animation: screenShake 0.4s ease-out;
-    }
-
-    @keyframes screenShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    .progress-container {
-      display: none;
-    }
-
     .attack-modes {
       display: flex;
       justify-content: center;
-      gap: 12px;
-      margin: 30px 0;
+      gap: 6px;
+      margin: 20px 0;
       flex-wrap: wrap;
     }
 
     .attack-mode-btn {
-      padding: 15px 25px;
-      border-radius: 30px;
-      border: 2px solid rgba(255,215,0,0.3);
-      background: linear-gradient(45deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1));
-      color: white;
-      font-weight: bold;
+      padding: 8px 12px;
+      font-size: 11px;
       cursor: pointer;
-      transition: all 0.3s;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-      font-size: 1.1em;
-      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      min-width: 50px;
+      font-weight: bold;
+    }
+
+    .attack-mode-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
     }
 
     .attack-mode-btn.active {
-      background: linear-gradient(45deg, #ffd700, #ffed4a);
-      color: black;
-      border-color: #ffd700;
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      border-color: #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
     }
 
     .controls {
-      text-align: center;
-      margin: 30px 0;
+      margin: 20px 0;
     }
 
     button {
-      padding: 18px 35px;
+      padding: 15px 30px;
       margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
       border: none;
-      border-radius: 30px;
+      border-radius: 25px;
       background: linear-gradient(45deg, #ff6b9d, #c44569);
       color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
       font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-      font-size: 1.2em;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      letter-spacing: 1px;
     }
 
     button:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 30px rgba(255, 107, 157, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(45deg, #feca57, #ff6b9d);
     }
 
     button:active {
-      transform: translateY(-1px);
+      transform: translateY(0);
     }
 
     #resetBtn {
-      background: linear-gradient(45deg, #667eea, #764ba2);
+      background: linear-gradient(45deg, #555, #777);
     }
 
     #resetBtn:hover {
-      box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(45deg, #777, #999);
     }
 
     #message {
-      font-size: 1.4em;
-      margin: 25px 0;
-      min-height: 50px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-      text-align: center;
-      color: #fff;
-      line-height: 1.4;
+      margin: 20px 0;
+      font-size: 1.2em;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      min-height: 30px;
     }
 
     .result-box {
-      margin-top: 30px;
-      padding: 30px;
-      background: linear-gradient(45deg, rgba(255,215,0,0.2), rgba(255,107,157,0.2));
-      border-radius: 25px;
-      border: 2px solid rgba(255, 215, 0, 0.5);
-      backdrop-filter: blur(15px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.9), rgba(254, 202, 87, 0.9));
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .coins-display {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      animation: coinPop 1s ease;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    @keyframes coinPop {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.5);
+      }
+      50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px) scale(1);
+      }
     }
 
     .combo-indicator {
@@ -298,98 +597,186 @@
       border: 2px solid rgba(255,255,255,0.2);
     }
 
-    .hidden {
-      display: none;
+    @media (max-width: 1200px) {
+      body {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .widget-left, .widget-right {
+        width: 100%;
+        max-width: 500px;
+        height: 300px;
+        margin-bottom: 15px;
+      }
+      
+      .game-container {
+        margin: 0;
+      }
+
+      .attack-modes {
+        gap: 6px;
+      }
+
+      .attack-mode-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+        min-width: 50px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .game-container {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      .diamond {
+        width: 150px;
+        height: 150px;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+      
+      .widget-left, .widget-right {
+        height: 250px;
+      }
+
+      .attack-mode-btn {
+        padding: 6px 10px;
+        font-size: 10px;
+        min-width: 45px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="main-container">
-    <!-- Jeu principal -->
-    <div class="game-container" id="gameContainer">
-      <h1>🥊 COMBAT ROYAL</h1>
-      
-      <div class="combo-indicator" id="comboIndicator">COMBO x0</div>
-      
-      <div class="boxer-container">
-        <div class="boxer" id="boxer">
-          <img src="https://pa1.narvii.com/6849/5ec01198439f51b144b65127316bfd2f6f333464_hq.gif" alt="Boxeur" id="boxerImg">
-        </div>
-      </div>
+  <div class="actions-widget">
+    <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=2136326&screen=1" frameborder="0"></iframe>
+  </div>
+  
+  <div class="coindrop-widget-bottom">
+    <iframe src="https://tikfinity.zerody.one/widget/coindrop?cid=2136326" frameborder="0"></iframe>
+  </div>
+  
+  <div class="firework-widget-bottom">
+    <iframe src="https://tikfinity.zerody.one/widget/firework?cid=2136326" frameborder="0"></iframe>
+  </div>
+  
+  <div class="timer-widget-bottom">
+    <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2136326" frameborder="0"></iframe>
+  </div>
+  
+  <div class="widget-left">
+    <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=2136326" frameborder="0"></iframe>
+  </div>
 
-      <div class="progress-container" style="display: none;">
-        <div class="progress-text" id="progressText">Boxeur en forme</div>
-      </div>
+  <div class="game-container" id="gameContainer">
+    <div class="combo-indicator" id="comboIndicator">COMBO x0</div>
 
-      <div class="attack-modes">
-        <button id="mode1" class="attack-mode-btn active">1 coup</button>
-        <button id="mode10" class="attack-mode-btn">10 coups</button>
-        <button id="mode100" class="attack-mode-btn">100 coups</button>
-      </div>
+    <h1>💎 Casse le Diamant !</h1>
+    <div class="squirrel-logo"></div>
+    
+    <div class="diamond-container">
+      <div class="diamond" id="diamond"></div>
+    </div>
 
-      <div class="controls">
-        <button id="attackBtn">🥊 FRAPPER</button>
-        <button id="resetBtn">🔄 NOUVEAU COMBAT</button>
-      </div>
+    <div class="instructions">
+      <h2>🌹 Casse le Diamant et Gagne le Cadeau ! 🌹</h2>
+      <p>Une Rose - Un Coup</p>
+    </div>
 
-      <p id="message">Ce boxeur arrogant te provoque ! Montre-lui qui est le patron !</p>
+    <div class="attack-modes">
+      <button id="mode1" class="attack-mode-btn active">1</button>
+      <button id="mode5" class="attack-mode-btn">5</button>
+      <button id="mode10" class="attack-mode-btn">10</button>
+      <button id="mode100" class="attack-mode-btn">100</button>
+      <button id="mode500" class="attack-mode-btn">500</button>
+      <button id="mode1000" class="attack-mode-btn">1000</button>
+    </div>
 
-      <div id="resultContainer" class="result-box hidden">
-        <h2>🏆 VICTOIRE ! 🏆</h2>
-        <p id="coinsResult"></p>
-      </div>
+    <div class="controls">
+      <button id="attackBtn">Attaquer (1 coup)</button>
+      <button id="resetBtn">Nouveau Diamant</button>
+    </div>
+
+    <p id="message"></p>
+
+    <div id="resultContainer" class="hidden result-box">
+      <h3>🎉 Diamant Détruit ! 🎉</h3>
+      <p id="coinsResult">Vous avez gagné 0 pièce !</p>
+    </div>
+  </div>
+
+  <div class="widget-right">
+    <iframe src="https://tikfinity.zerody.one/widget/ranking?cid=2136326" frameborder="0"></iframe>
+    <div class="timer-widget-right">
+      <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2136326" frameborder="0"></iframe>
     </div>
   </div>
 
   <script>
-    let maxHP, currentHP, coupCounter, totalHits, attackMode, combo, lastHitTime;
-    let hitsUntilRose = 4; // Compteur pour les roses (tous les 4 coups)
-    let currentGifIndex = 0;
-    let rosesEarnedThisFight = 0;
+    let maxHP, currentHP, coupCounter, totalHits;
+    let hitsUntilCoin = 4;
+    let attackMode = 1;
+    let rosesEarnedThisDiamond = 0;
+    let combo = 0;
+    let lastHitTime = 0;
+    let isAttacking = false;
+    let audioContext = null;
+    let isPinkDiamond = false;
 
-    const boxer = document.getElementById("boxer");
-    const boxerImg = document.getElementById("boxerImg");
+    const diamond = document.getElementById("diamond");
     const message = document.getElementById("message");
+    const attackBtn = document.getElementById("attackBtn");
     const resultContainer = document.getElementById("resultContainer");
     const coinsResult = document.getElementById("coinsResult");
-    const attackBtn = document.getElementById("attackBtn");
     const gameContainer = document.getElementById("gameContainer");
     const comboIndicator = document.getElementById("comboIndicator");
-    const progressText = document.getElementById("progressText"); // Caché mais présent pour éviter l'erreur
-
-    const boxerGifs = [
-      "https://pa1.narvii.com/6849/5ec01198439f51b144b65127316bfd2f6f333464_hq.gif",
-      "https://media1.tenor.com/images/cb9e19ad0133a2a24587dad94b717fc8/tenor.gif?itemid=5247347",
-      "https://media1.tenor.com/images/1980d6bce0826a7fa0b00a98212b287a/tenor.gif?itemid=11929671",
-      "https://media.tenor.com/JwHqAKX-wtUAAAAM/dempsey-roll.gif"
-    ];
 
     const impactEffects = ["💥", "🔥", "⭐", "💫", "✨", "💢"];
 
-    // Création des sons avec Web Audio API
-    function createSound(frequency, duration, type = 'sine') {
+    // Système audio corrigé
+    function initAudioContext() {
       try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        return audioContext;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function createSound(frequency, duration, type = 'sine', volume = 0.15) {
+      const context = initAudioContext();
+      if (!context) return;
+
+      try {
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
         
         oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+        gainNode.connect(context.destination);
         
         oscillator.frequency.value = frequency;
         oscillator.type = type;
         
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        gainNode.gain.setValueAtTime(volume, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + duration);
         
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration);
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + duration);
       } catch (e) {
-        // Silence en cas d'erreur audio
+        // Silence en cas d'erreur
       }
     }
 
-    // Sons
     function playHitSound() {
       createSound(800, 0.1, 'square');
       setTimeout(() => createSound(400, 0.05, 'triangle'), 50);
@@ -406,60 +793,81 @@
       setTimeout(() => createSound(600, 0.2, 'sine'), 200);
     }
 
-    function initGame() {
-      // PV aléatoires entre 200 et 2000 (comme le diamant)
-      maxHP = Math.floor(Math.random() * (2000 - 200 + 1)) + 200;
-      currentHP = maxHP;
-      coupCounter = 0;
-      totalHits = 0;
-      attackMode = 1;
-      combo = 0;
-      lastHitTime = 0;
-      currentGifIndex = 0;
-      hitsUntilRose = 4;
-      rosesEarnedThisFight = 0;
+    // Fonctions d'effets visuels CORRIGÉES
+    function createDiamondShards() {
+      const container = diamond.parentElement;
       
-      updateUI();
-      resultContainer.classList.add("hidden");
-      comboIndicator.style.display = "none";
-      boxerImg.src = boxerGifs[currentGifIndex];
-      boxerImg.style.filter = "none";
-      boxerImg.style.opacity = 1;
-      boxerImg.style.transform = "rotate(0deg)";
-      boxer.className = "boxer";
-      message.textContent = "Ce boxeur arrogant te provoque ! Montre-lui qui est le patron !";
+      for (let i = 0; i < 12; i++) {
+        const shard = document.createElement('div');
+        shard.style.cssText = `
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          background: linear-gradient(45deg, #4fc3f7, #29b6f6, #0288d1);
+          transform: rotate(45deg);
+          pointer-events: none;
+          left: 50%;
+          top: 50%;
+          z-index: 1000;
+        `;
+        
+        container.appendChild(shard);
+        
+        const angle = (i / 12) * Math.PI * 2;
+        const distance = 100 + Math.random() * 100;
+        const duration = 800 + Math.random() * 400;
+        
+        shard.animate([
+          {
+            transform: 'translate(-50%, -50%) rotate(45deg) scale(1)',
+            opacity: 1
+          },
+          {
+            transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) rotate(${45 + Math.random() * 360}deg) scale(0)`,
+            opacity: 0
+          }
+        ], {
+          duration: duration,
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        }).onfinish = () => shard.remove();
+      }
     }
 
-    function updateUI() {
-      // Changer de GIF tous les 100 coups
-      const newGifIndex = Math.floor(totalHits / 100) % boxerGifs.length;
-      if (newGifIndex !== currentGifIndex && currentHP > 0) {
-        currentGifIndex = newGifIndex;
-        boxerImg.src = boxerGifs[currentGifIndex];
-      }
-
-      // Appliquer effets visuels selon les dégâts (similaire au diamant)
-      const damagePercent = (maxHP - currentHP) / maxHP;
+    function createHitParticles() {
+      const container = diamond.parentElement;
       
-      if (currentHP <= 0) {
-        boxer.className = "boxer broken";
-        boxerImg.style.filter = "grayscale(100%) brightness(0.3)";
-        boxerImg.style.opacity = 0.3;
-      } else if (damagePercent >= 0.8) {
-        boxerImg.style.filter = "hue-rotate(270deg) saturate(0.2)";
-        boxerImg.style.opacity = 0.7;
-      } else if (damagePercent >= 0.6) {
-        boxerImg.style.filter = "hue-rotate(180deg) saturate(0.4)";
-        boxerImg.style.opacity = 0.8;
-      } else if (damagePercent >= 0.4) {
-        boxerImg.style.filter = "hue-rotate(90deg) saturate(0.6)";
-        boxerImg.style.opacity = 0.9;
-      } else if (damagePercent >= 0.2) {
-        boxerImg.style.filter = "hue-rotate(60deg) saturate(0.8)";
-        boxerImg.style.opacity = 0.95;
-      } else if (damagePercent > 0) {
-        boxerImg.style.filter = "hue-rotate(30deg)";
-        boxerImg.style.opacity = 1;
+      for (let i = 0; i < 6; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          background: #feca57;
+          border-radius: 50%;
+          pointer-events: none;
+          left: ${45 + Math.random() * 10}%;
+          top: ${45 + Math.random() * 10}%;
+          z-index: 999;
+        `;
+        
+        container.appendChild(particle);
+        
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 30 + Math.random() * 30;
+        
+        particle.animate([
+          {
+            transform: 'scale(1)',
+            opacity: 1
+          },
+          {
+            transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
+            opacity: 0
+          }
+        ], {
+          duration: 400,
+          easing: 'ease-out'
+        }).onfinish = () => particle.remove();
       }
     }
 
@@ -470,7 +878,7 @@
       effect.style.left = (Math.random() * 80 + 10) + '%';
       effect.style.top = (Math.random() * 60 + 20) + '%';
       
-      document.querySelector('.boxer-container').appendChild(effect);
+      document.querySelector('.diamond-container').appendChild(effect);
       
       setTimeout(() => {
         effect.remove();
@@ -491,94 +899,129 @@
       }
     }
 
+    // Fonction d'attaque CORRIGÉE avec protection anti-clics multiples
     function attack() {
-      if (currentHP <= 0) return;
-
+      if (currentHP <= 0 || isAttacking) return;
+      
+      isAttacking = true;
+      
       let hits = attackMode;
       let actualHits = 0;
       let rosesEarned = 0;
-
-      // Son de frappe
+      let wasCracked = diamond.classList.contains('cracked');
+      
       playHitSound();
+      createHitParticles();
+      createImpactEffect();
+      updateCombo();
+      
+      let animationType = 'hit';
+      let shakeType = 'screen-shake';
+      let animationDuration = 400;
+      
+      if (attackMode >= 1000) {
+        animationType = 'ultra-hit';
+        shakeType = 'ultra-shake';
+        animationDuration = 1200;
+      } else if (attackMode >= 500) {
+        animationType = 'mega-hit';
+        shakeType = 'mega-shake';
+        animationDuration = 1000;
+      } else if (attackMode >= 100) {
+        animationType = 'critical-hit';
+        shakeType = 'mega-shake';
+        animationDuration = 800;
+      } else if (attackMode >= 10) {
+        animationType = 'heavy-hit';
+        animationDuration = 600;
+      }
 
+      diamond.classList.add(animationType);
+      if (shakeType) gameContainer.classList.add(shakeType);
+      
       for (let i = 0; i < hits && currentHP > 0; i++) {
         coupCounter++;
         actualHits++;
         totalHits++;
 
-        // Tous les 2 coups → -1 PV (comme le diamant)
         if (coupCounter >= 2) {
           coupCounter = 0;
           currentHP--;
         }
 
-        // Gestion des roses (tous les 4 coups comme le diamant)
-        hitsUntilRose--;
-        if (hitsUntilRose <= 0) {
-          rosesEarnedThisFight++;
+        hitsUntilCoin--;
+        if (hitsUntilCoin <= 0) {
+          rosesEarnedThisDiamond++;
           rosesEarned++;
-          hitsUntilRose = 4;
+          hitsUntilCoin = 4;
         }
-
-        if (currentHP <= 0) break;
       }
-
-      // Effets visuels
-      updateCombo();
-      createImpactEffect();
-
-      // Animation du boxeur selon l'intensité
-      let animationType = 'hit';
-      if (attackMode >= 100) {
-        animationType = 'critical-hit';
-        gameContainer.classList.add('screen-shake');
-        setTimeout(() => gameContainer.classList.remove('screen-shake'), 400);
-      } else if (attackMode >= 10) {
-        animationType = 'heavy-hit';
+      
+      if (rosesEarned > 0) {
+        showRoseGain(rosesEarned);
       }
-
-      boxer.classList.add(animationType);
-      setTimeout(() => {
-        boxer.classList.remove(animationType);
-      }, animationType === 'critical-hit' ? 800 : animationType === 'heavy-hit' ? 600 : 400);
-
+      
       updateUI();
-
-      // Messages selon l'état (comme le diamant)
-      if (currentHP <= 0) {
-        endGame();
-      } else {
-        const damagePercent = (maxHP - currentHP) / maxHP;
+      
+      if (!wasCracked && diamond.classList.contains('cracked')) {
+        playCrackSound();
+      }
+      
+      setTimeout(() => {
+        diamond.classList.remove(animationType);
+        if (shakeType) gameContainer.classList.remove(shakeType);
+        isAttacking = false;
         
-        if (damagePercent >= 0.9) {
-          message.textContent = "Le boxeur titube ! Encore quelques coups !";
-        } else if (damagePercent >= 0.7) {
-          message.textContent = "Il est sérieusement touché !";
-        } else if (damagePercent >= 0.5) {
-          message.textContent = "Le boxeur commence à faiblir !";
-        } else if (damagePercent >= 0.3) {
-          message.textContent = "Il encaisse mais résiste !";
-        } else if (damagePercent > 0) {
-          message.textContent = "Le boxeur reste provocateur mais montre des signes !";
+        if (currentHP <= 0) {
+          endGame();
+        }
+      }, animationDuration);
+    }
+
+    function showRoseGain(amount) {
+      const roseDisplay = document.createElement('div');
+      roseDisplay.className = 'coins-display';
+      roseDisplay.textContent = `+${amount} 🌹`;
+      diamond.parentElement.appendChild(roseDisplay);
+      
+      setTimeout(() => {
+        roseDisplay.remove();
+      }, 1000);
+    }
+
+    function updateUI() {
+      if (currentHP === 0) {
+        diamond.className = "diamond broken";
+        message.textContent = "💥 Le diamant s'est brisé !";
+      } else {
+        if (maxHP - currentHP >= 20) {
+          diamond.classList.add("cracked");
+          message.textContent = "⚠️ Le diamant commence à se fissurer...";
+        } else {
+          diamond.classList.remove("cracked");
+          if (isPinkDiamond) {
+            message.textContent = "✨ DIAMANT ROSE SPÉCIAL ! ✨";
+          } else {
+            message.textContent = "À tout moment le diamant peut se briser...";
+          }
         }
       }
     }
 
     function endGame() {
-      // Son d'explosion et effets comme le diamant
-      playBreakSound();
-      
-      // Récompense basée sur les PV max (comme le diamant)
       let recompense = Math.floor(maxHP / 2);
       
-      message.textContent = "🥊 Félicitations ! Tu as mis KO le boxeur et gagné un cadeau ! 🎁✨";
+      playBreakSound();
+      setTimeout(() => createDiamondShards(), 100);
+      
+      message.textContent = "💥 Félicitations ! Tu as cassé le diamant ! 🌹✨";
       
       setTimeout(() => {
         coinsResult.innerHTML = `
           <strong>🎉 BRAVO ! 🎉</strong><br>
-          Tu as mis KO le boxeur et gagné un cadeau !<br>
-          <div style="font-size: 4em; margin: 10px 0; color: #feca57;">🎁</div>
-          <strong>Ton cadeau : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
+          Tu as cassé le diamant !<br>
+          <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
+          <strong>Ta récompense : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
         `;
         resultContainer.classList.remove("hidden");
       }, 500);
@@ -588,24 +1031,55 @@
 
     function setAttackMode(mode) {
       attackMode = mode;
-      document.getElementById('mode1').classList.toggle('active', mode === 1);
-      document.getElementById('mode10').classList.toggle('active', mode === 10);
-      document.getElementById('mode100').classList.toggle('active', mode === 100);
       
-      if (mode === 1) attackBtn.textContent = "🥊 FRAPPER";
-      else if (mode === 10) attackBtn.textContent = "💥 COMBO";
-      else attackBtn.textContent = "🔥 BARRAGE";
+      document.querySelectorAll('.attack-mode-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(`mode${mode}`).classList.add('active');
+      attackBtn.textContent = `Attaquer (${mode} coup${mode > 1 ? 's' : ''})`;
     }
 
-    // Event listeners
+    function initGame() {
+      maxHP = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000;
+      currentHP = maxHP;
+      coupCounter = 0;
+      totalHits = 0;
+      hitsUntilCoin = 4;
+      rosesEarnedThisDiamond = 0;
+      combo = 0;
+      lastHitTime = 0;
+      isAttacking = false;
+      
+      isPinkDiamond = Math.random() < 0.1;
+      
+      diamond.className = "diamond";
+      if (isPinkDiamond) {
+        diamond.classList.add("pink");
+        message.textContent = "✨ DIAMANT ROSE SPÉCIAL ! ✨";
+      } else {
+        message.textContent = `À tout moment le diamant peut se briser...`;
+      }
+      
+      resultContainer.classList.add("hidden");
+      comboIndicator.style.display = "none";
+    }
+
+    // Événements CORRIGÉS
     document.getElementById("attackBtn").addEventListener("click", attack);
     document.getElementById("resetBtn").addEventListener("click", initGame);
+
     document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
+    document.getElementById("mode5").addEventListener("click", () => setAttackMode(5));
     document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
     document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
+    document.getElementById("mode500").addEventListener("click", () => setAttackMode(500));
+    document.getElementById("mode1000").addEventListener("click", () => setAttackMode(1000));
 
     // Raccourcis clavier
     document.addEventListener('keydown', (e) => {
+      if (isAttacking) return;
+      
       switch(e.key) {
         case ' ':
         case 'Enter':
@@ -616,10 +1090,19 @@
           setAttackMode(1);
           break;
         case '2':
-          setAttackMode(10);
+          setAttackMode(5);
           break;
         case '3':
+          setAttackMode(10);
+          break;
+        case '4':
           setAttackMode(100);
+          break;
+        case '5':
+          setAttackMode(500);
+          break;
+        case '6':
+          setAttackMode(1000);
           break;
         case 'r':
         case 'R':
