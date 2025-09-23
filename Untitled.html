@@ -1,555 +1,731 @@
-<!doctype html>
+const progressText = document.getElementById("progressText");<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Plinko Premium — RTP ciblé 25%</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🥊 Combat de Boxeur Premium</title>
   <style>
-    :root{
-      --bg-start:#0a0e1f;--bg-end:#1a1f35;--panel:#0f1428;--accent:#ff4757;--accent-hover:#ff3742;
-      --success:#2ed573;--gold:#ffa502;--muted:#6c7293;--bright:#ffffff;--glass:rgba(255,255,255,0.08);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    
-    * { box-sizing: border-box; }
-    html,body{height:100%;margin:0;font-family:'Inter', -apple-system, system-ui, sans-serif;
-      background:linear-gradient(135deg,var(--bg-start) 0%, var(--bg-end) 100%);
-      color:var(--bright);overflow-x:hidden}
-    
-    .wrap{max-width:1100px;margin:20px auto;padding:24px;
-      background:linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-      border-radius:20px;border:1px solid rgba(255,255,255,0.1);
-      box-shadow:0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)}
-    
-    header{text-align:center;margin-bottom:24px}
-    h1{margin:0;font-size:28px;font-weight:700;background:linear-gradient(135deg, #ff4757, #ffa502);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .subtitle{color:var(--muted);font-size:14px;margin-top:8px}
-    
-    .controls{display:flex;gap:12px;margin-bottom:24px;align-items:center;flex-wrap:wrap;justify-content:center}
-    .btn-group{display:flex;gap:8px;background:rgba(255,255,255,0.03);padding:4px;border-radius:12px;border:1px solid rgba(255,255,255,0.1)}
-    
-    button{background:linear-gradient(135deg, var(--accent), var(--accent-hover));border:none;color:white;
-      padding:12px 20px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;
-      transition:all 0.3s ease;position:relative;overflow:hidden}
-    button:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,71,87,0.3)}
-    button:active{transform:translateY(0)}
-    button[disabled]{opacity:0.5;cursor:not-allowed;transform:none !important}
-    
-    .btn-multi{background:linear-gradient(135deg, var(--gold), #ff7675);padding:10px 16px}
-    .btn-multi:hover{box-shadow:0 8px 25px rgba(255,165,2,0.3)}
-    
-    .btn-reset{background:linear-gradient(135deg, #6c5ce7, #a29bfe);padding:10px 16px;margin-left:8px}
-    .btn-reset:hover{box-shadow:0 8px 25px rgba(108,92,231,0.3)}
-    
-    .stats{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}
-    .stat{background:var(--glass);padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1)}
-    .stat-value{font-weight:700;color:var(--success)}
-    
-    .game{display:flex;gap:24px;align-items:flex-start}
-    
-    .board{width:680px;height:560px;
-      background:linear-gradient(180deg,rgba(15,20,40,0.8), rgba(10,15,30,0.9));
-      border-radius:16px;padding:20px;position:relative;overflow:hidden;
-      border:2px solid rgba(255,255,255,0.1);
-      box-shadow:inset 0 4px 20px rgba(0,0,0,0.3)}
-    
-    canvas{background:transparent;display:block;margin:0 auto;border-radius:8px}
-    
-    .sidebar{flex:1;min-width:280px}
-    .info{background:var(--glass);padding:20px;border-radius:16px;border:1px solid rgba(255,255,255,0.1)}
-    .info h3{margin:0 0 16px 0;font-size:18px;color:var(--gold)}
-    
-    .bins{position:absolute;left:16px;right:16px;bottom:20px;height:100px;
-      display:flex;align-items:flex-end;justify-content:space-between;gap:2px}
-    .bin{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-      padding:8px 4px;border-radius:8px 8px 4px 4px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-      border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden}
-    
-    .bin::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-      background:linear-gradient(90deg, var(--accent), var(--gold))}
-    
-    .bin .mult{background:rgba(255,255,255,0.15);padding:4px 6px;border-radius:6px;
-      font-weight:700;font-size:11px;color:var(--bright);
-      box-shadow:0 2px 8px rgba(0,0,0,0.2)}
-    
-    .results{max-height:280px;overflow-y:auto;margin-top:16px;
-      background:rgba(0,0,0,0.2);padding:12px;border-radius:12px;
-      border:1px solid rgba(255,255,255,0.05)}
-    
-    .result-line{padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;
-      display:flex;justify-content:space-between;align-items:center}
-    .result-line:last-child{border-bottom:none}
-    .result-win{color:var(--success);font-weight:600}
-    .result-loss{color:var(--accent);opacity:0.7}
-    
-    .slot-legend{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
-    .chip{padding:8px 12px;border-radius:10px;background:var(--glass);
-      font-size:12px;border:1px solid rgba(255,255,255,0.1);text-align:center}
-    
-    .meter{margin-top:16px;padding:12px;background:rgba(0,0,0,0.2);border-radius:10px}
-    .meter-label{font-size:13px;color:var(--muted);margin-bottom:4px}
-    .meter-value{font-size:18px;font-weight:700;color:var(--success)}
-    
-    .progress{margin-top:8px}
-    .progress-bar{height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden}
-    .progress-fill{height:100%;background:linear-gradient(90deg, var(--accent), var(--success));
-      border-radius:3px;transition:width 0.3s ease}
-    
-    /* Animations pour les boules */
-    .ball{position:absolute;width:20px;height:20px;border-radius:50%;
-      background:radial-gradient(circle at 30% 30%, #fff 0%, #fff8 20%, var(--gold) 60%, var(--accent) 100%);
-      box-shadow:0 4px 15px rgba(255,71,87,0.4);z-index:10;
-      animation:ballGlow 0.1s ease-in-out infinite alternate}
-    
-    @keyframes ballGlow{
-      from{box-shadow:0 4px 15px rgba(255,71,87,0.4)}
-      to{box-shadow:0 6px 20px rgba(255,71,87,0.6)}
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/07/ab/9d/5b.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
     }
-    
-    .multi-progress{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-      background:rgba(0,0,0,0.9);padding:20px;border-radius:16px;z-index:1000;
-      border:1px solid rgba(255,255,255,0.2)}
-    .multi-progress.active{display:block}
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .game{flex-direction:column}
-      .board{width:100%;max-width:600px}
-      .controls{justify-content:center}
-      .stats{justify-content:center}
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(2px);
+      z-index: -1;
     }
-    
-    /* Scrollbar styling */
-    .results::-webkit-scrollbar{width:6px}
-    .results::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:3px}
-    .results::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+
+    .main-container {
+      display: flex;
+      align-items: flex-start;
+      gap: 30px;
+      max-width: 1400px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .side-widget {
+      width: 300px;
+      height: 600px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .side-widget iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .game-container {
+      background: linear-gradient(145deg, rgba(0,0,0,0.9), rgba(20,20,50,0.85));
+      border-radius: 30px;
+      padding: 40px;
+      width: 500px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.9);
+      position: relative;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      backdrop-filter: blur(15px);
+    }
+
+    .game-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #ffd700, #ff6b9d, #c44569, #ffd700);
+      border-radius: 32px;
+      z-index: -1;
+      animation: borderGlow 3s linear infinite;
+    }
+
+    @keyframes borderGlow {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 2.8em;
+      margin-bottom: 25px;
+      color: #ffd700;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+      text-align: center;
+      background: linear-gradient(45deg, #ffd700, #ffed4a, #ffd700);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .boxer-container {
+      position: relative;
+      height: 220px;
+      margin: 30px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      border-radius: 25px;
+      border: 2px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .boxer {
+      width: 200px;
+      height: 200px;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 0 20px rgba(255,215,0,0.5));
+      border-radius: 20px;
+    }
+
+    .boxer img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 20px;
+    }
+
+    .boxer.light-hit {
+      animation: lightHit 0.4s ease-out;
+    }
+
+    .boxer.heavy-hit {
+      animation: heavyHit 0.6s ease-out;
+    }
+
+    .boxer.critical-hit {
+      animation: criticalHit 0.8s ease-out;
+    }
+
+    .boxer.ko {
+      animation: knockout 1.5s ease-out forwards;
+    }
+
+    @keyframes lightHit {
+      0% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(-15px) rotate(-8deg); }
+      50% { transform: translateX(8px) rotate(5deg); }
+      75% { transform: translateX(-4px) rotate(-2deg); }
+      100% { transform: translateX(0) rotate(0deg); }
+    }
+
+    @keyframes heavyHit {
+      0% { transform: translateX(0) rotate(0deg) scale(1); }
+      20% { transform: translateX(-25px) rotate(-15deg) scale(0.9); }
+      40% { transform: translateX(12px) rotate(8deg) scale(1.05); }
+      60% { transform: translateX(-6px) rotate(-4deg) scale(0.95); }
+      80% { transform: translateX(3px) rotate(2deg) scale(1.02); }
+      100% { transform: translateX(0) rotate(0deg) scale(1); }
+    }
+
+    @keyframes criticalHit {
+      0% { transform: translateX(0) rotate(0deg) scale(1); }
+      15% { transform: translateX(-35px) rotate(-25deg) scale(0.85); }
+      30% { transform: translateX(20px) rotate(15deg) scale(1.1); }
+      45% { transform: translateX(-15px) rotate(-10deg) scale(0.9); }
+      60% { transform: translateX(8px) rotate(5deg) scale(1.05); }
+      75% { transform: translateX(-4px) rotate(-3deg) scale(0.97); }
+      90% { transform: translateX(2px) rotate(1deg) scale(1.02); }
+      100% { transform: translateX(0) rotate(0deg) scale(1); }
+    }
+
+    @keyframes knockout {
+      0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+      30% { transform: translateY(-15px) rotate(-20deg) scale(0.9); opacity: 0.9; }
+      70% { transform: translateY(60px) rotate(-120deg) scale(0.7); opacity: 0.7; }
+      100% { transform: translateY(80px) rotate(-120deg) scale(0.6); opacity: 0.4; }
+    }
+
+    .impact-effect {
+      position: absolute;
+      font-size: 2.5em;
+      pointer-events: none;
+      z-index: 3;
+      animation: impactPop 1s ease-out forwards;
+      opacity: 0;
+      filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
+    }
+
+    @keyframes impactPop {
+      0% { opacity: 0; transform: scale(0.3) translateY(0); }
+      30% { opacity: 1; transform: scale(1.5) translateY(-15px); }
+      100% { opacity: 0; transform: scale(1) translateY(-50px); }
+    }
+
+    .screen-shake {
+      animation: screenShake 0.4s ease-out;
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .progress-container {
+      margin: 25px 0;
+      text-align: center;
+    }
+
+    .progress-text {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      margin-bottom: 10px;
+    }
+
+    .attack-modes {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .attack-mode-btn {
+      padding: 15px 25px;
+      border-radius: 30px;
+      border: 2px solid rgba(255,215,0,0.3);
+      background: linear-gradient(45deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1));
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      font-size: 1.1em;
+      backdrop-filter: blur(10px);
+    }
+
+    .attack-mode-btn.active {
+      background: linear-gradient(45deg, #ffd700, #ffed4a);
+      color: black;
+      border-color: #ffd700;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+    }
+
+    .controls {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    button {
+      padding: 18px 35px;
+      margin: 10px;
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      font-size: 1.2em;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(255, 107, 157, 0.4);
+    }
+
+    button:active {
+      transform: translateY(-1px);
+    }
+
+    #resetBtn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+    }
+
+    #resetBtn:hover {
+      box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    #message {
+      font-size: 1.4em;
+      margin: 25px 0;
+      min-height: 50px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      text-align: center;
+      color: #fff;
+      line-height: 1.4;
+    }
+
+    .result-box {
+      margin-top: 30px;
+      padding: 30px;
+      background: linear-gradient(45deg, rgba(255,215,0,0.2), rgba(255,107,157,0.2));
+      border-radius: 25px;
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .combo-indicator {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      padding: 10px 18px;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 1em;
+      display: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .damage-number {
+      position: absolute;
+      font-size: 2em;
+      font-weight: bold;
+      color: #ff3838;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+      pointer-events: none;
+      z-index: 4;
+      animation: damageFloat 1.2s ease-out forwards;
+    }
+
+    @keyframes damageFloat {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
+    }
+
+    .roses-counter {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffd700;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9em;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,215,0,0.3);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+    }
+
+    @media (max-width: 1200px) {
+      .main-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .side-widget {
+        width: 100%;
+        max-width: 500px;
+        height: 300px;
+        order: 2;
+      }
+      
+      .game-container {
+        order: 1;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>🎯 Plinko Premium</h1>
-      <div class="subtitle">Configuration RTP 25% — Simulation avancée</div>
-    </header>
-
-    <div class="controls">
-      <div class="btn-group">
-        <button id="dropBtn">🌹 Lancer 1 coup</button>
-        <button id="drop10Btn" class="btn-multi">⚡ 10 coups</button>
-        <button id="drop100Btn" class="btn-multi">🚀 100 coups</button>
-      </div>
-      
-      <button id="resetBtn" class="btn-reset">🔄 Reset</button>
-      
-      <div class="stats">
-        <div class="stat">Total investi: <span class="stat-value" id="totalInvested">0</span> 🌹</div>
-        <div class="stat">Total gagné: <span class="stat-value" id="totalWon">0</span> 🌹</div>
-        <div class="stat">Résultat net: <span class="stat-value" id="netResult">0</span> 🌹</div>
-        <div class="stat">Coups joués: <span class="stat-value" id="totalPlayed">0</span></div>
-      </div>
+  <div class="main-container">
+    <!-- Widget gauche - Ranking -->
+    <div class="side-widget">
+      <iframe src="https://tikfinity.zerody.one/widget/ranking?cid=2260505" allowfullscreen></iframe>
     </div>
 
-    <div class="game">
-      <div class="board" id="board">
-        <canvas id="pegs" width="640" height="420"></canvas>
-        <div class="bins" id="bins"></div>
-      </div>
-
-      <div class="sidebar">
-        <div class="info">
-          <h3>📊 Configuration des gains</h3>
-          <div class="slot-legend" id="legend"></div>
-          
-          <div class="meter">
-            <div class="meter-label">RTP Actuel</div>
-            <div class="meter-value" id="currentRTP">—</div>
-            <div class="progress">
-              <div class="progress-bar">
-                <div class="progress-fill" id="rtpProgress"></div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="results" id="results">
-            <div style="text-align:center;color:var(--muted);padding:20px;">
-              Lancez votre première balle pour voir les résultats !
-            </div>
-          </div>
+    <!-- Jeu principal -->
+    <div class="game-container" id="gameContainer">
+      <h1>🥊 COMBAT ROYAL</h1>
+      
+      <div class="roses-counter" id="rosesCounter">🌹 0 roses</div>
+      <div class="combo-indicator" id="comboIndicator">COMBO x0</div>
+      
+      <div class="boxer-container">
+        <div class="boxer" id="boxer">
+          <img src="https://pa1.narvii.com/6849/5ec01198439f51b144b65127316bfd2f6f333464_hq.gif" alt="Boxeur" id="boxerImg">
         </div>
       </div>
-    </div>
-  </div>
+      
 
-  <!-- Progress modal for multi-drops -->
-  <div class="multi-progress" id="multiProgress">
-    <h3>🎯 Lancement en cours...</h3>
-    <div class="progress">
-      <div class="progress-bar">
-        <div class="progress-fill" id="multiProgressFill"></div>
+
+      <div class="attack-modes">
+        <button id="mode1" class="attack-mode-btn active">1 coup</button>
+        <button id="mode10" class="attack-mode-btn">10 coups</button>
+        <button id="mode100" class="attack-mode-btn">100 coups</button>
+      </div>
+
+      <div class="controls">
+        <button id="attackBtn">🥊 FRAPPER</button>
+        <button id="resetBtn">🔄 NOUVEAU COMBAT</button>
+      </div>
+
+      <p id="message">Ce boxeur arrogant te provoque ! Montre-lui qui est le patron !</p>
+
+      <div id="resultContainer" class="result-box" style="display:none;">
+        <h2>🏆 VICTOIRE ! 🏆</h2>
+        <p id="coinsResult"></p>
       </div>
     </div>
-    <div id="multiProgressText">0 / 0 coups</div>
+
+    <!-- Widget droit - Top Liker -->
+    <div class="side-widget">
+      <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=2260505" allowfullscreen></iframe>
+    </div>
   </div>
 
   <script>
-    // --- Configuration ---
-    const TARGET_RTP = 0.25;
-    const multipliers = [0, 0.25, 0.6, 2.5, 10];
-    let weights = [null, 0.17, 0.08, 0.02, 0.01];
-    
-    // Game state
-    let totalInvested = 0;
-    let totalWon = 0;
-    let totalPlayed = 0;
-    let isRunning = false;
-    
-    function computeWeights() {
-      const m = multipliers;
-      let numerator = 0;
-      for (let i = 1; i < m.length; i++) {
-        numerator += weights[i] * (m[i] - TARGET_RTP);
-      }
-      const denom = (m[0] - TARGET_RTP);
-      const w0 = -numerator / denom;
+    let coupCounter, attackMode, roses, combo, lastHitTime, totalHits, boxerState, isKO, maxHits, currentGifIndex;
+
+    const boxer = document.getElementById("boxer");
+    const boxerImg = document.getElementById("boxerImg");
+    const message = document.getElementById("message");
+    const resultContainer = document.getElementById("resultContainer");
+    const coinsResult = document.getElementById("coinsResult");
+    const attackBtn = document.getElementById("attackBtn");
+    const gameContainer = document.getElementById("gameContainer");
+    const comboIndicator = document.getElementById("comboIndicator");
+    const rosesCounter = document.getElementById("rosesCounter");
+
+    const boxerGifs = [
+      "https://pa1.narvii.com/6849/5ec01198439f51b144b65127316bfd2f6f333464_hq.gif",
+      "https://media1.tenor.com/images/cb9e19ad0133a2a24587dad94b717fc8/tenor.gif?itemid=5247347",
+      "https://media1.tenor.com/images/1980d6bce0826a7fa0b00a98212b287a/tenor.gif?itemid=11929671",
+      "https://media.tenor.com/JwHqAKX-wtUAAAAM/dempsey-roll.gif"
+    ];
+
+    const boxerStates = [
+      { filter: "none", opacity: 1, threshold: 0 },
+      { filter: "hue-rotate(30deg)", opacity: 1, threshold: 0.1 },
+      { filter: "hue-rotate(60deg) saturate(0.8)", opacity: 0.95, threshold: 0.25 },
+      { filter: "hue-rotate(90deg) saturate(0.6)", opacity: 0.9, threshold: 0.4 },
+      { filter: "hue-rotate(180deg) saturate(0.4)", opacity: 0.8, threshold: 0.6 },
+      { filter: "hue-rotate(270deg) saturate(0.2)", opacity: 0.7, threshold: 0.8 },
+      { filter: "grayscale(100%) blur(2px)", opacity: 0.5, threshold: 1 }
+    ];
+
+    const impactEffects = ["💥", "🔥", "⭐", "💫", "✨", "💢"];
+    const messages = [
+      "Le boxeur arrogant reste provocateur !",
+      "Il commence à s'énerver !",
+      "Le boxeur est étourdi par tes coups !",
+      "Il est sérieusement touché !",
+      "Le boxeur vacille dangereusement !",
+      "Il titube ! Encore un peu !",
+      "KO TOTAL !"
+    ];
+
+    function initGame() {
+      coupCounter = 0;
+      attackMode = 1;
+      roses = 0;
+      combo = 0;
+      lastHitTime = 0;
+      totalHits = 0;
+      boxerState = 0;
+      isKO = false;
+      currentGifIndex = 0;
       
-      if (!isFinite(w0) || w0 <= 0) {
-        let scale = 1.0;
-        for (let attempt = 0; attempt < 200; attempt++) {
-          numerator = 0;
-          for (let i = 1; i < m.length; i++) {
-            numerator += (weights[i] * scale) * (m[i] - TARGET_RTP);
-          }
-          const tryw0 = -numerator / denom;
-          if (tryw0 > 0 && isFinite(tryw0)) {
-            weights[0] = tryw0;
-            return;
-          }
-          scale *= 1.06;
+      // Points de vie aléatoires entre 200 et 4000
+      maxHits = Math.floor(Math.random() * (4000 - 200 + 1)) + 200;
+      
+      updateUI();
+      resultContainer.style.display = "none";
+      comboIndicator.style.display = "none";
+      boxerImg.src = boxerGifs[currentGifIndex];
+      boxerImg.style.filter = boxerStates[0].filter;
+      boxerImg.style.opacity = boxerStates[0].opacity;
+      boxerImg.style.transform = "rotate(0deg)";
+      message.textContent = `Ce boxeur arrogant te provoque ! Il a ${maxHits} coups à encaisser !`;
+      rosesCounter.textContent = "🌹 0 roses";
+    }
+
+    function updateUI() {
+      // Changer de GIF tous les 100 coups
+      const newGifIndex = Math.floor(totalHits / 100) % boxerGifs.length;
+      if (newGifIndex !== currentGifIndex && !isKO) {
+        currentGifIndex = newGifIndex;
+        boxerImg.src = boxerGifs[currentGifIndex];
+      }
+
+      // Mettre à jour l'état du boxeur basé sur le pourcentage de PV perdus
+      const damagePercent = totalHits / maxHits;
+      for (let i = boxerStates.length - 1; i >= 0; i--) {
+        if (damagePercent >= boxerStates[i].threshold) {
+          boxerState = i;
+          break;
         }
-        weights[0] = 1.0;
-      } else {
-        weights[0] = w0;
+      }
+
+      // Appliquer les filtres visuels au boxeur
+      boxerImg.style.filter = boxerStates[boxerState].filter;
+      boxerImg.style.opacity = boxerStates[boxerState].opacity;
+      
+      // Si KO, arrêter l'animation
+      if (totalHits >= maxHits && !isKO) {
+        isKO = true;
+        boxerImg.style.transform = "rotate(-90deg)";
+      }
+      
+      rosesCounter.textContent = `🌹 ${roses} roses`;
+    }
+
+    function createImpactEffect() {
+      const effect = document.createElement('div');
+      effect.className = 'impact-effect';
+      effect.textContent = impactEffects[Math.floor(Math.random() * impactEffects.length)];
+      effect.style.left = (Math.random() * 80 + 10) + '%';
+      effect.style.top = (Math.random() * 60 + 20) + '%';
+      
+      document.querySelector('.boxer-container').appendChild(effect);
+      
+      setTimeout(() => {
+        effect.remove();
+      }, 1000);
+    }
+
+    function createDamageNumber() {
+      const damage = document.createElement('div');
+      damage.className = 'damage-number';
+      damage.textContent = 'COUP!';
+      damage.style.left = (Math.random() * 60 + 20) + '%';
+      damage.style.top = '10%';
+      
+      document.querySelector('.boxer-container').appendChild(damage);
+      
+      setTimeout(() => {
+        damage.remove();
+      }, 1200);
+    }
+
+    function getHitAnimation() {
+      const damagePercent = totalHits / maxHits;
+      if (damagePercent >= 0.8) return 'critical-hit';
+      if (damagePercent >= 0.5) return 'heavy-hit';
+      return 'light-hit';
+    }
+
+    function updateCombo() {
+      const currentTime = Date.now();
+      if (currentTime - lastHitTime > 2000) {
+        combo = 0;
+      }
+      combo++;
+      lastHitTime = currentTime;
+      
+      if (combo >= 3) {
+        comboIndicator.textContent = `COMBO x${combo}`;
+        comboIndicator.style.display = 'block';
+        comboIndicator.style.animation = 'none';
+        comboIndicator.offsetHeight;
+        comboIndicator.style.animation = 'impactPop 0.5s ease-out';
       }
     }
 
-    function getProbabilities() {
-      const sum = weights.reduce((a, b) => a + b, 0);
-      return weights.map(w => w / sum);
-    }
+    function attack() {
+      if (totalHits >= maxHits) return; // Déjà KO
 
-    function computeRTP() {
-      const probs = getProbabilities();
-      let r = 0;
-      for (let i = 0; i < multipliers.length; i++) r += probs[i] * multipliers[i];
-      return r;
-    }
+      let hits = attackMode;
+      let damageDealt = 0;
+      let effectsCreated = 0;
 
-    // Initialize
-    computeWeights();
-    const VISIBLE_BINS = 9;
+      for (let i = 0; i < hits && totalHits < maxHits; i++) {
+        coupCounter++;
+        totalHits++;
 
-    // UI Elements
-    const elements = {
-      bins: document.getElementById('bins'),
-      legend: document.getElementById('legend'),
-      results: document.getElementById('results'),
-      currentRTP: document.getElementById('currentRTP'),
-      totalInvested: document.getElementById('totalInvested'),
-      totalWon: document.getElementById('totalWon'),
-      netResult: document.getElementById('netResult'),
-      totalPlayed: document.getElementById('totalPlayed'),
-      rtpProgress: document.getElementById('rtpProgress'),
-      dropBtn: document.getElementById('dropBtn'),
-      drop10Btn: document.getElementById('drop10Btn'),
-      drop100Btn: document.getElementById('drop100Btn'),
-      multiProgress: document.getElementById('multiProgress'),
-      multiProgressFill: document.getElementById('multiProgressFill'),
-      multiProgressText: document.getElementById('multiProgressText'),
-      resetBtn: document.getElementById('resetBtn')
-    };
-
-    // Update displays
-    function updateStats() {
-      elements.totalInvested.textContent = totalInvested.toFixed(2);
-      elements.totalWon.textContent = totalWon.toFixed(2);
-      const net = totalWon - totalInvested;
-      elements.netResult.textContent = net.toFixed(2);
-      elements.netResult.style.color = net >= 0 ? 'var(--success)' : 'var(--accent)';
-      elements.totalPlayed.textContent = totalPlayed;
-      
-      const actualRTP = totalInvested > 0 ? (totalWon / totalInvested) : 0;
-      elements.currentRTP.textContent = (actualRTP * 100).toFixed(2) + '%';
-      elements.rtpProgress.style.width = Math.min(100, actualRTP * 400) + '%';
-    }
-
-    // Build bins
-    function buildBins() {
-      elements.bins.innerHTML = '';
-      for (let i = 0; i < VISIBLE_BINS; i++) {
-        const bin = document.createElement('div');
-        bin.className = 'bin';
-        const multSpan = document.createElement('div');
-        multSpan.className = 'mult';
-        multSpan.textContent = '—';
-        bin.appendChild(multSpan);
-        elements.bins.appendChild(bin);
-      }
-    }
-
-    // Build legend
-    function buildLegend() {
-      elements.legend.innerHTML = '';
-      const probs = getProbabilities();
-      for (let i = 0; i < multipliers.length; i++) {
-        const chip = document.createElement('div');
-        chip.className = 'chip';
-        chip.innerHTML = `<div>x${multipliers[i]}</div><div>${(probs[i] * 100).toFixed(1)}%</div>`;
-        elements.legend.appendChild(chip);
-      }
-    }
-
-    // Draw pegs
-    function drawPegs() {
-      const canvas = document.getElementById('pegs');
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Gradient pegs
-      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 6);
-      gradient.addColorStop(0, 'rgba(255,255,255,0.3)');
-      gradient.addColorStop(1, 'rgba(255,255,255,0.05)');
-      ctx.fillStyle = gradient;
-      
-      const rows = 8;
-      const cols = 10;
-      const spacingX = canvas.width / (cols + 1);
-      const spacingY = canvas.height / (rows + 2);
-      
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const x = (c + 1) * spacingX + (r % 2 ? spacingX / 2 : 0);
-          const y = 40 + r * spacingY;
+        // Tous les 4 coups → -1 PV (dégâts au boxeur)
+        if (coupCounter >= 4) {
+          coupCounter = 0;
+          damageDealt++;
+          effectsCreated++;
           
-          ctx.save();
-          ctx.translate(x, y);
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(0, 0, 5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
+          setTimeout(() => createDamageNumber(), i * 50);
         }
-      }
-    }
 
-    // Weighted selection
-    function weightedChoice() {
-      const ps = getProbabilities();
-      const r = Math.random();
-      let acc = 0;
-      for (let i = 0; i < ps.length; i++) {
-        acc += ps[i];
-        if (r <= acc) return i;
-      }
-      return ps.length - 1;
-    }
-
-    // Map to visual bin
-    function logicalToVisualIndex(slot) {
-      const cumulative = [];
-      const ps = getProbabilities();
-      let s = 0;
-      for (let i = 0; i < ps.length; i++) {
-        s += ps[i];
-        cumulative.push(s);
-      }
-      const r = cumulative[slot] - ps[slot] / 2;
-      return Math.min(VISIBLE_BINS - 1, Math.floor(r * VISIBLE_BINS));
-    }
-
-    // Animate ball
-    function animateBallTo(binIndex, onComplete, fast = false) {
-      const boardRect = document.getElementById('board').getBoundingClientRect();
-      const bins = document.querySelectorAll('.bin');
-      const targetBin = bins[binIndex];
-      const targetRect = targetBin.getBoundingClientRect();
-      const boardEl = document.getElementById('board');
-
-      const ball = document.createElement('div');
-      ball.className = 'ball';
-      boardEl.appendChild(ball);
-
-      const startX = boardRect.width / 2 - 10;
-      const startY = 10;
-      const endX = targetRect.left - boardRect.left + targetRect.width / 2 - 10;
-      const endY = boardRect.height - targetRect.height - 20;
-
-      ball.style.left = startX + 'px';
-      ball.style.top = startY + 'px';
-
-      const duration = fast ? 300 + Math.random() * 200 : 1200 + Math.random() * 400;
-      const start = performance.now();
-      
-      function frame(now) {
-        const p = Math.min(1, (now - start) / duration);
-        const easeP = p * p;
-        
-        const y = startY + (endY - startY) * easeP;
-        const wobble = Math.sin(p * 15) * 8 * (1 - p);
-        const x = startX + (endX - startX) * p + wobble;
-        
-        ball.style.left = x + 'px';
-        ball.style.top = y + 'px';
-        ball.style.transform = `scale(${1 - p * 0.1})`;
-        
-        if (p < 1) {
-          requestAnimationFrame(frame);
-        } else {
+        // Tous les 100 coups → +25 roses pour la récompense finale
+        if (totalHits % 100 === 0) {
+          roses += 25;
+          
+          // Effet spécial pour le bonus de 100 coups
           setTimeout(() => {
-            ball.remove();
-            if (onComplete) onComplete();
-          }, fast ? 100 : 300);
+            const bonusEffect = document.createElement('div');
+            bonusEffect.className = 'impact-effect';
+            bonusEffect.textContent = '+25🌹';
+            bonusEffect.style.left = '50%';
+            bonusEffect.style.top = '30%';
+            bonusEffect.style.color = '#ffd700';
+            bonusEffect.style.fontSize = '1.5em';
+            document.querySelector('.boxer-container').appendChild(bonusEffect);
+            
+            setTimeout(() => bonusEffect.remove(), 1000);
+          }, 200);
         }
-      }
-      requestAnimationFrame(frame);
-    }
 
-    // Add result to log
-    function logResult(slot, multiplier, win) {
-      const line = document.createElement('div');
-      line.className = 'result-line';
-      
-      const left = document.createElement('span');
-      left.textContent = `Slot ${slot} (x${multiplier})`;
-      
-      const right = document.createElement('span');
-      right.className = win > 0 ? 'result-win' : 'result-loss';
-      right.textContent = win > 0 ? `+${win.toFixed(2)}` : '0';
-      
-      line.appendChild(left);
-      line.appendChild(right);
-      
-      // Clear placeholder
-      if (elements.results.children[0]?.textContent?.includes('Lancez votre première')) {
-        elements.results.innerHTML = '';
-      }
-      
-      elements.results.prepend(line);
-      
-      // Keep max 50 results
-      while (elements.results.children.length > 50) {
-        elements.results.removeChild(elements.results.lastChild);
-      }
-    }
-
-    // Handle single drop
-    function handleDrop(fast = false, onComplete = null) {
-      const slot = weightedChoice();
-      const vindex = logicalToVisualIndex(slot);
-      
-      animateBallTo(vindex, () => {
-        const winMultiplier = multipliers[slot];
-        const win = winMultiplier; // 1 rose base bet
-        
-        totalInvested += 1;
-        totalWon += win;
-        totalPlayed += 1;
-        
-        updateStats();
-        logResult(slot, winMultiplier, win);
-        
-        if (onComplete) onComplete();
-      }, fast);
-    }
-
-    // Handle multiple drops
-    function handleMultipleDrop(count) {
-      if (isRunning) return;
-      isRunning = true;
-      
-      elements.multiProgress.classList.add('active');
-      elements.multiProgressText.textContent = `0 / ${count} coups`;
-      elements.multiProgressFill.style.width = '0%';
-      
-      // Disable buttons
-      [elements.dropBtn, elements.drop10Btn, elements.drop100Btn].forEach(btn => {
-        btn.disabled = true;
-      });
-      
-      let completed = 0;
-      
-      function dropNext() {
-        if (completed >= count) {
-          elements.multiProgress.classList.remove('active');
-          isRunning = false;
-          [elements.dropBtn, elements.drop10Btn, elements.drop100Btn].forEach(btn => {
-            btn.disabled = false;
-          });
-          return;
-        }
-        
-        handleDrop(true, () => {
-          completed++;
-          const progress = (completed / count) * 100;
-          elements.multiProgressFill.style.width = progress + '%';
-          elements.multiProgressText.textContent = `${completed} / ${count} coups`;
+        // Combo de 50 → +1 rose
+        if (combo >= 50 && combo % 50 === 0) {
+          roses += 1;
           
-          if (completed < count) {
-            setTimeout(dropNext, 50); // Small delay between drops
-          } else {
-            setTimeout(() => {
-              elements.multiProgress.classList.remove('active');
-              isRunning = false;
-              [elements.dropBtn, elements.drop10Btn, elements.drop100Btn].forEach(btn => {
-                btn.disabled = false;
-              });
-            }, 500);
-          }
-        });
+          // Effet spécial pour le combo de 50
+          setTimeout(() => {
+            const comboEffect = document.createElement('div');
+            comboEffect.className = 'impact-effect';
+            comboEffect.textContent = 'COMBO +1🌹';
+            comboEffect.style.left = '70%';
+            comboEffect.style.top = '20%';
+            comboEffect.style.color = '#ff6b9d';
+            comboEffect.style.fontSize = '1.2em';
+            document.querySelector('.boxer-container').appendChild(comboEffect);
+            
+            setTimeout(() => comboEffect.remove(), 1000);
+          }, 300);
+        }
+
+        if (totalHits >= maxHits) break; // KO atteint
       }
+
+      if (effectsCreated > 0 || attackMode >= 10) {
+        updateCombo();
+        
+        // Screen shake pour gros coups
+        if (attackMode >= 10) {
+          gameContainer.classList.add('screen-shake');
+          setTimeout(() => gameContainer.classList.remove('screen-shake'), 400);
+        }
+
+        // Créer effets d'impact
+        for (let i = 0; i < Math.min(effectsCreated + 1, 4); i++) {
+          setTimeout(() => createImpactEffect(), i * 100);
+        }
+
+        // Animation du boxeur
+        const animationType = getHitAnimation();
+        boxer.className = `boxer ${animationType}`;
+        setTimeout(() => {
+          boxer.className = 'boxer';
+        }, animationType === 'critical-hit' ? 800 : animationType === 'heavy-hit' ? 600 : 400);
+      }
+
+      updateUI();
+
+      if (totalHits >= maxHits) {
+        endGame();
+      } else {
+        // Mettre à jour le message selon l'état
+        const damagePercent = totalHits / maxHits;
+        const remainingHits = maxHits - totalHits;
+        
+        if (damagePercent >= 0.9) {
+          message.textContent = `Le boxeur titube ! Plus que ${remainingHits} coups !`;
+        } else if (damagePercent >= 0.7) {
+          message.textContent = `Il est sérieusement touché ! ${remainingHits} coups restants !`;
+        } else if (damagePercent >= 0.5) {
+          message.textContent = `Le boxeur commence à faiblir ! ${remainingHits} coups !`;
+        } else if (damagePercent >= 0.3) {
+          message.textContent = `Il encaisse mais résiste ! ${remainingHits} coups !`;
+        } else {
+          message.textContent = `Le boxeur reste provocateur ! ${remainingHits} coups !`;
+        }
+      }
+    }
+
+    function endGame() {
+      boxer.classList.add('ko');
+      message.textContent = "KO MAGISTRAL ! Le boxeur arrogant est enfin à terre !";
       
-      dropNext();
+      coinsResult.textContent = `🎉 Récompense finale : ${roses} roses !`;
+      resultContainer.style.display = "block";
+      comboIndicator.style.display = "none";
+      
+      // Effets de célébration
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          const celebration = document.createElement('div');
+          celebration.className = 'impact-effect';
+          celebration.textContent = ['🎉', '🏆', '⭐', '🔥'][Math.floor(Math.random() * 4)];
+          celebration.style.left = (Math.random() * 100) + '%';
+          celebration.style.top = (Math.random() * 100) + '%';
+          document.querySelector('.game-container').appendChild(celebration);
+          
+          setTimeout(() => celebration.remove(), 1000);
+        }, i * 150);
+      }
+    }
+
+    function setAttackMode(mode) {
+      attackMode = mode;
+      document.getElementById('mode1').classList.toggle('active', mode === 1);
+      document.getElementById('mode10').classList.toggle('active', mode === 10);
+      document.getElementById('mode100').classList.toggle('active', mode === 100);
+      
+      if (mode === 1) attackBtn.textContent = "🥊 FRAPPER";
+      else if (mode === 10) attackBtn.textContent = "💥 COMBO";
+      else attackBtn.textContent = "🔥 BARRAGE";
     }
 
     // Event listeners
-    elements.dropBtn.addEventListener('click', () => {
-      if (isRunning) return;
-      isRunning = true;
-      elements.dropBtn.disabled = true;
-      handleDrop(false, () => {
-        isRunning = false;
-        elements.dropBtn.disabled = false;
-      });
-    });
+    document.getElementById("attackBtn").addEventListener("click", attack);
+    document.getElementById("resetBtn").addEventListener("click", initGame);
+    document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
+    document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
+    document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
 
-    elements.drop10Btn.addEventListener('click', () => handleMultipleDrop(10));
-    elements.drop100Btn.addEventListener('click', () => handleMultipleDrop(100));
-
-    // Reset button
-    elements.resetBtn.addEventListener('click', () => {
-      if (isRunning) return;
-      
-      if (totalPlayed > 0 && !confirm('Êtes-vous sûr de vouloir remettre à zéro toutes les statistiques ?')) {
-        return;
+    // Reset combo après inactivité
+    setInterval(() => {
+      const currentTime = Date.now();
+      if (currentTime - lastHitTime > 3000 && combo > 0) {
+        combo = 0;
+        comboIndicator.style.display = "none";
       }
-      
-      // Reset all stats
-      totalInvested = 0;
-      totalWon = 0;
-      totalPlayed = 0;
-      
-      // Clear results
-      elements.results.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">Lancez votre première balle pour voir les résultats !</div>';
-      
-      // Update displays
-      updateStats();
-    });
+    }, 1000);
 
-    // Initialize UI
-    buildBins();
-    buildLegend();
-    drawPegs();
-    updateStats();
+    initGame();
   </script>
 </body>
 </html>
