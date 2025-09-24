@@ -178,6 +178,7 @@
       justify-content: center;
       align-items: center;
       width: 100%;
+      min-height: 260px; /* reserve espace pour le widget de pièces */
     }
 
     .actions-widget {
@@ -597,6 +598,21 @@
       border: 2px solid rgba(255,255,255,0.2);
     }
 
+    /* styles du widget coindrop intégré sous le diamant */
+    .diamond-coindrop {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -140px; /* place sous le diamant */
+      width: 320px;
+      height: 220px;
+      z-index: 6; /* au-dessus pour que les pièces soient visibles */
+      pointer-events: none; /* ne bloque pas le clic sur le diamant */
+      background: transparent;
+      border: none;
+    }
+    .diamond-coindrop iframe { width:100%; height:100%; border: none; background: transparent; }
+
     @media (max-width: 1200px) {
       body {
         flex-direction: column;
@@ -623,6 +639,12 @@
         font-size: 11px;
         min-width: 50px;
       }
+
+      .diamond-coindrop {
+        bottom: -120px;
+        width: 260px;
+        height: 180px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -648,6 +670,12 @@
         padding: 6px 10px;
         font-size: 10px;
         min-width: 45px;
+      }
+
+      .diamond-coindrop {
+        bottom: -100px;
+        width: 220px;
+        height: 140px;
       }
     }
   </style>
@@ -681,6 +709,11 @@
     
     <div class="diamond-container">
       <div class="diamond" id="diamond"></div>
+
+      <!-- WIDGET COINDROP intégré sous/le long du diamant (transparent, sans contour, pointer-events:none) -->
+      <div class="diamond-coindrop" aria-hidden="true">
+        <iframe src="https://tikfinity.zerody.one/widget/coindrop?cid=2136326"></iframe>
+      </div>
     </div>
 
     <div class="instructions">
@@ -1036,12 +1069,16 @@
         btn.classList.remove('active');
       });
       
-      document.getElementById(`mode${mode}`).classList.add('active');
+      // si l'élément existe (sécurité)
+      const btnEl = document.getElementById(`mode${mode}`);
+      if (btnEl) btnEl.classList.add('active');
+
       attackBtn.textContent = `Attaquer (${mode} coup${mode > 1 ? 's' : ''})`;
     }
 
     function initGame() {
-      maxHP = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000;
+      // <-- MODIF : vie aléatoire entre 10 000 et 30 000
+      maxHP = Math.floor(Math.random() * (30000 - 10000 + 1)) + 10000;
       currentHP = maxHP;
       coupCounter = 0;
       totalHits = 0;
@@ -1063,6 +1100,11 @@
       
       resultContainer.classList.add("hidden");
       comboIndicator.style.display = "none";
+
+      // reset des compteurs visibles (sécurité si tu veux les afficher autrement)
+      coupCounter = 0;
+      totalHits = 0;
+      hitsUntilCoin = 4;
     }
 
     // Événements CORRIGÉS
