@@ -1,1287 +1,2279 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💎 Casse le Diamant</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Arial', sans-serif;
-      background-image: url('https://img.freepik.com/premium-photo/cherry-blossoms-forest_1091302-2482.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      color: #fff;
-      text-align: center;
-      min-height: 100vh;
-      padding: 20px;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: -1;
-    }
-
-    .widget-left {
-      width: 200px;
-      height: 400px;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 15px;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .widget-left iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .widget-right {
-      width: 200px;
-      height: 400px;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 15px;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      position: relative;
-    }
-
-    .widget-right iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .timer-widget-right {
-      position: absolute;
-      bottom: -80px;
-      left: 0;
-      width: 100%;
-      height: 60px;
-      z-index: 15;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-right iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .game-container {
-      max-width: 500px;
-      flex: 1;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 20px;
-      padding: 30px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-      margin: 0 5px;
-      position: relative;
-      border: 2px solid rgba(255, 215, 0, 0.3);
-    }
-
-    .game-container::before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      background: linear-gradient(45deg, #ffd700, #ff6b9d, #c44569, #ffd700);
-      border-radius: 22px;
-      z-index: -1;
-      animation: borderGlow 3s linear infinite;
-    }
-
-    @keyframes borderGlow {
-      0% { filter: hue-rotate(0deg); }
-      100% { filter: hue-rotate(360deg); }
-    }
-
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .squirrel-logo {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 20px;
-      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43f.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-      animation: squirrelBounce 2s ease-in-out infinite;
-    }
-
-    @keyframes squirrelBounce {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-5px) scale(1.05); }
-    }
-
-    .instructions {
-      margin: 30px 0;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-    }
-
-    .instructions h2 {
-      font-size: 1.8em;
-      margin-bottom: 10px;
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .instructions p {
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #feca57;
-    }
-
-    .diamond-container {
-      position: relative;
-      margin: 30px auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      min-height: 260px; /* reserve espace pour le widget de pièces */
-    }
-
-    .actions-widget {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 180px;
-      height: 80px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .firework-widget-bottom {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 400px;
-      height: 300px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .firework-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-bottom {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 150px;
-      height: 60px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .coindrop-widget-bottom {
-      position: fixed;
-      bottom: 200px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 400px;
-      height: 200px;
-      z-index: 500;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .coindrop-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .actions-widget iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .diamond {
-      width: 200px;
-      height: 200px;
-      margin: 0 auto;
-      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48e.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      position: relative;
-      transition: all 0.3s ease;
-      filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) brightness(1.2) contrast(1.1);
-      z-index: 5;
-    }
-
-    .diamond.pink {
-      filter: drop-shadow(0 0 30px rgba(255, 105, 180, 0.8)) brightness(1.2) contrast(1.1) hue-rotate(15deg) saturate(1.5);
-      animation: pinkGlow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes pinkGlow {
-      0% { filter: drop-shadow(0 0 30px rgba(255, 105, 180, 0.8)) brightness(1.2) contrast(1.1) hue-rotate(15deg) saturate(1.5); }
-      100% { filter: drop-shadow(0 0 40px rgba(255, 20, 147, 1)) brightness(1.4) contrast(1.2) hue-rotate(25deg) saturate(1.8); }
-    }
-
-    .diamond.hit {
-      animation: lightHit 0.4s ease-out;
-    }
-
-    .diamond.heavy-hit {
-      animation: heavyHit 0.6s ease-out;
-    }
-
-    .diamond.critical-hit {
-      animation: criticalHit 0.8s ease-out;
-    }
-
-    .diamond.mega-hit {
-      animation: megaHit 1.2s ease-out;
-    }
-
-    .diamond.ultra-hit {
-      animation: ultraHit 1.5s ease-out;
-    }
-
-    .diamond.cracked {
-      filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)) hue-rotate(0deg);
-      animation: redPulse 1s infinite;
-    }
-
-    .diamond.broken {
-      opacity: 0.3;
-      filter: grayscale(100%) brightness(0.3);
-      animation: knockout 1.5s ease-out forwards;
-    }
-
-    @keyframes lightHit {
-      0% { transform: translateX(0) rotate(0deg); }
-      25% { transform: translateX(-15px) rotate(-8deg); }
-      50% { transform: translateX(8px) rotate(5deg); }
-      75% { transform: translateX(-4px) rotate(-2deg); }
-      100% { transform: translateX(0) rotate(0deg); }
-    }
-
-    @keyframes heavyHit {
-      0% { transform: translateX(0) rotate(0deg) scale(1); }
-      20% { transform: translateX(-25px) rotate(-15deg) scale(0.9); }
-      40% { transform: translateX(12px) rotate(8deg) scale(1.05); }
-      60% { transform: translateX(-6px) rotate(-4deg) scale(0.95); }
-      80% { transform: translateX(3px) rotate(2deg) scale(1.02); }
-      100% { transform: translateX(0) rotate(0deg) scale(1); }
-    }
-
-    @keyframes criticalHit {
-      0% { transform: translateX(0) rotate(0deg) scale(1); }
-      15% { transform: translateX(-35px) rotate(-25deg) scale(0.85); }
-      30% { transform: translateX(20px) rotate(15deg) scale(1.1); }
-      45% { transform: translateX(-15px) rotate(-10deg) scale(0.9); }
-      60% { transform: translateX(8px) rotate(5deg) scale(1.05); }
-      75% { transform: translateX(-4px) rotate(-3deg) scale(0.97); }
-      90% { transform: translateX(2px) rotate(1deg) scale(1.02); }
-      100% { transform: translateX(0) rotate(0deg) scale(1); }
-    }
-
-    @keyframes megaHit {
-      0% { transform: translateX(0) rotate(0deg) scale(1); }
-      10% { transform: translateX(-45px) rotate(-35deg) scale(0.8); }
-      20% { transform: translateX(30px) rotate(20deg) scale(1.15); }
-      30% { transform: translateX(-25px) rotate(-15deg) scale(0.85); }
-      40% { transform: translateX(15px) rotate(10deg) scale(1.1); }
-      50% { transform: translateX(-10px) rotate(-8deg) scale(0.9); }
-      60% { transform: translateX(8px) rotate(5deg) scale(1.05); }
-      70% { transform: translateX(-4px) rotate(-3deg) scale(0.97); }
-      80% { transform: translateX(2px) rotate(2deg) scale(1.02); }
-      90% { transform: translateX(-1px) rotate(-1deg) scale(0.99); }
-      100% { transform: translateX(0) rotate(0deg) scale(1); }
-    }
-
-    @keyframes ultraHit {
-      0% { transform: translateX(0) rotate(0deg) scale(1); }
-      8% { transform: translateX(-55px) rotate(-45deg) scale(0.7); }
-      16% { transform: translateX(40px) rotate(25deg) scale(1.2); }
-      24% { transform: translateX(-35px) rotate(-20deg) scale(0.8); }
-      32% { transform: translateX(25px) rotate(15deg) scale(1.15); }
-      40% { transform: translateX(-18px) rotate(-12deg) scale(0.85); }
-      48% { transform: translateX(12px) rotate(8deg) scale(1.1); }
-      56% { transform: translateX(-8px) rotate(-6deg) scale(0.9); }
-      64% { transform: translateX(6px) rotate(4deg) scale(1.05); }
-      72% { transform: translateX(-4px) rotate(-3deg) scale(0.97); }
-      80% { transform: translateX(2px) rotate(2deg) scale(1.02); }
-      88% { transform: translateX(-1px) rotate(-1deg) scale(0.99); }
-      96% { transform: translateX(0.5px) rotate(0.5deg) scale(1.01); }
-      100% { transform: translateX(0) rotate(0deg) scale(1); }
-    }
-
-    @keyframes knockout {
-      0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-      30% { transform: translateY(-15px) rotate(-20deg) scale(0.9); opacity: 0.9; }
-      70% { transform: translateY(60px) rotate(-120deg) scale(0.7); opacity: 0.7; }
-      100% { transform: translateY(80px) rotate(-120deg) scale(0.6); opacity: 0.4; }
-    }
-
-    @keyframes redPulse {
-      0%, 100% { filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)); }
-      50% { filter: brightness(0.5) drop-shadow(0 0 40px rgba(255, 0, 0, 1)); }
-    }
-
-    .screen-shake {
-      animation: screenShake 0.4s ease-out;
-    }
-
-    .mega-shake {
-      animation: megaShake 0.8s ease-out;
-    }
-
-    .ultra-shake {
-      animation: ultraShake 1.2s ease-out;
-    }
-
-    @keyframes screenShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    @keyframes megaShake {
-      0%, 100% { transform: translateX(0) translateY(0); }
-      10% { transform: translateX(-8px) translateY(-3px); }
-      20% { transform: translateX(8px) translateY(3px); }
-      30% { transform: translateX(-6px) translateY(-2px); }
-      40% { transform: translateX(6px) translateY(2px); }
-      50% { transform: translateX(-4px) translateY(-1px); }
-      60% { transform: translateX(4px) translateY(1px); }
-      70% { transform: translateX(-2px) translateY(-0.5px); }
-      80% { transform: translateX(2px) translateY(0.5px); }
-    }
-
-    @keyframes ultraShake {
-      0%, 100% { transform: translateX(0) translateY(0); }
-      5% { transform: translateX(-12px) translateY(-5px); }
-      10% { transform: translateX(12px) translateY(5px); }
-      15% { transform: translateX(-10px) translateY(-4px); }
-      20% { transform: translateX(10px) translateY(4px); }
-      25% { transform: translateX(-8px) translateY(-3px); }
-      30% { transform: translateX(8px) translateY(3px); }
-      35% { transform: translateX(-6px) translateY(-2px); }
-      40% { transform: translateX(6px) translateY(2px); }
-      45% { transform: translateX(-4px) translateY(-1px); }
-      50% { transform: translateX(4px) translateY(1px); }
-      55% { transform: translateX(-3px) translateY(-1px); }
-      60% { transform: translateX(3px) translateY(1px); }
-      65% { transform: translateX(-2px) translateY(-0.5px); }
-      70% { transform: translateX(2px) translateY(0.5px); }
-      75% { transform: translateX(-1px) translateY(-0.2px); }
-      80% { transform: translateX(1px) translateY(0.2px); }
-    }
-
-    .impact-effect {
-      position: absolute;
-      font-size: 2.5em;
-      pointer-events: none;
-      z-index: 3;
-      animation: impactPop 1s ease-out forwards;
-      opacity: 0;
-      filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
-    }
-
-    @keyframes impactPop {
-      0% { opacity: 0; transform: scale(0.3) translateY(0); }
-      30% { opacity: 1; transform: scale(1.5) translateY(-15px); }
-      100% { opacity: 0; transform: scale(1) translateY(-50px); }
-    }
-
-    /* Styles pour le marteau */
-    .hammer {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      z-index: 10;
-      pointer-events: none;
-      opacity: 0;
-      transform-origin: bottom center;
-    }
-
-    .hammer-head {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(45deg, #8B4513, #A0522D, #8B4513);
-      border-radius: 5px;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%) rotate(45deg);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    }
-
-    .hammer-handle {
-      position: absolute;
-      width: 8px;
-      height: 60px;
-      background: linear-gradient(to bottom, #D2691E, #8B4513);
-      top: 35px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-radius: 4px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    .hammer-hit {
-      animation: hammerSwing 0.6s ease-out forwards;
-    }
-
-    @keyframes hammerSwing {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, -100%) rotate(-30deg) scale(0.8);
-      }
-      20% {
-        opacity: 1;
-        transform: translate(-50%, -100%) rotate(15deg) scale(1);
-      }
-      40% {
-        transform: translate(-50%, -100%) rotate(-10deg) scale(1.1);
-      }
-      60% {
-        transform: translate(-50%, -100%) rotate(5deg) scale(1);
-      }
-      80% {
-        transform: translate(-50%, -100%) rotate(-2deg) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -100%) rotate(0deg) scale(0.8);
-      }
-    }
-
-    .attack-modes {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-
-    .attack-mode-btn {
-      padding: 8px 12px;
-      font-size: 11px;
-      cursor: pointer;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(5px);
-      min-width: 50px;
-      font-weight: bold;
-    }
-
-    .attack-mode-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .attack-mode-btn.active {
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      border-color: #fff;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-    }
-
-    .controls {
-      margin: 20px 0;
-    }
-
-    button {
-      padding: 15px 30px;
-      margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 25px;
-      background: linear-gradient(45deg, #ff6b9d, #c44569);
-      color: #fff;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      text-transform: uppercase;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-      background: linear-gradient(45deg, #feca57, #ff6b9d);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    #resetBtn {
-      background: linear-gradient(45deg, #555, #777);
-    }
-
-    #resetBtn:hover {
-      background: linear-gradient(45deg, #777, #999);
-    }
-
-    #message {
-      margin: 20px 0;
-      font-size: 1.2em;
-      font-weight: bold;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-      min-height: 30px;
-    }
-
-    .result-box {
-      background: linear-gradient(135deg, rgba(255, 107, 157, 0.9), rgba(254, 202, 87, 0.9));
-      padding: 20px;
-      border-radius: 15px;
-      margin: 20px 0;
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(10px);
-      animation: fadeInUp 0.5s ease;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .coins-display {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      color: white;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-weight: bold;
-      animation: coinPop 1s ease;
-      pointer-events: none;
-      z-index: 4;
-    }
-
-    @keyframes coinPop {
-      0% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px) scale(0.5);
-      }
-      50% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(-10px) scale(1.2);
-      }
-      100% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-30px) scale(1);
-      }
-    }
-
-    .combo-indicator {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: linear-gradient(45deg, #ff6b9d, #c44569);
-      padding: 10px 18px;
-      border-radius: 25px;
-      font-weight: bold;
-      font-size: 1em;
-      display: none;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      border: 2px solid rgba(255,255,255,0.2);
-    }
-
-    /* styles du widget coindrop intégré sous le diamant */
-    .diamond-coindrop {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -140px; /* place sous le diamant */
-      width: 320px;
-      height: 220px;
-      z-index: 6; /* au-dessus pour que les pièces soient visibles */
-      pointer-events: none; /* ne bloque pas le clic sur le diamant */
-      background: transparent;
-      border: none;
-    }
-    .diamond-coindrop iframe { width:100%; height:100%; border: none; background: transparent; }
-
-    @media (max-width: 1200px) {
-      body {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .widget-left, .widget-right {
-        width: 100%;
-        max-width: 500px;
-        height: 300px;
-        margin-bottom: 15px;
-      }
-      
-      .game-container {
-        margin: 0;
-      }
-
-      .attack-modes {
-        gap: 6px;
-      }
-
-      .attack-mode-btn {
-        padding: 8px 12px;
-        font-size: 11px;
-        min-width: 50px;
-      }
-
-      .diamond-coindrop {
-        bottom: -120px;
-        width: 260px;
-        height: 180px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .game-container {
-        padding: 20px;
-        margin: 10px;
-      }
-      
-      .diamond {
-        width: 150px;
-        height: 150px;
-      }
-      
-      h1 {
-        font-size: 2em;
-      }
-      
-      .widget-left, .widget-right {
-        height: 250px;
-      }
-
-      .attack-mode-btn {
-        padding: 6px 10px;
-        font-size: 10px;
-        min-width: 45px;
-      }
-
-      .diamond-coindrop {
-        bottom: -100px;
-        width: 220px;
-        height: 140px;
-      }
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Roue de Casino - Design Réaliste</title>
+<style>
+:root{
+  --bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  --card: rgba(15, 15, 16, 0.8);
+  --txt: #eef0f2;
+  --bronze: #cd7f32; --silver: #c0c0c0; --gold: #ffd700; --diamond: #00e6e6;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --glow: 0 0 15px rgba(255, 255, 255, 0.7);
+  --chest: #8b4513; /* Nouvelle couleur pour le coffre */
+}
+body {
+  margin: 0;
+  background: url('https://img.freepik.com/vector-premium/paisaje-lugar-llamado-luna-estrellas_889056-229645.jpg'), linear-gradient(135deg, rgba(26, 26, 46, 0.7) 0%, rgba(22, 33, 62, 0.8) 100%);
+  background-size: cover, cover;
+  background-position: center, center;
+  background-attachment: fixed, fixed;
+  background-blend-mode: multiply;
+  color: var(--txt);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.wrap {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 20px;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+.chest-header {
+  flex: 0 0 200px;
+  min-width: 180px;
+}
+.chest-title-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: #ddd;
+}
+.chest-bar-header {
+  height: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.chest-fill-header {
+  height: 100%;
+  background: linear-gradient(90deg, #8b4513, #a0522d, #cd853f);
+  border-radius: 8px;
+  width: 0%;
+  transition: width 0.5s ease;
+  position: relative;
+}
+.chest-fill-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: progressShine 2s infinite;
+}
+.chest-label-header {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 0 2px rgba(0,0,0,0.8);
+  font-size: 0.75rem;
+}
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  background: linear-gradient(45deg, var(--bronze), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+}
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+select, input, button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(40, 40, 45, 0.8);
+  color: var(--txt);
+  font-size: 0.95rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+}
+select:focus, input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--gold);
+}
+button {
+  cursor: pointer;
+  font-weight: 600;
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+  border: 1px solid #444;
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+button:active {
+  transform: translateY(1px);
+}
+#spinBtn {
+  background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+}
+#multiBtn {
+  background: linear-gradient(to bottom, #2196F3, #0D47A1);
+}
+#resetBtn {
+  background: linear-gradient(to bottom, #F44336, #B71C1C);
+}
+#resetChestBtn {
+  background: linear-gradient(to bottom, #8b4513, #654321);
+  color: white;
+}
+#stopBtn {
+  background: linear-gradient(to bottom, #FF9800, #E65100);
+}
+#speedBtn {
+  background: linear-gradient(to bottom, #9C27B0, #4A148C);
+}
+#statsBtn {
+  background: linear-gradient(to bottom, #607D8B, #455A64);
+}
+.main {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  position: relative;
+}
+.firework-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 15;
+  pointer-events: none;
+}
+.topliker-wrap {
+  flex: 0 0 300px;
+  min-width: 280px;
+  position: relative;
+  z-index: 10;
+}
+.topliker-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  text-align: center;
+  margin-bottom: 20px;
+}
+.topgifter-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  text-align: center;
+}
+.ranking-container {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  text-align: center;
+}
+.topliker-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #ddd;
+  font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+}
+.topgifter-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #ddd;
+  font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+}
+.ranking-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #ddd;
+  font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+}
+.canvasWrap {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+.coindrop-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  pointer-events: none;
+}
+.myactions-overlay {
+  position: relative;
+  z-index: 20;
+  pointer-events: none;
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+.myactions-overlay-timer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  pointer-events: none;
+}
+canvas {
+  border-radius: 50%;
+  box-shadow: var(--shadow), 0 0 30px rgba(255, 215, 0, 0.3);
+  transition: transform 0.5s ease;
+  border: 8px solid #2c2c2c;
+}
+canvas.spinning {
+  animation: wheelGlow 1.5s infinite alternate;
+}
+@keyframes wheelGlow {
+  0% { box-shadow: var(--shadow), 0 0 20px rgba(255, 215, 0, 0.3); }
+  100% { box-shadow: var(--shadow), 0 0 40px rgba(255, 215, 0, 0.8); }
+}
+#result {
+  font-size: 1.4rem;
+  margin: 15px 0;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  text-align: center;
+  min-width: 80%;
+  transition: all 0.5s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+#result.highlight {
+  background: linear-gradient(45deg, rgba(255,215,0,0.3), rgba(255,140,0,0.3));
+  transform: scale(1.05);
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+#turnCounter {
+  font-size: 1.1rem;
+  margin-top: 10px;
+  color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.timer-container {
+  margin-top: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  text-align: center;
+  width: 80%;
+}
+.timer-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #ddd;
+}
+.timer-display {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+.timer-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.timer-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+}
+.timer-btn:hover {
+  transform: translateY(-2px);
+}
+.info {
+  flex: 1;
+  min-width: 320px;
+  background: var(--card);
+  border: 1px solid #333;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  position: relative;
+  z-index: 10;
+}
+.statGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.stat {
+  background: rgba(20, 20, 25, 0.8);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #222;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}
+.stat:hover {
+  transform: translateY(-3px);
+}
+.stat b {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #ddd;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+  font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+}
+.stat .reset-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+.stat .reset-icon:hover {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+.stat .add-icon {
+  position: absolute;
+  top: 40px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+.stat .add-icon:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+#summary, #history {
+  margin-top: 15px;
+  max-height: 180px;
+  overflow: auto;
+  padding: 12px;
+  background: rgba(10, 10, 15, 0.8);
+  border-radius: 8px;
+  border: 1px solid #222;
+  white-space: pre-wrap;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+}
+#history {
+  margin-top: 20px;
+}
+.legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  justify-content: center;
+}
+.legendItem {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 6px;
+}
+.colorBox {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #222;
+}
+.hist-pieces{ color: #65b26e }
+.hist-tickets{ color: #6ea8ff }
+.hist-fragment-sylver{ color: #c78cff }
+.hist-fragment-gold{ color: #ffd700 }
+.hist-fragment-diamond{ color: #00e6e6 }
+.hist-wheelchange{ color: #ffd166 }
+.hist-other{ color: #ffb86b }
+.hist-chest{ color: #d2691e } /* Nouvelle couleur pour le coffre */
+
+/* Barre de progression pour la roue argent */
+.progress-container {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+.progress-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #ddd;
+}
+.progress-bar {
+  height: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a050d0, #c78cff, #e0c0ff);
+  border-radius: 10px;
+  width: 0%;
+  transition: width 0.5s ease;
+  position: relative;
+}
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: progressShine 2s infinite;
+}
+@keyframes progressShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.progress-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 0 2px rgba(255,255,255,0.8);
+  font-size: 0.85rem;
+}
+.progress-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.progress-btn {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+}
+
+/* Nouvelle barre de progression pour le coffre */
+.chest-container {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(139, 69, 19, 0.5);
+}
+.chest-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #ddd;
+}
+.chest-bar {
+  height: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.chest-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b4513, #a0522d, #cd853f);
+  border-radius: 10px;
+  width: 0%;
+  transition: width 0.5s ease;
+  position: relative;
+}
+.chest-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: progressShine 2s infinite;
+}
+.chest-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 0 2px rgba(0,0,0,0.8);
+  font-size: 0.85rem;
+}
+.chest-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.chest-btn {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+  background: linear-gradient(to bottom, #8b4513, #654321);
+  color: white;
+}
+
+/* Section Stream Buddies */
+.streambuddies-section {
+  margin: 20px auto;
+  text-align: center;
+  width: 100%;
+}
+
+footer {
+  margin-top: 25px;
+  color: #909090;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 15px;
+  border-top: 1px solid #333;
+}
+
+/* Animation pour les gains importants */
+@keyframes celebrate {
+ 0% { transform: scale(1); }
+ 50% { transform: scale(1.2); }
+ 100% { transform: scale(1); }
+}
+.celebrate {
+  animation: celebrate 0.5s ease;
+}
+
+/* Popup de félicitations */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.popup.active {
+  opacity: 1;
+  visibility: visible;
+}
+.popup-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 400px;
+  width: 80%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 2px solid var(--diamond);
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+.popup.active .popup-content {
+  transform: scale(1);
+}
+.popup h2 {
+  color: var(--diamond);
+  margin-top: 0;
+  font-size: 2rem;
+}
+.popup p {
+  font-size: 1.2rem;
+  margin: 15px 0;
+}
+.popup-btn {
+  background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+/* Animations de particules */
+.particle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Animation de pièces qui tombent */
+.coin-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 99;
+}
+
+.coin {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #daa520);
+  border-radius: '50%';
+  box-shadow: 0 0 10px #ffd700;
+  animation: coin-fall linear forwards;
+}
+
+@keyframes coin-fall {
+  0% {
+    transform: translateY(-50px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Indicateur de roue amélioré */
+.wheel-pointer {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 40px solid #d62828;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+  z-index: 10;
+}
+
+.wheel-pointer::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: -10px;
+  width: 20px;
+  height: 20px;
+  background: #ffd700;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ffd700;
+}
+
+/* Effet de lumière tournante */
+.light-spot {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+  opacity: 0.3;
+  animation: rotating-light 4s linear infinite;
+}
+
+@keyframes rotating-light {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Effet de brillance sur la roue */
+.wheel-shine {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 50%);
+  opacity: 0.3;
+}
+
+/* Popup pour modifier les compteurs */
+.modify-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.modify-popup.active {
+  opacity: 1;
+  visibility: visible;
+}
+.modify-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 400px;
+  width: 80%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 2px solid var(--gold);
+}
+.modify-content h2 {
+  color: var(--gold);
+  margin-top: 0;
+}
+.modify-content input {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: rgba(40, 40, 45, 0.8);
+  color: var(--txt);
+  font-size: 1rem;
+}
+.modify-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.modify-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+.modify-confirm {
+  background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+  color: white;
+}
+.modify-cancel {
+  background: linear-gradient(to bottom, #F44336, #B71C1C);
+  color: white;
+}
+
+/* Nouveau style pour les statistiques */
+.stats-container {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+.stats-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #ddd;
+  cursor: pointer;
+}
+.stats-content {
+  display: none;
+}
+.stats-content.active {
+  display: block;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.stats-chart {
+  background: rgba(10, 10, 15, 0.8);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #222;
+}
+.stats-chart h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #ffd700;
+  text-align: center;
+}
+.chart-container {
+  height: 150px;
+  position: relative;
+}
+.bar {
+  position: absolute;
+  bottom: 0;
+  width: 30px;
+  background: linear-gradient(to top, #4CAF50, #2E7D32);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+}
+.bar-label {
+  position: absolute;
+  bottom: -25px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+}
+.recent-history {
+  margin-top: 15px;
+  max-height: 150px;
+  overflow: auto;
+  padding: 10px;
+  background: rgba(10, 10, 15, 0.8);
+  border-radius: 8px;
+  border: 1px solid #222;
+}
+.recent-item {
+  padding: 5px;
+  border-bottom: 1px solid #333;
+  font-size: 0.9rem;
+}
+.recent-item:last-child {
+  border-bottom: none;
+}
+
+@media(max-width: 760px){
+  .main { flex-direction: column; }
+  .firework-background { height: auto; min-height: 300px; }
+  .topliker-wrap { flex: 1; min-width: auto; }
+  .topliker-container iframe { height: 250px; }
+  .ranking-container iframe { height: 250px; }
+  .coindrop-overlay iframe { width: 200px; height: 200px; }
+  .myactions-overlay iframe { width: 300px; height: 150px; }
+  .myactions-overlay-timer iframe { width: 300px; height: 150px; }
+  .streambuddies-section iframe { height: 120px; }
+  header { flex-direction: column; }
+  .chest-header { flex: 1; min-width: auto; margin-bottom: 10px; }
+  .controls { justify-content: center; }
+  .modify-content { width: 90%; padding: 20px; }
+  .modify-buttons { flex-direction: column; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .timer-controls { flex-direction: column; }
+}
+</style>
 </head>
 <body>
-  <div class="actions-widget">
-    <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=2136326&screen=1" frameborder="0"></iframe>
-  </div>
-  
-  <div class="coindrop-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/coindrop?cid=2136326" frameborder="0"></iframe>
-  </div>
-  
-  <div class="firework-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/firework?cid=2136326" frameborder="0"></iframe>
-  </div>
-  
-  <div class="timer-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2136326" frameborder="0"></iframe>
-  </div>
-  
-  <div class="widget-left">
-    <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=2136326" frameborder="0"></iframe>
-  </div>
+<div class="wrap">
+<header>
+<h1 id="wheelTitle">🎡 Roue Bronze</h1>
 
-  <div class="game-container" id="gameContainer">
-    <div class="combo-indicator" id="comboIndicator">COMBO x0</div>
+<!-- Progression du Coffre intégrée dans le header -->
+<div class="chest-header">
+  <div class="chest-title-header">
+    <span>🪙 Coffre</span>
+    <span id="chestProgressTextHeader">0 pièces</span>
+  </div>
+  <div class="chest-bar-header">
+    <div class="chest-fill-header" id="chestProgressBarHeader"></div>
+    <div class="chest-label-header" id="chestProgressLabelHeader">0%</div>
+  </div>
+</div>
 
-    <h1>💎 Casse le Diamant !</h1>
-    <div class="squirrel-logo"></div>
+<div class="controls">
+<select id="wheelSelect">
+<option value="bronze">Bronze</option>
+<option value="silver">Argent</option>
+<option value="gold">Or</option>
+<option value="diamond">Diamant</option>
+</select>
+
+<button id="spinBtn">🎯 1 Tour</button>
+<input id="multiCount" type="number" min="1" value="10" style="width:78px" />
+<button id="multiBtn">🚀 Lancer plusieurs</button>
+<button id="stopBtn" disabled>⏹️ Stop</button>
+<button id="speedBtn">⚡ Accélérer</button>
+<button id="resetChestBtn">🪙 Reset Coffre</button>
+<button id="statsBtn">📊 Statistiques</button>
+<button id="resetBtn">🔄 Reset Complet</button>
+</div>
+</header>
+
+<div class="main">
+<!-- Widget Firework en arrière-plan -->
+<div class="firework-background">
+  <iframe 
+    src="https://tikfinity.zerody.one/widget/firework?cid=2260505" 
+    width="100%" 
+    height="500" 
+    frameborder="0" 
+    style="background: transparent; pointer-events: none;">
+  </iframe>
+</div>
+
+<!-- Widget Top Liker à gauche -->
+<div class="topliker-wrap">
+  <div class="topliker-container">
+    <div class="topliker-title">🏆 Top Liker</div>
+    <iframe 
+      src="https://tikfinity.zerody.one/widget/topliker?cid=2260505" 
+      width="100%" 
+      height="350" 
+      frameborder="0" 
+      style="border-radius: 10px; background: rgba(0,0,0,0.3);">
+    </iframe>
+  </div>
+  
+  <!-- Widget Ranking -->
+  <div class="ranking-container">
+    <div class="ranking-title">📊 Ranking</div>
+    <iframe 
+      src="https://tikfinity.zerody.one/widget/ranking?cid=2260505" 
+      width="100%" 
+      height="350" 
+      frameborder="0" 
+      style="border-radius: 10px; background: rgba(0,0,0,0.3);">
+    </iframe>
+  </div>
+</div>
+
+<div class="canvasWrap">
+  <div style="position: relative; display: inline-block;">
+    <canvas id="wheel"></canvas>
+    <div class="wheel-pointer"></div>
+    <div class="light-spot"></div>
+    <div class="wheel-shine"></div>
     
-    <div class="diamond-container">
-      <div class="diamond" id="diamond"></div>
+    <!-- Widget Coin Drop au centre de la roue -->
+    <div class="coindrop-overlay">
+      <iframe 
+        src="https://tikfinity.zerody.one/widget/coindrop?cid=2260505" 
+        width="300" 
+        height="300" 
+        frameborder="0" 
+        style="background: transparent; pointer-events: none;">
+      </iframe>
+    </div>
+  </div>
+<h2 id="result">Résultat : -</h2>
 
-      <!-- WIDGET COINDROP intégré sous/le long du diamant (transparent, sans contour, pointer-events:none) -->
-      <div class="diamond-coindrop" aria-hidden="true">
-        <iframe src="https://tikfinity.zerody.one/widget/coindrop?cid=2136326"></iframe>
+<div id="turnCounter">Tours effectués : 0 <button class="timer-btn" id="resetTurnBtn">↺ Reset</button></div>
+
+  <!-- Widget TikTok -->
+  <div class="timer-container" style="position: relative;">
+    <div class="timer-title">🎁 Cadeaux = + de temps</div>
+    <iframe 
+      src="https://tikfinity.zerody.one/widget/timer?cid=2260505" 
+      width="100%" 
+      height="200" 
+      frameborder="0" 
+      style="border-radius: 10px; background: rgba(0,0,0,0.3);">
+    </iframe>
+    
+    <!-- Widget My Actions par-dessus le chronomètre -->
+    <div class="myactions-overlay-timer">
+      <iframe 
+        src="https://tikfinity.zerody.one/widget/myactions?cid=2260505&screen=1" 
+        width="400" 
+        height="200" 
+        frameborder="0" 
+        style="background: transparent; pointer-events: none;">
+      </iframe>
+    </div>
+  </div>
+
+</div>
+
+<div class="info">
+<div class="statGrid">
+<div class="stat">
+<b>Pièces</b>
+<div id="piecesTotal">Total pièces: 0</div>
+<div id="piecesCount">Nombre de gains pièces: 0</div>
+<span class="reset-icon" title="Réinitialiser les pièces" onclick="resetPieces()">↺</span>
+<span class="add-icon" title="Modifier les pièces" onclick="modifyPieces()">✎</span>
+</div>
+<div class="stat">
+<b>Tickets</b>
+<div id="ticketsTotal">Total tickets: 0</div>
+<div id="ticketsCount">Nombre de gains tickets: 0</div>
+<span class="reset-icon" title="Réinitialiser les tickets" onclick="resetTickets()">↺</span>
+<span class="add-icon" title="Modifier les tickets" onclick="modifyTickets()">✎</span>
+</div>
+<div class="stat">
+<b>Fragments</b>
+<div id="fragCount">Total fragments: 0</div>
+<div id="fragSylver">Argent: 0</div>
+<div id="fragGold">Or: 0</div>
+<div id="fragDiamond">Diamant: 0</div>
+<span class="reset-icon" title="Réinitialiser les fragments" onclick="resetFragments()">↺</span>
+</div>
+<div class="stat">
+<b>Changements de roue</b>
+<div id="sylverCount">Argent: 0</div>
+<div id="goldCount">Or: 0</div>
+<div id="diamondCount">Diamant: 0</div>
+</div>
+</div>
+
+<!-- Barre de progression pour la roue argent -->
+<div class="progress-container">
+  <div class="progress-title">
+    <span>Progression vers la roue Argent</span>
+    <span id="sylverProgressText">0/20</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="sylverProgressBar"></div>
+    <div class="progress-label" id="sylverProgressLabel">0%</div>
+  </div>
+  <div class="progress-controls">
+    <button class="progress-btn" onclick="modifySylverProgress(-10)">-10</button>
+    <button class="progress-btn" onclick="modifySylverProgress(-1)">-1</button>
+    <button class="progress-btn" onclick="modifySylverProgress(1)">+1</button>
+    <button class="progress-btn" onclick="modifySylverProgress(10)">+10</button>
+  </div>
+</div>
+
+<!-- Nouvelle barre de progression pour le coffre déplacée dans le header -->
+
+<div class="legend">
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#d4ffd4,#88cc88)"></div> Pièces</div>
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#e6f0ff,#66a3ff)"></div> Tickets</div>
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#f0e6ff,#c59bff)"></div> Fragment Argent</div>
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#fff5b1,#ffd700)"></div> Changement de roue</div>
+<div class="legendItem"><div class="colorBox" style="background:linear-gradient(#8b4513,#a0522d)"></div> Coffre</div>
+</div>
+
+<div id="summary"></div>
+<div id="history"><b>Historique Complet :</b></div>
+</div>
+</div>
+
+<!-- Popup de statistiques avancées -->
+<div class="popup" id="statsPopup">
+  <div class="popup-content">
+    <h2>📊 Statistiques Avancées</h2>
+    <div class="stats-grid">
+      <div class="stats-chart">
+        <h3>Répartition des gains</h3>
+        <div class="chart-container" id="gainDistributionChart">
+          <!-- Graphique de répartition -->
+        </div>
+      </div>
+      <div class="stats-chart">
+        <h3>Gains par type</h3>
+        <div class="chart-container" id="gainByTypeChart">
+          <!-- Graphique par type -->
+        </div>
       </div>
     </div>
-
-    <div class="instructions">
-      <h2>🌹 Casse le Diamant et Gagne le Cadeau ! 🌹</h2>
-      <p>Une Rose - Un Coup</p>
+    <div class="stats-chart" style="grid-column: 1 / -1; margin-top: 15px;">
+      <h3>Évolution des gains</h3>
+      <div class="chart-container" id="gainEvolutionChart">
+        <!-- Graphique d'évolution -->
+      </div>
     </div>
+    <button class="popup-btn" onclick="document.getElementById('statsPopup').classList.remove('active')">Fermer</button>
+  </div>
+</div>
 
-    <div class="attack-modes">
-      <button id="mode1" class="attack-mode-btn active">1</button>
-      <button id="mode5" class="attack-mode-btn">5</button>
-      <button id="mode10" class="attack-mode-btn">10</button>
-      <button id="mode30" class="attack-mode-btn">30</button>
-      <button id="mode50" class="attack-mode-btn">50</button>
-      <button id="mode100" class="attack-mode-btn">100</button>
-      <button id="mode500" class="attack-mode-btn">500</button>
-      <button id="mode1000" class="attack-mode-btn">1000</button>
-    </div>
+<!-- Widget Stream Buddies en bas centré sans contour -->
+<div class="streambuddies-section">
+  <iframe 
+    src="https://tikfinity.zerody.one/widget/streambuddies?cid=2260505" 
+    width="100%" 
+    height="150" 
+    frameborder="0" 
+    style="background: transparent; border: none; max-width: 800px; margin: 0 auto; display: block;">
+  </iframe>
+</div>
 
-    <div class="controls">
-      <button id="attackBtn">Attaquer (1 coup)</button>
-      <button id="resetBtn">Nouveau Diamant</button>
-    </div>
+<footer>Spin rapide 0.5s — multi-spin séquentiel — couleurs & compteurs en temps réel.</footer>
+</div>
 
-    <p id="message"></p>
+<!-- Popup de félicitations -->
+<div class="popup" id="congratsPopup">
+  <div class="popup-content">
+    <h2>Félicitations !</h2>
+    <p id="popupMessage">Vous avez gagné un prix spécial !</p>
+    <button class="popup-btn" onclick="document.getElementById('congratsPopup').classList.remove('active')">Fermer</button>
+  </div>
+</div>
 
-    <div id="resultContainer" class="hidden result-box">
-      <h3>🎉 Diamant Détruit ! 🎉</h3>
-      <p id="coinsResult">Vous avez gagné 0 pièce !</p>
+<!-- Nouveau popup pour les tours offerts -->
+<div class="popup" id="toursPopup">
+  <div class="popup-content">
+    <h2 id="toursPopupTitle">Tours offerts !</h2>
+    <p id="toursPopupMessage">Vous avez gagné des tours gratuits !</p>
+    <button class="popup-btn" onclick="document.getElementById('toursPopup').classList.remove('active')">Super !</button>
+  </div>
+</div>
+
+<!-- Popup pour modifier les pièces -->
+<div class="modify-popup" id="modifyPiecesPopup">
+  <div class="modify-content">
+    <h2>Modifier les pièces</h2>
+    <input type="number" id="piecesInput" min="0" value="0" />
+    <div class="modify-buttons">
+      <button class="modify-btn modify-confirm" onclick="confirmModifyPieces()">Confirmer</button>
+      <button class="modify-btn modify-cancel" onclick="cancelModifyPieces()">Annuler</button>
     </div>
   </div>
+</div>
 
-  <div class="widget-right">
-    <iframe src="https://tikfinity.zerody.one/widget/ranking?cid=2136326" frameborder="0"></iframe>
-    <div class="timer-widget-right">
-      <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2136326" frameborder="0"></iframe>
+<!-- Popup pour modifier les tickets -->
+<div class="modify-popup" id="modifyTicketsPopup">
+  <div class="modify-content">
+    <h2>Modifier les tickets</h2>
+    <input type="number" id="ticketsInput" min="0" value="0" />
+    <div class="modify-buttons">
+      <button class="modify-btn modify-confirm" onclick="confirmModifyTickets()">Confirmer</button>
+      <button class="modify-btn modify-cancel" onclick="cancelModifyTickets()">Annuler</button>
     </div>
   </div>
+</div>
 
-  <script>
-    let maxHP, currentHP, coupCounter, totalHits;
-    let hitsUntilCoin = 4;
-    let attackMode = 1;
-    let rosesEarnedThisDiamond = 0;
-    let combo = 0;
-    let lastHitTime = 0;
-    let isAttacking = false;
-    let audioContext = null;
-    let isPinkDiamond = false;
+<script>
+// ==================== DONNÉES ====================
+// Modification de la roue Bronze pour ajouter la case "Coffre"
+const bronzeItems = [
+  "5 Pièces", "5 Pièces", "1/20 Argent", "5 Pièces", "5 Pièces","5 Pièces",
+  "5 Pièces", "5 Pièces", "1/20 Argent", "5 Pièces", "15 Pièces","5 Pièces","5 Pièces",
+  "5 Pièces", "5 Pièces", "5 Pièces", "10 Pièces", "5 Pièces","5 Pièces","5 Pièces","5 Pièces",
+  "5 Pièces", "Roue Argent", "Coffre", "30 Pièces", "5 Pièces"  // Ajout de "Coffre"
+];
 
-    const diamond = document.getElementById("diamond");
-    const message = document.getElementById("message");
-    const attackBtn = document.getElementById("attackBtn");
-    const resultContainer = document.getElementById("resultContainer");
-    const coinsResult = document.getElementById("coinsResult");
-    const gameContainer = document.getElementById("gameContainer");
-    const comboIndicator = document.getElementById("comboIndicator");
+const silverItems = [
+  "5 Pièces", "5 Pièces", "5 Pièces", "5 Pièces", "5 Pièces",
+  "5 Pièces", "5 Pièces", "5 Pièces", "100 Pièces", "1/20 Or",
+  "5 Pièces", "5 Pièces", "30 Pièces", "Roue Or", "5 Pièces",
+  "5 Pièces", "5 Pièces", "5 Pièces", "5 Pièces", "100 Pièces"
+];
 
-    const impactEffects = ["💥", "🔥", "⭐", "💫", "✨", "💢"];
+const goldItems = [
+  "200 Pièces", "Roue Diamant", "1000 Pièces", "300 Pièces", "100 Pièces",
+  "5000 Pièces", "300 Pièces", "500 Pièces", "1000 Pièces", "1000 Pièces",
+  "500 Pièces", "300 Pièces", "500 Pièces", "5 Pièces", "500 Pièces", "400 Pièces",
+  "300 Pièces", "500 Pièces", "300 Pièces", "400 Pièces", "500 Pièces"
+];
 
-    // Système audio corrigé
-    function initAudioContext() {
-      try {
-        if (!audioContext) {
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioContext.state === 'suspended') {
-          audioContext.resume();
-        }
-        return audioContext;
-      } catch (e) {
-        return null;
-      }
-    }
+const diamondItems = [
+  "Roue Univers", "5000 Pièces", "2000 Pièces", "1000 Pièces", "10000 Pièces",
+  "1000 Pièces", "30000 Pièces", "1000 Pièces", "5 Pièces", "7000 Pièces",
+  "1000 Pièces", "5000 Pièces", "1000 Pièces", "7000 Pièces", "500 Pièces",
+  "1000 Pièces", "1000 Pièces", "1000 Pièces", "1000 Pièces",
+  "10000 Pièces", "1000 Pièces", "300 Pièces", "5 Pièces"
+];
 
-    function createSound(frequency, duration, type = 'sine', volume = 0.15) {
-      const context = initAudioContext();
-      if (!context) return;
+const wheelsData = { bronze: bronzeItems, silver: silverItems, gold: goldItems, diamond: diamondItems };
 
-      try {
-        const oscillator = context.createOscillator();
-        const gainNode = context.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(context.destination);
-        
-        oscillator.frequency.value = frequency;
-        oscillator.type = type;
-        
-        gainNode.gain.setValueAtTime(volume, context.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + duration);
-        
-        oscillator.start(context.currentTime);
-        oscillator.stop(context.currentTime + duration);
-      } catch (e) {
-        // Silence en cas d'erreur
-      }
-    }
+// ==================== TEXTURES ET COULEURS RÉALISTES ====================
+const wheelTextures = {
+  bronze: {
+    base: ['#f1c27d', '#d99a4a'],
+    highlight: '#ffd700',
+    shadow: '#8c5e24',
+    border: '#704214',
+    pattern: '#daa520'
+  },
+  silver: {
+    base: ['#e6e6e6', '#c0c0c0'],
+    highlight: '#ffffff',
+    shadow: '#a0a0a0',
+    border: '#808080',
+    pattern: '#d0d0d0'
+  },
+  gold: {
+    base: ['#ffef9c', '#e6c84a'],
+    highlight: '#fffacd',
+    shadow: '#b8860b',
+    border: '#daa520',
+    pattern: '#ffd700'
+  },
+  diamond: {
+    base: ['#bff9ff', '#66e6e6'],
+    highlight: '#ffffff',
+    shadow: '#009999',
+    border: '#00b3b3',
+    pattern: '#00cccc'
+  }
+};
 
-    function playHitSound() {
-      createSound(800, 0.1, 'square');
-      setTimeout(() => createSound(400, 0.05, 'triangle'), 50);
-    }
+const categoryColors = {
+  pieces: ['#d4ffd4','#88cc88'],
+  tickets: ['#e6f0ff','#66a3ff'],
+  'fragment-sylver': ['#c78cff','#a050d0'],
+  'fragment-gold': ['#ffd700','#e6c84a'],
+  'fragment-diamond': ['#00e6e6','#009999'],
+  wheelChange: ['#fff5b1','#ffd700'],
+  other: ['#f39c12','#e67e22'],
+  'tours-offerts': ['#ffb3ba','#ff6b6b'],
+  'chest': ['#8b4513','#a0522d'] // Nouvelle couleur pour le coffre
+};
 
-    function playCrackSound() {
-      createSound(200, 0.3, 'sawtooth');
-      setTimeout(() => createSound(150, 0.2, 'sawtooth'), 100);
-    }
+// ==================== STATE ====================
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const spinBtn = document.getElementById('spinBtn');
+const multiBtn = document.getElementById('multiBtn');
+const stopBtn = document.getElementById('stopBtn');
+const speedBtn = document.getElementById('speedBtn');
+const resetChestBtn = document.getElementById('resetChestBtn');
+const statsBtn = document.getElementById('statsBtn');
+const resetBtn = document.getElementById('resetBtn');
+const wheelSelect = document.getElementById('wheelSelect');
+const congratsPopup = document.getElementById('congratsPopup');
+const toursPopup = document.getElementById('toursPopup');
+const statsPopup = document.getElementById('statsPopup');
 
-    function playBreakSound() {
-      createSound(100, 0.5, 'sawtooth');
-      setTimeout(() => createSound(300, 0.3, 'square'), 100);
-      setTimeout(() => createSound(600, 0.2, 'sine'), 200);
-    }
+const resultEl = document.getElementById('result');
+const turnCounterEl = document.getElementById('turnCounter');
+const summaryEl = document.getElementById('summary');
+const historyEl = document.getElementById('history');
+const wheelTitle = document.getElementById('wheelTitle');
+const recentListEl = null; // Supprimé - historique récent retiré
 
-    // Fonction pour créer un marteau animé
-    function createHammer() {
-      const hammer = document.createElement('div');
-      hammer.className = 'hammer';
-      
-      const hammerHead = document.createElement('div');
-      hammerHead.className = 'hammer-head';
-      
-      const hammerHandle = document.createElement('div');
-      hammerHandle.className = 'hammer-handle';
-      
-      hammer.appendChild(hammerHead);
-      hammer.appendChild(hammerHandle);
-      
-      // Positionner le marteau au-dessus du diamant
-      const diamondRect = diamond.getBoundingClientRect();
-      const containerRect = diamond.parentElement.getBoundingClientRect();
-      
-      hammer.style.left = (diamondRect.left + diamondRect.width/2 - containerRect.left) + 'px';
-      hammer.style.top = (diamondRect.top - containerRect.top) + 'px';
-      
-      diamond.parentElement.appendChild(hammer);
-      
-      return hammer;
-    }
+const piecesTotalEl = document.getElementById('piecesTotal');
+const piecesCountEl = document.getElementById('piecesCount');
+const ticketsTotalEl = document.getElementById('ticketsTotal');
+const ticketsCountEl = document.getElementById('ticketsCount');
+const fragCountEl = document.getElementById('fragCount');
+const fragSylverEl = document.getElementById('fragSylver');
+const fragGoldEl = document.getElementById('fragGold');
+const fragDiamondEl = document.getElementById('fragDiamond');
+const sylverCountEl = document.getElementById('sylverCount');
+const goldCountEl = document.getElementById('goldCount');
+const diamondCountEl = document.getElementById('diamondCount');
 
-    // Fonction pour animer le marteau
-    function animateHammer() {
-      const hammer = createHammer();
-      hammer.classList.add('hammer-hit');
-      
-      // Supprimer le marteau après l'animation
-      setTimeout(() => {
-        if (hammer.parentElement) {
-          hammer.parentElement.removeChild(hammer);
-        }
-      }, 600);
-    }
+// Éléments de la barre de progression argent
+const sylverProgressBar = document.getElementById('sylverProgressBar');
+const sylverProgressLabel = document.getElementById('sylverProgressLabel');
+const sylverProgressText = document.getElementById('sylverProgressText');
 
-    // Fonctions d'effets visuels CORRIGÉES
-    function createDiamondShards() {
-      const container = diamond.parentElement;
-      
-      for (let i = 0; i < 12; i++) {
-        const shard = document.createElement('div');
-        shard.style.cssText = `
-          position: absolute;
-          width: 8px;
-          height: 8px;
-          background: linear-gradient(45deg, #4fc3f7, #29b6f6, #0288d1);
-          transform: rotate(45deg);
-          pointer-events: none;
-          left: 50%;
-          top: 50%;
-          z-index: 1000;
-        `;
-        
-        container.appendChild(shard);
-        
-        const angle = (i / 12) * Math.PI * 2;
-        const distance = 100 + Math.random() * 100;
-        const duration = 800 + Math.random() * 400;
-        
-        shard.animate([
-          {
-            transform: 'translate(-50%, -50%) rotate(45deg) scale(1)',
-            opacity: 1
-          },
-          {
-            transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) rotate(${45 + Math.random() * 360}deg) scale(0)`,
-            opacity: 0
-          }
-        ], {
-          duration: duration,
-          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        }).onfinish = () => shard.remove();
-      }
-    }
+// Nouveaux éléments pour la barre de progression du coffre (dans le header)
+const chestProgressBar = document.getElementById('chestProgressBarHeader');
+const chestProgressLabel = document.getElementById('chestProgressLabelHeader');
+const chestProgressText = document.getElementById('chestProgressTextHeader');
 
-    function createHitParticles() {
-      const container = diamond.parentElement;
-      
-      for (let i = 0; i < 6; i++) {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background: #feca57;
-          border-radius: 50%;
-          pointer-events: none;
-          left: ${45 + Math.random() * 10}%;
-          top: ${45 + Math.random() * 10}%;
-          z-index: 999;
-        `;
-        
-        container.appendChild(particle);
-        
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 30 + Math.random() * 30;
-        
-        particle.animate([
-          {
-            transform: 'scale(1)',
-            opacity: 1
-          },
-          {
-            transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
-            opacity: 0
-          }
-        ], {
-          duration: 400,
-          easing: 'ease-out'
-        }).onfinish = () => particle.remove();
-      }
-    }
+// Éléments pour les popups de modification
+const modifyPiecesPopup = document.getElementById('modifyPiecesPopup');
+const modifyTicketsPopup = document.getElementById('modifyTicketsPopup');
+const piecesInput = document.getElementById('piecesInput');
+const ticketsInput = document.getElementById('ticketsInput');
 
-    function createImpactEffect() {
-      const effect = document.createElement('div');
-      effect.className = 'impact-effect';
-      effect.textContent = impactEffects[Math.floor(Math.random() * impactEffects.length)];
-      effect.style.left = (Math.random() * 80 + 10) + '%';
-      effect.style.top = (Math.random() * 60 + 20) + '%';
-      
-      document.querySelector('.diamond-container').appendChild(effect);
+// Élément pour le timer (supprimé - remplacé par widget TikTok)
+
+let currentWheel = 'bronze';
+let currentItems = wheelsData[currentWheel];
+let angle = 0;
+let spinning = false;
+let totalTurns = 0;
+const resultsCount = {};
+const recentHistory = []; // Supprimé - historique récent retiré
+const counters = {
+  piecesTotal:0, piecesCount:0,
+  ticketsTotal:0, ticketsCount:0,
+  fragCount:0, fragSylver:0, fragGold:0, fragDiamond:0,
+  wheelSylver:0, wheelGold:0, wheelDiamond:0,
+  toursArgentOfferts: 0,
+  toursOrOfferts: 0,
+  chestPieces: 0 // Nouveau compteur pour les pièces dans le coffre
+};
+
+// Variables pour le contrôle des animations
+let animationId = null;
+let currentAnimation = null;
+let spinDuration = 1500; // Durée par défaut d'un tour
+let isFastMode = false; // Mode accéléré
+let isMultiSpinning = false; // Indique si un multi-spin est en cours
+let remainingSpins = 0; // Nombre de tours restants dans un multi-spin
+
+// Variables supprimées - timer remplacé par widget TikTok
+
+// ==================== FONCTIONS TIMER SUPPRIMÉES ====================
+// Le timer a été remplacé par le widget TikTok
+
+// ==================== ANIMATIONS ====================
+function createCoinRain() {
+  const coinRain = document.createElement('div');
+  coinRain.className = 'coin-rain';
+  document.body.appendChild(coinRain);
+  
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      const coin = document.createElement('div');
+      coin.className = 'coin';
+      coin.style.left = Math.random() * 100 + 'vw';
+      coin.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      coinRain.appendChild(coin);
       
       setTimeout(() => {
-        effect.remove();
-      }, 1000);
-    }
+        coin.remove();
+      }, 5000);
+    }, i * 100);
+  }
+  
+  setTimeout(() => {
+    coinRain.remove();
+  }, 5000);
+}
 
-    function updateCombo() {
-      const currentTime = Date.now();
-      if (currentTime - lastHitTime > 2000) {
-        combo = 0;
-      }
-      combo++;
-      lastHitTime = currentTime;
-      
-      if (combo >= 3) {
-        comboIndicator.textContent = `COMBO x${combo}`;
-        comboIndicator.style.display = 'block';
-      }
-    }
-
-    // Fonction d'attaque CORRIGÉE avec protection anti-clics multiples
-    function attack() {
-      if (currentHP <= 0 || isAttacking) return;
-      
-      isAttacking = true;
-      
-      let hits = attackMode;
-      let actualHits = 0;
-      let rosesEarned = 0;
-      let wasCracked = diamond.classList.contains('cracked');
-      
-      // Animer le marteau
-      animateHammer();
-      
-      playHitSound();
-      createHitParticles();
-      createImpactEffect();
-      updateCombo();
-      
-      let animationType = 'hit';
-      let shakeType = 'screen-shake';
-      let animationDuration = 400;
-      
-      if (attackMode >= 1000) {
-        animationType = 'ultra-hit';
-        shakeType = 'ultra-shake';
-        animationDuration = 1200;
-      } else if (attackMode >= 500) {
-        animationType = 'mega-hit';
-        shakeType = 'mega-shake';
-        animationDuration = 1000;
-      } else if (attackMode >= 100) {
-        animationType = 'critical-hit';
-        shakeType = 'mega-shake';
-        animationDuration = 800;
-      } else if (attackMode >= 30) {
-        animationType = 'heavy-hit';
-        animationDuration = 600;
-      } else if (attackMode >= 10) {
-        animationType = 'heavy-hit';
-        animationDuration = 600;
-      }
-
-      diamond.classList.add(animationType);
-      if (shakeType) gameContainer.classList.add(shakeType);
-      
-      for (let i = 0; i < hits && currentHP > 0; i++) {
-        coupCounter++;
-        actualHits++;
-        totalHits++;
-
-        if (coupCounter >= 2) {
-          coupCounter = 0;
-          currentHP--;
-        }
-
-        hitsUntilCoin--;
-        if (hitsUntilCoin <= 0) {
-          rosesEarnedThisDiamond++;
-          rosesEarned++;
-          hitsUntilCoin = 4;
-        }
-      }
-      
-      if (rosesEarned > 0) {
-        showRoseGain(rosesEarned);
-      }
-      
-      updateUI();
-      
-      if (!wasCracked && diamond.classList.contains('cracked')) {
-        playCrackSound();
-      }
+function createFragmentParticles(type) {
+  let color;
+  switch(type) {
+    case 'sylver': color = '#c78cff'; break;
+    case 'gold': color = '#ffd700'; break;
+    case 'diamond': color = '#00e6e6'; break;
+    default: color = '#ffffff';
+  }
+  
+  for (let i = 0; i < 20; i++) {
+    setTimeout(() => {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.width = '10px';
+      particle.style.height = '10px';
+      particle.style.background = color;
+      particle.style.borderRadius = '50%';
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.animationDuration = (Math.random() * 2 + 1) + 's';
+      document.body.appendChild(particle);
       
       setTimeout(() => {
-        diamond.classList.remove(animationType);
-        if (shakeType) gameContainer.classList.remove(shakeType);
-        isAttacking = false;
-        
-        if (currentHP <= 0) {
-          endGame();
-        }
-      }, animationDuration);
-    }
+        particle.remove();
+      }, 3000);
+    }, i * 100);
+  }
+}
 
-    function showRoseGain(amount) {
-      const roseDisplay = document.createElement('div');
-      roseDisplay.className = 'coins-display';
-      roseDisplay.textContent = `+${amount} 🌹`;
-      diamond.parentElement.appendChild(roseDisplay);
+function createTourParticles() {
+  for (let i = 0; i < 30; i++) {
+    setTimeout(() => {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.width = '15px';
+      particle.style.height = '15px';
+      particle.style.background = 'radial-gradient(circle, #ffd700, #ff6b00)';
+      particle.style.borderRadius = '50%';
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.animationDuration = (Math.random() * 2 + 1) + 's';
+      particle.style.boxShadow = '0 0 10px #ff6b00';
+      document.body.appendChild(particle);
       
       setTimeout(() => {
-        roseDisplay.remove();
-      }, 1000);
-    }
+        particle.remove();
+      }, 3000);
+    }, i * 100);
+  }
+}
 
-    function updateUI() {
-      if (currentHP === 0) {
-        diamond.className = "diamond broken";
-        message.textContent = "💥 Le diamant s'est brisé !";
+// ==================== UTIL ====================
+function setCanvasSize(){
+  const size = Math.min(520, Math.floor(window.innerWidth * 0.56));
+  const dpr = window.devicePixelRatio || 1;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  drawWheel(currentItems, angle);
+}
+window.addEventListener('resize', setCanvasSize);
+
+function normalize(s){ return (s||'').toLowerCase(); }
+function extractFraction(s){ const m = s.match(/(\d+)\s*\/\s*(\d+)/); return m ? Number(m[1])/Number(m[2]) : null; }
+function categorizeLabel(s){
+  const low = normalize(s);
+  if(/\bpi[eè]c/i.test(s) || low.includes('pièce') || low.includes('pièces')) return 'pieces';
+  if(/\btickets?\b|ticket de/i.test(low)) return 'tickets';
+  if(/\/\d+|1\/20/.test(low)){
+    if(low.includes('sylver') || low.includes('argent')) return 'fragment-sylver';
+    if(low.includes('gold') || low.includes('or')) return 'fragment-gold';
+    if(low.includes('diamond')||low.includes('diamant')) return 'fragment-diamond';
+    return 'fragment';
+  }
+  if(/wheel|golden|silver|diamond|diamant|universe|galaxie|galaxy|or|argent/i.test(low)) return 'wheelChange';
+  if(/tours?.*offert|offert.*tours?/i.test(low)) return 'tours-offerts';
+  if(/coffre/i.test(low)) return 'chest'; // Nouvelle catégorie pour le coffre
+  return 'other';
+}
+
+// ==================== DESSIN RÉALISTE DES ROUES ====================
+function drawWheel(items, angleOffset = 0){
+  const size = canvas.clientWidth;
+  const center = size/2;
+  const radius = center-12;
+  const num = items.length;
+  const arc = (2*Math.PI)/num;
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.save(); 
+  ctx.translate(center,center); 
+  ctx.rotate(angleOffset);
+
+  const texture = wheelTextures[currentWheel];
+  
+  // Dessiner l'arrière-plan de la roue avec un dégradé réaliste
+  const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+  gradient.addColorStop(0, texture.base[0]);
+  gradient.addColorStop(0.7, texture.base[1]);
+  gradient.addColorStop(1, texture.shadow);
+  
+  // Ajouter un motif de casino
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  
+  // Bordure décorative
+  ctx.strokeStyle = texture.border;
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  
+  // Ajouter un motif de points sur la bordure
+  ctx.beginPath();
+  ctx.arc(0, 0, radius + 2, 0, 2 * Math.PI);
+  ctx.setLineDash([5, 3]);
+  ctx.strokeStyle = texture.highlight;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Ajouter des détails réalistes selon le type de roue
+  if (currentWheel === 'diamond') {
+    // Effet de facettes de diamant
+    for (let i = 0; i < 12; i++) {
+      const angle = (i * Math.PI) / 6;
+      const x1 = Math.cos(angle) * (radius * 0.8);
+      const y1 = Math.sin(angle) * (radius * 0.8);
+      const x2 = Math.cos(angle) * radius;
+      const y2 = Math.sin(angle) * radius;
+      
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  } else if (currentWheel === 'gold') {
+    // Effet de veinures d'or
+    for (let i = 0; i < 24; i++) {
+      const angle = (i * Math.PI) / 12;
+      const startRadius = radius * 0.7;
+      const endRadius = radius * 0.9;
+      
+      ctx.beginPath();
+      ctx.arc(0, 0, startRadius, angle, angle + 0.1);
+      ctx.arc(0, 0, endRadius, angle + 0.1, angle, true);
+      ctx.closePath();
+      
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(184, 134, 11, 0.4)' : 'rgba(218, 165, 32, 0.4)';
+      ctx.fill();
+    }
+  } else if (currentWheel === 'silver') {
+    // Effet de reflets argentés
+    for (let i = 0; i < 36; i++) {
+      const angle = (i * Math.PI) / 18;
+      const length = radius * 0.15;
+      
+      ctx.beginPath();
+      ctx.moveTo(
+        Math.cos(angle) * (radius * 0.7),
+        Math.sin(angle) * (radius * 0.7)
+      );
+      ctx.lineTo(
+        Math.cos(angle) * (radius * 0.85),
+        Math.sin(angle) * (radius * 0.85)
+      );
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  } else if (currentWheel === 'bronze') {
+    // Effet de patine bronze
+    for (let i = 0; i < 18; i++) {
+      const angle = (i * Math.PI) / 9;
+      const spotRadius = radius * 0.1;
+      
+      ctx.beginPath();
+      ctx.arc(
+        Math.cos(angle) * (radius * 0.75),
+        Math.sin(angle) * (radius * 0.75),
+        spotRadius,
+        0,
+        Math.PI * 2
+      );
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(139, 69, 19, 0.3)' : 'rgba(112, 66, 20, 0.3)';
+      ctx.fill();
+    }
+  }
+
+  for(let i=0;i<num;i++){
+    const start = i*arc;
+    const label = items[i];
+    const cat = categorizeLabel(label);
+    let colors = categoryColors[cat] || categoryColors.other;
+    const fill = (i%2===0)?colors[0]:colors[1];
+
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,radius,start,start+arc);
+    ctx.closePath();
+    
+    // Ajouter un effet de dégradé
+    const segmentGradient = ctx.createLinearGradient(
+      Math.cos(start) * radius/2, 
+      Math.sin(start) * radius/2,
+      Math.cos(start + arc) * radius, 
+      Math.sin(start + arc) * radius
+    );
+    segmentGradient.addColorStop(0, fill);
+    segmentGradient.addColorStop(1, i%2===0 ? colors[1] : colors[0]);
+    
+    ctx.fillStyle = segmentGradient;
+    ctx.fill();
+    
+    ctx.strokeStyle='#fff'; 
+    ctx.lineWidth=1; 
+    ctx.stroke();
+
+    ctx.save(); 
+    ctx.rotate(start + arc/2);
+    const fontSize = Math.max(11, Math.floor(radius / (num > 12 ? 7.6 : 6.6)));
+    ctx.font = `bold ${fontSize}px Arial`;
+    ctx.textAlign='right';
+    ctx.fillStyle='#000';
+    ctx.fillText(label, radius-8,6);
+    ctx.restore();
+  }
+  
+  // Dessiner le centre de la roue avec un effet plus travaillé
+  ctx.beginPath();
+  ctx.arc(0, 0, 15, 0, 2 * Math.PI);
+  
+  const centerGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 15);
+  centerGradient.addColorStop(0, texture.highlight);
+  centerGradient.addColorStop(1, texture.shadow);
+  ctx.fillStyle = centerGradient;
+  ctx.fill();
+  
+  ctx.strokeStyle = texture.border;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  // Ajouter un petit cercle au centre
+  ctx.beginPath();
+  ctx.arc(0, 0, 5, 0, 2 * Math.PI);
+  ctx.fillStyle = '#222';
+  ctx.fill();
+  
+  ctx.restore();
+
+  // Dessiner l'indicateur amélioré
+  ctx.fillStyle='#d62828';
+  ctx.beginPath();
+  ctx.moveTo(center-14,8);
+  ctx.lineTo(center+14,8);
+  ctx.lineTo(center,36);
+  ctx.closePath();
+  
+  const pointerGradient = ctx.createLinearGradient(center-14, 8, center+14, 8);
+  pointerGradient.addColorStop(0, '#ff5252');
+  pointerGradient.addColorStop(1, '#b33939');
+  ctx.fillStyle = pointerGradient;
+  ctx.fill();
+  
+  // Ajouter un effet d'ombre à l'indicateur
+  ctx.strokeStyle = '#900';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  // Ajouter un cercle rouge à la base de l'indicateur
+  ctx.beginPath();
+  ctx.arc(center, 8, 10, 0, 2 * Math.PI);
+  ctx.fillStyle = '#d62828';
+  ctx.fill();
+  ctx.strokeStyle = '#900';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// ==================== SPIN ====================
+function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
+
+function spinOnce(){
+  if(spinning) return Promise.resolve(null);
+  spinning=true; 
+  spinBtn.disabled=true; 
+  multiBtn.disabled=true;
+  stopBtn.disabled = false;
+  
+  // Ajouter une classe pour l'animation de la roue
+  canvas.classList.add('spinning');
+
+  const items = currentItems;
+  const num = items.length;
+  const arc = (2*Math.PI)/num;
+  const targetIndex = Math.floor(Math.random()*num);
+  const center_i = targetIndex*arc+arc/2;
+  const rotations = 4+Math.floor(Math.random()*2);
+  const finalRotation = -Math.PI/2-center_i+rotations*2*Math.PI;
+  const startRotation = angle;
+  let startTime=null;
+
+  return new Promise(resolve=>{
+    function animate(ts){
+      if(!startTime) startTime=ts;
+      const elapsed = ts-startTime;
+      const t = Math.min(1,elapsed/spinDuration);
+      const ease = easeOutCubic(t);
+      angle = startRotation + (finalRotation-startRotation)*ease;
+      drawWheel(currentItems, angle);
+      
+      if(t<1) {
+        animationId = requestAnimationFrame(animate);
       } else {
-        if (maxHP - currentHP >= 20) {
-          diamond.classList.add("cracked");
-          message.textContent = "⚠️ Le diamant commence à se fissurer...";
-        } else {
-          diamond.classList.remove("cracked");
-          if (isPinkDiamond) {
-            message.textContent = "✨ DIAMANT ROSE SPÉCIAL ! ✨";
-          } else {
-            message.textContent = "À tout moment le diamant peut se briser...";
-          }
-        }
+        angle=((angle%(2*Math.PI))+2*Math.PI)% (2*Math.PI);
+        const pick = items[targetIndex];
+        
+        // Enlever la classe d'animation
+        canvas.classList.remove('spinning');
+        
+        applyResult(pick);
+        spinning=false; 
+        spinBtn.disabled=false; 
+        multiBtn.disabled=false;
+        stopBtn.disabled = true;
+        resolve(pick);
       }
     }
+    
+    // Stocker la fonction d'animation pour pouvoir l'arrêter
+    currentAnimation = animate;
+    animationId = requestAnimationFrame(animate);
+  });
+}
 
-    function endGame() {
-      // MODIFICATION : Récompense = HP divisé par 3
-      let recompense = Math.floor(maxHP / 3);
+function stopSpinning() {
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+  
+  // Si on est en mode multi-spin, on arrête complètement la séquence
+  if (isMultiSpinning) {
+    isMultiSpinning = false;
+    remainingSpins = 0;
+    multiBtn.disabled = false;
+    spinBtn.disabled = false;
+  }
+  
+  spinning = false;
+  spinBtn.disabled = false;
+  multiBtn.disabled = false;
+  stopBtn.disabled = true;
+  canvas.classList.remove('spinning');
+  
+  // Calculer le résultat basé sur l'angle actuel
+  const items = currentItems;
+  const num = items.length;
+  const arc = (2*Math.PI)/num;
+  const normalizedAngle = ((angle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+  const targetIndex = Math.floor((2*Math.PI - normalizedAngle) / arc) % num;
+  const pick = items[targetIndex];
+  
+  applyResult(pick);
+  updateHistory('Tour arrêté manuellement', 'other');
+}
+
+function toggleSpeed() {
+  isFastMode = !isFastMode;
+  spinDuration = isFastMode ? 500 : 1500;
+  speedBtn.textContent = isFastMode ? '🐌 Ralentir' : '⚡ Accélérer';
+  speedBtn.style.background = isFastMode ? 
+    'linear-gradient(to bottom, #FF9800, #E65100)' : 
+    'linear-gradient(to bottom, #9C27B0, #4A148C)';
+  updateHistory(`Mode ${isFastMode ? 'accéléré' : 'normal'} activé`, 'other');
+}
+
+async function multiSpin(){
+  const count=parseInt(document.getElementById('multiCount').value,10);
+  if(isNaN(count)||count<1) return alert('Veuillez entrer un nombre valide.');
+  
+  // Désactiver les boutons pendant le multi-spin
+  spinBtn.disabled=true; 
+  multiBtn.disabled=true;
+  stopBtn.disabled = false;
+  
+  isMultiSpinning = true;
+  remainingSpins = count;
+  
+  for(let i=0; i<count && isMultiSpinning; i++){
+    await spinOnce();
+    remainingSpins--;
+    
+    // Si on a encore des tours à faire et que l'utilisateur n'a not stopped
+    if (isMultiSpinning && remainingSpins > 0) {
+      await new Promise(r=>setTimeout(r, isFastMode ? 50 : 120));
+    }
+  }
+  
+  // Réactiver les boutons
+  isMultiSpinning = false;
+  spinning = false;
+  spinBtn.disabled=false; 
+  multiBtn.disabled=false;
+  stopBtn.disabled = true;
+}
+
+// ==================== APPLY RESULT ====================
+function applyResult(pick){
+  totalTurns++;
+  resultsCount[pick]=(resultsCount[pick]||0)+1;
+  resultEl.textContent='Résultat : '+pick;
+  
+  // Animation du résultat
+  resultEl.classList.remove('highlight');
+  void resultEl.offsetWidth; // Déclencher le reflow
+  resultEl.classList.add('highlight');
+  
+  setTimeout(() => {
+    resultEl.classList.remove('highlight');
+  }, 2000);
+  
+  turnCounterEl.innerHTML = `Tours effectués : ${totalTurns} <button class="timer-btn" id="resetTurnBtn">↺ Reset</button>`;
+
+  const cat = categorizeLabel(pick);
+  const normalizedPick = normalize(pick);
+
+  // Gestion du changement de roue
+  let wheelChanged = false;
+  let diamondResult = null;
+  let toursResult = null;
+  
+  if(normalizedPick.includes("roue argent") || normalizedPick.includes("silver wheel")) {
+    currentWheel = "silver";
+    wheelChanged = true;
+    counters.wheelSylver++;
+  } 
+  else if(normalizedPick.includes("roue or") || normalizedPick.includes("gold wheel")) {
+    currentWheel = "gold";
+    wheelChanged = true;
+    counters.wheelGold++;
+  } 
+  else if(normalizedPick.includes("roue diamant") || normalizedPick.includes("diamond wheel")) {
+    currentWheel = "diamond";
+    wheelChanged = true;
+    counters.wheelDiamond++;
+    
+    // Stocker le résultat pour l'afficher dans le popup
+    diamondResult = pick;
+  }
+  else if(normalizedPick.includes("tours argent offerts") || normalizedPick.includes("tours or offerts")) {
+    // Retour à la roue bronze pour les tours offerts
+    currentWheel = "bronze";
+    wheelChanged = true;
+    toursResult = pick;
+    
+    // Compter les tours offerts
+    const match = pick.match(/(\d+)\s*tours\s*(argent|or)\s*offerts/i);
+    if (match) {
+      const count = parseInt(match[1]);
+      const type = match[2].toLowerCase();
       
-      playBreakSound();
-      setTimeout(() => createDiamondShards(), 100);
+      if (type === 'argent') {
+        counters.toursArgentOfferts += count;
+      } else if (type === 'or') {
+        counters.toursOrOfferts += count;
+      }
+    }
+  }
+  else if((cat === 'pieces' || cat === 'tickets') && currentWheel !== 'bronze' && !normalizedPick.includes("roue diamant")) {
+    // Revenir à la roue bronze si on obtient des pièces ou tickets sur une autre roue
+    // SAUF si on vient de gagner la roue diamant
+    currentWheel = "bronze";
+    wheelChanged = true;
+  }
+  // CORRECTION: Tous les fragments font revenir à la roue bronze
+  else if(cat.includes('fragment')) {
+    currentWheel = "bronze";
+    wheelChanged = true;
+  }
+  
+  // Mise à jour de la roue si changement
+  if(wheelChanged) {
+    currentItems = wheelsData[currentWheel];
+    wheelSelect.value = currentWheel;
+    const wheelNames = {
+      'bronze': 'Bronze',
+      'silver': 'Argent', 
+      'gold': 'Or',
+      'diamond': 'Diamant'
+    };
+    wheelTitle.textContent = `🎡 Roue ${wheelNames[currentWheel]}`;
+    drawWheel(currentItems, angle);
+  }
+
+  // Compter les gains
+  if(cat==='pieces'){
+    const val = parseInt(pick) || 0;
+    counters.piecesTotal += val;
+    counters.piecesCount++;
+    
+    // Animation de pièces seulement pour les gains importants (100+ pièces)
+    if (val >= 100) {
+      createCoinRain();
+    }
+  } else if(cat==='tickets'){
+    const val = parseInt(pick) || 1;
+    counters.ticketsTotal += val;
+    counters.ticketsCount++;
+  } else if(cat==='fragment-sylver'){ 
+    counters.fragCount++; 
+    counters.fragSylver++; 
+    createFragmentParticles('sylver'); // Animation de fragments argent
+  }
+  else if(cat==='fragment-gold'){ 
+    counters.fragCount++; 
+    counters.fragGold++; 
+    createFragmentParticles('gold'); // Animation de fragments or
+  }
+  else if(cat==='fragment-diamond'){ 
+    counters.fragCount++; 
+    counters.fragDiamond++; 
+    createFragmentParticles('diamond'); // Animation de fragments diamant
+  }
+  else if(cat==='tours-offerts') {
+    createTourParticles(); // Animation pour les tours offerts
+  }
+  else if(cat==='chest') {
+    // Ajouter 2 pièces au coffre
+    counters.chestPieces += 2;
+    updateChestProgress(); // Mettre à jour la barre de progression du coffre
+    updateHistory(`+2 pièces ajoutées au coffre (Total: ${counters.chestPieces})`, 'chest');
+  }
+
+  updateCounters();
+  updateSummary();
+  updateHistory(pick,cat);
+  // updateRecentHistory supprimé - historique récent retiré
+  
+  // Afficher le popup pour la roue diamant
+  if (diamondResult) {
+    setTimeout(() => {
+      document.getElementById('popupMessage').textContent = `Vous avez gagné: ${diamondResult}`;
+      congratsPopup.classList.add('active');
       
-      message.textContent = "💥 Félicitations ! Tu as cassé le diamant ! 🌹✨";
-      
+      // Retour à la roue bronze après affichage du popup
       setTimeout(() => {
-        coinsResult.innerHTML = `
-          <strong>🎉 BRAVO ! 🎉</strong><br>
-          Tu as cassé le diamant !<br>
-          <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
-          <strong>Ta récompense : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
-        `;
-        resultContainer.classList.remove("hidden");
+        currentWheel = "bronze";
+        currentItems = wheelsData[currentWheel];
+        wheelSelect.value = currentWheel;
+        wheelTitle.textContent = '🎡 Roue Bronze';
+        drawWheel(currentItems, angle);
+        updateHistory('Retour à la roue Bronze', 'wheelChange');
       }, 500);
-      
-      comboIndicator.style.display = "none";
-    }
-
-    function setAttackMode(mode) {
-      attackMode = mode;
-      
-      document.querySelectorAll('.attack-mode-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
-      // si l'élément existe (sécurité)
-      const btnEl = document.getElementById(`mode${mode}`);
-      if (btnEl) btnEl.classList.add('active');
-
-      attackBtn.textContent = `Attaquer (${mode} coup${mode > 1 ? 's' : ''})`;
-    }
-
-    function initGame() {
-      // MODIFICATION : vie aléatoire entre 3 500 et 100 000
-      maxHP = Math.floor(Math.random() * (100000 - 3500 + 1)) + 3500;
-      currentHP = maxHP;
-      coupCounter = 0;
-      totalHits = 0;
-      hitsUntilCoin = 4;
-      rosesEarnedThisDiamond = 0;
-      combo = 0;
-      lastHitTime = 0;
-      isAttacking = false;
-      
-      isPinkDiamond = Math.random() < 0.1;
-      
-      diamond.className = "diamond";
-      if (isPinkDiamond) {
-        diamond.classList.add("pink");
-        message.textContent = "✨ DIAMANT ROSE SPÉCIAL ! ✨";
-      } else {
-        message.textContent = `À tout moment le diamant peut se briser...`;
-      }
-      
-      resultContainer.classList.add("hidden");
-      comboIndicator.style.display = "none";
-
-      // reset des compteurs visibles (sécurité si tu veux les afficher autrement)
-      coupCounter = 0;
-      totalHits = 0;
-      hitsUntilCoin = 4;
-    }
-
-    // Événements CORRIGÉS
-    document.getElementById("attackBtn").addEventListener("click", attack);
-    document.getElementById("resetBtn").addEventListener("click", initGame);
-
-    document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
-    document.getElementById("mode5").addEventListener("click", () => setAttackMode(5));
-    document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
-    document.getElementById("mode30").addEventListener("click", () => setAttackMode(30));
-    document.getElementById("mode50").addEventListener("click", () => setAttackMode(50));
-    document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
-    document.getElementById("mode500").addEventListener("click", () => setAttackMode(500));
-    document.getElementById("mode1000").addEventListener("click", () => setAttackMode(1000));
-
-    // Raccourcis clavier
-    document.addEventListener('keydown', (e) => {
-      if (isAttacking) return;
-      
-      switch(e.key) {
-        case ' ':
-        case 'Enter':
-          e.preventDefault();
-          attack();
-          break;
-        case '1':
-          setAttackMode(1);
-          break;
-        case '2':
-          setAttackMode(5);
-          break;
-        case '3':
-          setAttackMode(10);
-          break;
-        case '4':
-          setAttackMode(30);
-          break;
-        case '5':
-          setAttackMode(50);
-          break;
-        case '6':
-          setAttackMode(100);
-          break;
-        case '7':
-          setAttackMode(500);
-          break;
-        case '8':
-          setAttackMode(1000);
-          break;
-        case 'r':
-        case 'R':
-          initGame();
-          break;
-      }
-    });
-
-    // Reset combo après inactivité
-    setInterval(() => {
-      const currentTime = Date.now();
-      if (currentTime - lastHitTime > 3000 && combo > 0) {
-        combo = 0;
-        comboIndicator.style.display = "none";
-      }
     }, 1000);
+  }
+  
+  // Afficher le popup pour les tours offerts
+  if (toursResult) {
+    setTimeout(() => {
+      document.getElementById('toursPopupTitle').textContent = "Tours offerts !";
+      document.getElementById('toursPopupMessage').textContent = `Félicitations ! Vous avez gagné : ${toursResult}`;
+      toursPopup.classList.add('active');
+    }, 1000);
+  }
+}
 
-    initGame();
-  </script>
+// ==================== UPDATE UI ====================
+function updateCounters(){
+  piecesTotalEl.textContent='Total pièces: '+counters.piecesTotal;
+  piecesCountEl.textContent='Nombre de gains pièces: '+counters.piecesCount;
+  ticketsTotalEl.textContent='Total tickets: '+counters.ticketsTotal;
+  ticketsCountEl.textContent='Nombre de gains tickets: '+counters.ticketsCount;
+  fragCountEl.textContent='Total fragments: '+counters.fragCount;
+  fragSylverEl.textContent='Argent: '+counters.fragSylver;
+  fragGoldEl.textContent='Or: '+counters.fragGold;
+  fragDiamondEl.textContent='Diamant: '+counters.fragDiamond;
+  sylverCountEl.textContent='Argent: '+counters.wheelSylver;
+  goldCountEl.textContent='Or: '+counters.wheelGold;
+  diamondCountEl.textContent='Diamant: '+counters.wheelDiamond;
+  
+  // Mettre à jour la barre de progression pour la roue argent
+  updateSylverProgress();
+  
+  // Mettre à jour la barre de progression pour le coffre
+  updateChestProgress();
+}
+
+function updateSylverProgress() {
+  const totalNeeded = 20;
+  const currentProgress = counters.fragSylver;
+  const percentage = Math.min(100, (currentProgress / totalNeeded) * 100);
+  
+  sylverProgressBar.style.width = percentage + '%';
+  sylverProgressLabel.textContent = Math.round(percentage) + '%';
+  sylverProgressText.textContent = currentProgress + '/' + totalNeeded;
+}
+
+function updateChestProgress() {
+  // Pas de limite maximale pour le coffre, donc on affiche juste le nombre de pièces
+  chestProgressText.textContent = counters.chestPieces + ' pièces';
+  
+  // Pour la barre de progression, on utilise un pourcentage basé sur un objectif arbitraire
+  // pour que la barre ait toujours un aspect visuel intéressant
+  const targetForDisplay = Math.max(100, counters.chestPieces + 10); // Toujours au moins 100
+  const percentage = Math.min(100, (counters.chestPieces / targetForDisplay) * 100);
+  
+  chestProgressBar.style.width = percentage + '%';
+  chestProgressLabel.textContent = Math.round(percentage) + '%';
+}
+
+function modifySylverProgress(value) {
+  counters.fragSylver = Math.max(0, counters.fragSylver + value);
+  updateCounters();
+  updateHistory(`Modification manuelle des fragments argent: ${value > 0 ? '+' : ''}${value}`, 'other');
+}
+
+function updateSummary(){
+  let text='Résumé des résultats :\n';
+  for(const [k,v] of Object.entries(resultsCount)) text+=`${k}: ${v}\n`;
+  
+  // Ajouter les compteurs de tours offerts
+  text += `\nTours Argent offerts: ${counters.toursArgentOfferts}\n`;
+  text += `Tours Or offerts: ${counters.toursOrOfferts}\n`;
+  text += `Pièces dans le coffre: ${counters.chestPieces}\n`;
+  
+  summaryEl.textContent=text;
+}
+
+function updateHistory(pick,cat){
+  const time=(new Date()).toLocaleTimeString();
+  const cls = cat==='pieces'?'hist-pieces':
+              cat==='tickets'?'hist-tickets':
+              cat==='fragment-sylver'?'hist-fragment-sylver':
+              cat==='fragment-gold'?'hist-fragment-gold':
+              cat==='fragment-diamond'?'hist-fragment-diamond':
+              cat==='wheelChange'?'hist-wheelchange':
+              cat==='tours-offerts'?'hist-wheelchange':
+              cat==='chest'?'hist-chest':'hist-other';
+  const div=document.createElement('div');
+  div.className=cls;
+  div.textContent=`${time} - ${pick}`;
+  historyEl.appendChild(div);
+  historyEl.scrollTop=historyEl.scrollHeight;
+}
+
+// Fonction updateRecentHistory supprimée - historique récent retiré
+
+// ==================== STATISTIQUES AVANCÉES ====================
+function showAdvancedStats() {
+  // Calculer les statistiques
+  const totalSpins = totalTurns;
+  const totalGains = Object.values(resultsCount).reduce((a, b) => a + b, 0);
+  
+  // Calculer les pourcentages par type de gain
+  const gainTypes = {};
+  Object.keys(resultsCount).forEach(gain => {
+    const type = categorizeLabel(gain);
+    gainTypes[type] = (gainTypes[type] || 0) + resultsCount[gain];
+  });
+  
+  // Préparer les données pour les graphiques
+  const gainDistributionData = Object.entries(gainTypes).map(([type, count]) => ({
+    type,
+    count,
+    percentage: totalSpins > 0 ? ((count / totalSpins) * 100).toFixed(1) : 0
+  }));
+  
+  // Afficher le popup de statistiques
+  const statsContent = document.getElementById('statsPopup').querySelector('.popup-content');
+  
+  // Créer les graphiques (version simplifiée avec des barres)
+  createBarChart('gainDistributionChart', gainDistributionData, 'Répartition des gains');
+  
+  // Afficher le popup
+  statsPopup.classList.add('active');
+}
+
+function createBarChart(containerId, data, title) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  
+  const maxValue = Math.max(...data.map(item => item.count));
+  const barWidth = 30;
+  const spacing = 10;
+  const chartWidth = data.length * (barWidth + spacing);
+  const chartHeight = 120;
+  
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", chartHeight + 30);
+  svg.setAttribute("viewBox", `0 0 ${chartWidth} ${chartHeight + 30}`);
+  
+  data.forEach((item, index) => {
+    const barHeight = (item.count / maxValue) * chartHeight;
+    const x = index * (barWidth + spacing);
+    const y = chartHeight - barHeight;
+    
+    // Barre
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", x);
+    rect.setAttribute("y", y);
+    rect.setAttribute("width", barWidth);
+    rect.setAttribute("height", barHeight);
+    rect.setAttribute("fill", getColorForType(item.type));
+    rect.setAttribute("rx", 2);
+    svg.appendChild(rect);
+    
+    // Étiquette
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", x + barWidth / 2);
+    text.setAttribute("y", chartHeight + 15);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("font-size", "10");
+    text.setAttribute("fill", '#fff');
+    text.textContent = item.type.substring(0, 8);
+    svg.appendChild(text);
+    
+    // Valeur
+    const valueText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    valueText.setAttribute("x", x + barWidth / 2);
+    valueText.setAttribute("y", y - 5);
+    valueText.setAttribute("text-anchor", "middle");
+    valueText.setAttribute("font-size", "10");
+    valueText.setAttribute("fill", '#fff');
+    valueText.textContent = item.count;
+    svg.appendChild(valueText);
+  });
+  
+  container.appendChild(svg);
+}
+
+function getColorForType(type) {
+  const colors = {
+    'pieces': '#65b26e',
+    'tickets': '#6ea8ff',
+    'fragment-sylver': '#c78cff',
+    'fragment-gold': '#ffd700',
+    'fragment-diamond': '#00e6e6',
+    'wheelChange': '#ffd166',
+    'tours-offerts': '#ff6b6b',
+    'chest': '#d2691e', // Nouvelle couleur pour le coffre
+    'other': '#ffb86b'
+  };
+  
+  return colors[type] || '#cccccc';
+}
+
+// Fonction toggleStats supprimée - liée à l'historique récent retiré
+
+// ==================== FONCTIONS DE MODIFICATION MANUELLE ====================
+function modifyPieces() {
+  piecesInput.value = counters.piecesTotal;
+  modifyPiecesPopup.classList.add('active');
+}
+
+function modifyTickets() {
+  ticketsInput.value = counters.ticketsTotal;
+  modifyTicketsPopup.classList.add('active');
+}
+
+function confirmModifyPieces() {
+  const newValue = parseInt(piecesInput.value) || 0;
+  if (newValue >= 0) {
+    counters.piecesTotal = newValue;
+    updateCounters();
+    updateHistory(`Modification manuelle des pièces: ${newValue}`, 'other');
+  }
+  modifyPiecesPopup.classList.remove('active');
+}
+
+function confirmModifyTickets() {
+  const newValue = parseInt(ticketsInput.value) || 0;
+  if (newValue >= 0) {
+    counters.ticketsTotal = newValue;
+    updateCounters();
+    updateHistory(`Modification manuelle des tickets: ${newValue}`, 'other');
+  }
+  modifyTicketsPopup.classList.remove('active');
+}
+
+function cancelModifyPieces() {
+  modifyPiecesPopup.classList.remove('active');
+}
+
+function cancelModifyTickets() {
+  modifyTicketsPopup.classList.remove('active');
+}
+
+// ==================== FONCTIONS POUR LE COFFRE ====================
+function resetChest() {
+  counters.chestPieces = 0;
+  updateCounters();
+  updateHistory('Réinitialisation du coffre', 'chest');
+}
+
+// ==================== RESET FUNCTIONS ====================
+function resetPieces() {
+  counters.piecesTotal = 0;
+  counters.piecesCount = 0;
+  updateCounters();
+  updateHistory('Réinitialisation des pièces', 'other');
+}
+
+function resetTickets() {
+  counters.ticketsTotal = 0;
+  counters.ticketsCount = 0;
+  updateCounters();
+  updateHistory('Réinitialisation des tickets', 'other');
+}
+
+function resetFragments() {
+  counters.fragCount = 0;
+  counters.fragSylver = 0;
+  counters.fragGold = 0;
+  counters.fragDiamond = 0;
+  updateCounters();
+  updateHistory('Réinitialisation des fragments', 'other');
+}
+
+function resetTurnCounter() {
+  totalTurns = 0;
+  document.getElementById('turnCounter').innerHTML = 'Tours effectués : 0 <button class="timer-btn" id="resetTurnBtn">↺ Reset</button>';
+  updateHistory('Compteur de tours réinitialisé', 'other');
+}
+
+function resetAll(){
+  totalTurns=0;
+  currentWheel = 'bronze';
+  currentItems = wheelsData[currentWheel];
+  wheelSelect.value = currentWheel;
+  wheelTitle.textContent = '🎡 Roue Bronze';
+  Object.keys(resultsCount).forEach(k=>delete resultsCount[k]);
+  // recentHistory supprimé - historique récent retiré
+  Object.keys(counters).forEach(k=>counters[k]=0);
+  resultEl.textContent='Résultat : -';
+  turnCounterEl.innerHTML = 'Tours effectués : 0 <button class="timer-btn" id="resetTurnBtn">↺ Reset</button>';
+  summaryEl.textContent='';
+  historyEl.innerHTML='<b>Historique :</b>';
+  // recentListEl supprimé - historique récent retiré
+  
+  // Réinitialiser le mode de vitesse
+  isFastMode = false;
+  spinDuration = 1500;
+  speedBtn.textContent = '⚡ Accélérer';
+  speedBtn.style.background = 'linear-gradient(to bottom, #9C27B0, #4A148C)';
+  
+  // Arrêter tout spin en cours
+  if (isMultiSpinning) {
+    isMultiSpinning = false;
+    remainingSpins = 0;
+  }
+  stopSpinning();
+  
+  // Timer supprimé - remplacé par widget TikTok
+  
+  updateCounters();
+  drawWheel(currentItems, angle);
+}
+
+// ==================== EVENTS ====================
+spinBtn.addEventListener('click',()=>spinOnce());
+multiBtn.addEventListener('click',multiSpin);
+stopBtn.addEventListener('click', stopSpinning);
+speedBtn.addEventListener('click', toggleSpeed);
+resetChestBtn.addEventListener('click', resetChest);
+statsBtn.addEventListener('click', showAdvancedStats);
+resetBtn.addEventListener('click',resetAll);
+
+// Délégation d'événements pour le bouton de reset des tours
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.id === 'resetTurnBtn') {
+    resetTurnCounter();
+  }
+});
+
+wheelSelect.addEventListener('change',(e)=>{
+  currentWheel=e.target.value;
+  currentItems=wheelsData[currentWheel];
+  const wheelNames = {
+    'bronze': 'Bronze',
+    'silver': 'Argent', 
+    'gold': 'Or',
+    'diamond': 'Diamant'
+  };
+  wheelTitle.textContent=`🎡 Roue ${wheelNames[currentWheel]}`;
+  drawWheel(currentItems,angle);
+  updateHistory('Changement manuel de roue','wheelChange');
+});
+
+// ==================== INIT ====================
+setCanvasSize();
+drawWheel(currentItems,angle);
+updateSylverProgress(); // Initialiser la barre de progression
+updateChestProgress(); // Initialiser la barre de progression du coffre
+// Timer remplacé par widget TikTok
+</script>
 </body>
 </html>
