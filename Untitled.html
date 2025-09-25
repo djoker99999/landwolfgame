@@ -1,5 +1,240 @@
 <!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💎 Casse le Diamant</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    body {
+      font-family: 'Arial', sans-serif;
+      background-image: url('https://img.freepik.com/premium-photo/cherry-blossoms-forest_1091302-2482.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: -1;
+    }
+
+    .widget-left {
+      width: 200px;
+      height: 400px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .widget-left iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .widget-right {
+      width: 200px;
+      height: 400px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .widget-right iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .timer-widget-right {
+      position: absolute;
+      bottom: -80px;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      z-index: 15;
+      border: none;
+      background: transparent;
+    }
+
+    .timer-widget-right iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+    }
+
+    .game-container {
+      max-width: 500px;
+      flex: 1;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      margin: 0 5px;
+      position: relative;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .game-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #ffd700, #ff6b9d, #c44569, #ffd700);
+      border-radius: 22px;
+      z-index: -1;
+      animation: borderGlow 3s linear infinite;
+    }
+
+    @keyframes borderGlow {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .squirrel-logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px;
+      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43f.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+      animation: squirrelBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes squirrelBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.05); }
+    }
+
+    .instructions {
+      margin: 30px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .instructions h2 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .instructions p {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #feca57;
+    }
+
+    .diamond-container {
+      position: relative;
+      margin: 30px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-height: 260px; /* reserve espace pour le widget de pièces */
+    }
+
+    .actions-widget {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 180px;
+      height: 80px;
+      z-index: 1000;
+      border: none;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .firework-widget-bottom {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 300px;
+      z-index: 1000;
+      border: none;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .firework-widget-bottom iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+    }
+
+    .timer-widget-bottom {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 150px;
+      height: 60px;
+      z-index: 1000;
+      border: none;
+      background: transparent;
+    }
+
+    .timer-widget-bottom iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+    }
+
+    .coindrop-widget-bottom {
+      position: fixed;
+      bottom: 200px;
+      left: 50%;
       transform: translateX(-50%);
       width: 400px;
       height: 200px;
@@ -213,6 +448,69 @@
       0% { opacity: 0; transform: scale(0.3) translateY(0); }
       30% { opacity: 1; transform: scale(1.5) translateY(-15px); }
       100% { opacity: 0; transform: scale(1) translateY(-50px); }
+    }
+
+    /* Styles pour le marteau */
+    .hammer {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+      transform-origin: bottom center;
+    }
+
+    .hammer-head {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(45deg, #8B4513, #A0522D, #8B4513);
+      border-radius: 5px;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .hammer-handle {
+      position: absolute;
+      width: 8px;
+      height: 60px;
+      background: linear-gradient(to bottom, #D2691E, #8B4513);
+      top: 35px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .hammer-hit {
+      animation: hammerSwing 0.6s ease-out forwards;
+    }
+
+    @keyframes hammerSwing {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -100%) rotate(-30deg) scale(0.8);
+      }
+      20% {
+        opacity: 1;
+        transform: translate(-50%, -100%) rotate(15deg) scale(1);
+      }
+      40% {
+        transform: translate(-50%, -100%) rotate(-10deg) scale(1.1);
+      }
+      60% {
+        transform: translate(-50%, -100%) rotate(5deg) scale(1);
+      }
+      80% {
+        transform: translate(-50%, -100%) rotate(-2deg) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -100%) rotate(0deg) scale(0.8);
+      }
     }
 
     .attack-modes {
@@ -593,6 +891,45 @@
       setTimeout(() => createSound(600, 0.2, 'sine'), 200);
     }
 
+    // Fonction pour créer un marteau animé
+    function createHammer() {
+      const hammer = document.createElement('div');
+      hammer.className = 'hammer';
+      
+      const hammerHead = document.createElement('div');
+      hammerHead.className = 'hammer-head';
+      
+      const hammerHandle = document.createElement('div');
+      hammerHandle.className = 'hammer-handle';
+      
+      hammer.appendChild(hammerHead);
+      hammer.appendChild(hammerHandle);
+      
+      // Positionner le marteau au-dessus du diamant
+      const diamondRect = diamond.getBoundingClientRect();
+      const containerRect = diamond.parentElement.getBoundingClientRect();
+      
+      hammer.style.left = (diamondRect.left + diamondRect.width/2 - containerRect.left) + 'px';
+      hammer.style.top = (diamondRect.top - containerRect.top) + 'px';
+      
+      diamond.parentElement.appendChild(hammer);
+      
+      return hammer;
+    }
+
+    // Fonction pour animer le marteau
+    function animateHammer() {
+      const hammer = createHammer();
+      hammer.classList.add('hammer-hit');
+      
+      // Supprimer le marteau après l'animation
+      setTimeout(() => {
+        if (hammer.parentElement) {
+          hammer.parentElement.removeChild(hammer);
+        }
+      }, 600);
+    }
+
     // Fonctions d'effets visuels CORRIGÉES
     function createDiamondShards() {
       const container = diamond.parentElement;
@@ -709,6 +1046,9 @@
       let actualHits = 0;
       let rosesEarned = 0;
       let wasCracked = diamond.classList.contains('cracked');
+      
+      // Animer le marteau
+      animateHammer();
       
       playHitSound();
       createHitParticles();
