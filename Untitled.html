@@ -1152,7 +1152,8 @@
     }
 
     function endGame() {
-      let recompense = Math.floor(maxHP / 2);
+      // MODIFICATION : Récompense = HP divisé par 3.5
+      let recompense = Math.floor(maxHP / 3.5);
       
       playBreakSound();
       setTimeout(() => createDiamondShards(), 100);
@@ -1187,8 +1188,8 @@
     }
 
     function initGame() {
-      // vie aléatoire entre 10 000 et 30 000
-      maxHP = Math.floor(Math.random() * (30000 - 10000 + 1)) + 10000;
+      // MODIFICATION : vie aléatoire entre 3 000 et 40 000
+      maxHP = Math.floor(Math.random() * (40000 - 3000 + 1)) + 3000;
       currentHP = maxHP;
       coupCounter = 0;
       totalHits = 0;
