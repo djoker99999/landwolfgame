@@ -725,6 +725,8 @@
       <button id="mode1" class="attack-mode-btn active">1</button>
       <button id="mode5" class="attack-mode-btn">5</button>
       <button id="mode10" class="attack-mode-btn">10</button>
+      <button id="mode30" class="attack-mode-btn">30</button>
+      <button id="mode50" class="attack-mode-btn">50</button>
       <button id="mode100" class="attack-mode-btn">100</button>
       <button id="mode500" class="attack-mode-btn">500</button>
       <button id="mode1000" class="attack-mode-btn">1000</button>
@@ -964,6 +966,9 @@
         animationType = 'critical-hit';
         shakeType = 'mega-shake';
         animationDuration = 800;
+      } else if (attackMode >= 30) {
+        animationType = 'heavy-hit';
+        animationDuration = 600;
       } else if (attackMode >= 10) {
         animationType = 'heavy-hit';
         animationDuration = 600;
@@ -1077,7 +1082,7 @@
     }
 
     function initGame() {
-      // <-- MODIF : vie aléatoire entre 10 000 et 30 000
+      // vie aléatoire entre 10 000 et 30 000
       maxHP = Math.floor(Math.random() * (30000 - 10000 + 1)) + 10000;
       currentHP = maxHP;
       coupCounter = 0;
@@ -1114,6 +1119,8 @@
     document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
     document.getElementById("mode5").addEventListener("click", () => setAttackMode(5));
     document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
+    document.getElementById("mode30").addEventListener("click", () => setAttackMode(30));
+    document.getElementById("mode50").addEventListener("click", () => setAttackMode(50));
     document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
     document.getElementById("mode500").addEventListener("click", () => setAttackMode(500));
     document.getElementById("mode1000").addEventListener("click", () => setAttackMode(1000));
@@ -1138,12 +1145,18 @@
           setAttackMode(10);
           break;
         case '4':
-          setAttackMode(100);
+          setAttackMode(30);
           break;
         case '5':
-          setAttackMode(500);
+          setAttackMode(50);
           break;
         case '6':
+          setAttackMode(100);
+          break;
+        case '7':
+          setAttackMode(500);
+          break;
+        case '8':
           setAttackMode(1000);
           break;
         case 'r':
