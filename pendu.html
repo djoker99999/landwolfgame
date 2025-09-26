@@ -1,5 +1,356 @@
 <!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎯 Mot du Jour - Version Cadenas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+
+    .game-container {
+      max-width: 1000px;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      border: 3px solid rgba(255, 215, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-container::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      background: linear-gradient(45deg, #ffd700, #ff6b9d, #c44569, #ffd700);
+      border-radius: 25px;
+      z-index: -1;
+      animation: borderGlow 3s linear infinite;
+    }
+
+    @keyframes borderGlow {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 2.8em;
+      margin-bottom: 15px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .difficulty-selector {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .difficulty-btn {
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      min-width: 120px;
+      font-weight: bold;
+    }
+
+    .difficulty-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .difficulty-btn.active {
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      border-color: #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .difficulty-btn.easy {
+      border-color: #2ecc71;
+    }
+
+    .difficulty-btn.medium {
+      border-color: #feca57;
+    }
+
+    .difficulty-btn.hard {
+      border-color: #ff6b9d;
+    }
+
+    .difficulty-btn.expert {
+      border-color: #c44569;
+    }
+
+    .word-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px 0;
+      perspective: 1000px;
+      flex-wrap: wrap;
+    }
+
+    .letter-wheel {
+      width: 70px;
+      height: 110px;
+      background: linear-gradient(145deg, #2c3e50, #34495e);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3em;
+      font-weight: bold;
+      color: #feca57;
+      box-shadow: 
+        inset 0 0 10px rgba(0, 0, 0, 0.5),
+        0 5px 15px rgba(0, 0, 0, 0.3);
+      border: 3px solid #feca57;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s;
+      text-transform: uppercase;
+    }
+
+    .letter-wheel:hover {
+      transform: translateY(-5px);
+    }
+
+    .letter-wheel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
+      pointer-events: none;
+    }
+
+    .letter-wheel::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #feca57;
+      box-shadow: 0 0 10px #feca57;
+    }
+
+    .letter-wheel.correct {
+      animation: correctPulse 0.5s ease-in-out 3;
+      background: linear-gradient(145deg, #27ae60, #2ecc71);
+      color: white;
+    }
+
+    @keyframes correctPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .letter-wheel.spinning {
+      animation: spinLetter 0.1s linear infinite;
+    }
+
+    .letter-wheel.fast-spin {
+      animation: spinLetter 0.03s linear infinite;
+    }
+
+    @keyframes spinLetter {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+
+    .word-body {
+      width: 100%;
+      max-width: 600px;
+      height: 150px;
+      background: linear-gradient(145deg, #8B4513, #A0522D);
+      margin: 0 auto 20px;
+      border-radius: 10px;
+      position: relative;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .word-shackle {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 80px;
+      border: 15px solid #D2691E;
+      border-bottom: none;
+      border-radius: 60px 60px 0 0;
+      z-index: 1;
+    }
+
+    .attack-modes {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .attack-mode-btn {
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      min-width: 60px;
+      font-weight: bold;
+    }
+
+    .attack-mode-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .attack-mode-btn.active {
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      border-color: #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .controls {
+      margin: 25px 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      padding: 15px 30px;
+      margin: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(45deg, #feca57, #ff6b9d);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    button:disabled:hover::before {
+      left: -100%;
+    }
+
+    #spinBtn {
+      background: linear-gradient(45deg, #27ae60, #2ecc71);
+      font-size: 20px;
+      padding: 18px 40px;
+    }
+
+    #spinBtn:hover {
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
+    }
+
+    #speedBtn {
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      font-size: 16px;
+      padding: 15px 25px;
+    }
+
+    #speedBtn:hover {
+      background: linear-gradient(45deg, #2980b9, #3498db);
+    }
+
+    #speedBtn.active {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      animation: pulseSpeed 1s infinite;
     }
 
     @keyframes pulseSpeed {
@@ -345,6 +696,38 @@
       75% { transform: scale(1.1) rotate(-5deg); }
     }
 
+    /* CONTROLES SON */
+    .sound-controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .sound-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.2em;
+    }
+
+    .sound-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .sound-btn.muted {
+      background: rgba(255, 0, 0, 0.3);
+    }
+
     @media (max-width: 768px) {
       .game-container {
         padding: 20px;
@@ -396,6 +779,17 @@
       .reward-icon {
         font-size: 2.5em;
       }
+
+      .sound-controls {
+        top: 10px;
+        left: 10px;
+      }
+
+      .sound-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1em;
+      }
     }
 
     @media (max-width: 480px) {
@@ -442,6 +836,12 @@
 </head>
 <body>
   <div class="game-container">
+    <!-- Contrôles son -->
+    <div class="sound-controls">
+      <div class="sound-btn" id="soundToggle">🔊</div>
+      <div class="sound-btn" id="musicToggle">🎵</div>
+    </div>
+
     <h1>🎯 Mot du Jour - Version Cadenas</h1>
     
     <div class="difficulty-selector">
@@ -584,10 +984,15 @@
     let isSpinning = false;
     let winAnimationActive = false;
     let attackMode = 1;
-    let audioContext = null;
     let currentDifficulty = 4;
     let isFastMode = false;
     let unlockedRewards = 0;
+
+    // Variables audio
+    let audioContext = null;
+    let soundsEnabled = true;
+    let musicEnabled = true;
+    let backgroundMusic = null;
 
     // Éléments DOM
     const wordContainer = document.getElementById('wordContainer');
@@ -606,6 +1011,129 @@
     const speedIndicator = document.getElementById('speedIndicator');
     const rewardsDisplay = document.getElementById('rewardsDisplay');
     const rewardsCount = document.getElementById('rewardsCount');
+    const soundToggle = document.getElementById('soundToggle');
+    const musicToggle = document.getElementById('musicToggle');
+
+    // Initialisation de l'audio
+    function initAudio() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        createBackgroundMusic();
+      } catch (e) {
+        console.log("Audio non supporté par le navigateur");
+        soundsEnabled = false;
+        musicEnabled = false;
+        updateSoundButtons();
+      }
+    }
+
+    // Créer la musique de fond
+    function createBackgroundMusic() {
+      if (!musicEnabled || !audioContext) return;
+      
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.02, audioContext.currentTime);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.start();
+      backgroundMusic = { oscillator, gainNode };
+    }
+
+    // Sons pour le jeu
+    function playSound(type, frequency = 440, duration = 0.2) {
+      if (!soundsEnabled || !audioContext) return;
+      
+      try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        // Configuration selon le type de son
+        switch(type) {
+          case 'spin':
+            oscillator.type = 'sawtooth';
+            frequency = 100 + Math.random() * 300;
+            break;
+          case 'correct':
+            oscillator.type = 'sine';
+            frequency = 523.25; // Do
+            break;
+          case 'win':
+            oscillator.type = 'triangle';
+            frequency = 784.00; // Sol
+            break;
+          case 'click':
+            oscillator.type = 'square';
+            frequency = 330;
+            duration = 0.1;
+            break;
+          case 'reward':
+            oscillator.type = 'sine';
+            frequency = 659.25; // Mi
+            break;
+        }
+        
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        console.log("Erreur de lecture audio");
+      }
+    }
+
+    // Jouer une séquence de notes pour la victoire
+    function playWinSequence() {
+      if (!soundsEnabled) return;
+      
+      const notes = [523.25, 587.33, 659.25, 698.46, 783.99, 880.00]; // Do, Ré, Mi, Fa, Sol, La
+      notes.forEach((note, index) => {
+        setTimeout(() => playSound('win', note, 0.3), index * 200);
+      });
+    }
+
+    // Jouer un son de rotation
+    function playSpinSound() {
+      playSound('spin', 200 + Math.random() * 400, 0.1);
+    }
+
+    // Basculer les sons
+    function toggleSounds() {
+      soundsEnabled = !soundsEnabled;
+      updateSoundButtons();
+    }
+
+    // Basculer la musique
+    function toggleMusic() {
+      musicEnabled = !musicEnabled;
+      if (backgroundMusic) {
+        if (musicEnabled) {
+          backgroundMusic.gainNode.gain.setValueAtTime(0.02, audioContext.currentTime);
+        } else {
+          backgroundMusic.gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        }
+      }
+      updateSoundButtons();
+    }
+
+    // Mettre à jour l'apparence des boutons son
+    function updateSoundButtons() {
+      soundToggle.textContent = soundsEnabled ? "🔊" : "🔇";
+      soundToggle.classList.toggle('muted', !soundsEnabled);
+      
+      musicToggle.textContent = musicEnabled ? "🎵" : "🔇";
+      musicToggle.classList.toggle('muted', !musicEnabled);
+    }
 
     // Initialisation du jeu
     function initGame() {
@@ -633,6 +1161,9 @@
       message.textContent = "Prêt à jouer ? Faites tourner les lettres !";
       spinBtn.disabled = false;
       removeWinClasses();
+      
+      // Son de démarrage
+      playSound('click');
     }
 
     // Mettre à jour l'affichage des récompenses
@@ -667,6 +1198,7 @@
         unlockedRewards++;
         updateRewardsDisplay();
         showRewardAnimation(difficulty);
+        playSound('reward', 784, 0.5);
       }
     }
 
@@ -691,6 +1223,7 @@
       const closeButton = rewardAnimation.querySelector('.reward-close');
       closeButton.addEventListener('click', () => {
         document.body.removeChild(rewardAnimation);
+        playSound('click');
       });
       
       // Fermer automatiquement après 7 secondes
@@ -754,6 +1287,11 @@
             letterElement.classList.remove('correct');
           }
           
+          // Son de rotation
+          if (spins % 2 === 0) {
+            playSpinSound();
+          }
+          
           spins++;
           
           if (spins >= maxSpins) {
@@ -772,6 +1310,7 @@
       isSpinning = true;
       spinBtn.disabled = true;
       message.textContent = "Les lettres tournent...";
+      playSound('click');
       
       // Faire le nombre de tours sélectionné
       for (let tour = 0; tour < attackMode; tour++) {
@@ -807,12 +1346,6 @@
       spinBtn.disabled = false;
     }
 
-    // Vérifier si le mot est correct
-    function checkWord() {
-      const currentWordAttempt = currentLetters.join('');
-      return currentWordAttempt === currentWord;
-    }
-
     // Gestion de la victoire
     async function winGame() {
       winAnimationActive = true;
@@ -821,11 +1354,17 @@
       // Débloquer la récompense pour cette difficulté
       unlockReward(currentDifficulty);
       
+      // Sons de victoire
+      playWinSequence();
+      
       // Animation de victoire pour chaque lettre
       for (let i = 0; i < currentWord.length; i++) {
         setTimeout(() => {
           const letterElement = document.getElementById(`letter${i}`);
-          if (letterElement) letterElement.classList.add('correct');
+          if (letterElement) {
+            letterElement.classList.add('correct');
+            playSound('correct', 523.25 + (i * 100), 0.2);
+          }
         }, i * 200);
       }
       
@@ -865,6 +1404,7 @@
       const closeButton = victoryAnimation.querySelector('.reward-close');
       closeButton.addEventListener('click', () => {
         document.body.removeChild(victoryAnimation);
+        playSound('click');
       });
       
       // Fermer automatiquement après 7 secondes
@@ -885,6 +1425,7 @@
     // Basculer le mode accéléré
     function toggleSpeedMode() {
       isFastMode = !isFastMode;
+      playSound('click');
       
       if (isFastMode) {
         speedBtn.classList.add('active');
@@ -902,6 +1443,7 @@
     // Définir le mode d'attaque
     function setAttackMode(mode) {
       attackMode = mode;
+      playSound('click');
       
       document.querySelectorAll('.attack-mode-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -915,6 +1457,7 @@
     // Changer la difficulté
     function setDifficulty(difficulty) {
       currentDifficulty = difficulty;
+      playSound('click');
       
       document.querySelectorAll('.difficulty-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -929,6 +1472,8 @@
     spinBtn.addEventListener('click', spinAllLetters);
     speedBtn.addEventListener('click', toggleSpeedMode);
     resetBtn.addEventListener('click', initGame);
+    soundToggle.addEventListener('click', toggleSounds);
+    musicToggle.addEventListener('click', toggleMusic);
 
     document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
     document.getElementById("mode5").addEventListener("click", () => setAttackMode(5));
@@ -958,10 +1503,24 @@
       if (e.key === 's' || e.key === 'S') {
         toggleSpeedMode();
       }
+      
+      if (e.key === 'm' || e.key === 'M') {
+        toggleSounds();
+      }
     });
 
     // Initialisation au chargement
-    window.addEventListener('load', initGame);
+    window.addEventListener('load', () => {
+      initAudio();
+      initGame();
+    });
+
+    // Redémarrer l'audio après interaction utilisateur (requis par certains navigateurs)
+    document.addEventListener('click', () => {
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+    });
   </script>
 </body>
 </html>
