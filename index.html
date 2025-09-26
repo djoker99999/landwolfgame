@@ -76,6 +76,47 @@
       background-clip: text;
     }
 
+    .tiktok-connection {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tiktok-status {
+      background: rgba(231, 76, 60, 0.8);
+      padding: 5px 10px;
+      border-radius: 15px;
+      border: 2px solid #e74c3c;
+      font-size: 0.8em;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .tiktok-status.connected {
+      background: rgba(46, 204, 113, 0.8);
+      border-color: #2ecc71;
+    }
+
+    .tiktok-btn {
+      background: linear-gradient(45deg, #ff0050, #00f2ea);
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.8em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tiktok-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
     .difficulty-selector {
       display: flex;
       justify-content: center;
@@ -436,51 +477,6 @@
       font-style: italic;
     }
 
-    .win-animation {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: #feca57;
-      opacity: 0;
-    }
-
-    @keyframes confettiFall {
-      0% {
-        transform: translateY(-100px) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(1000px) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
-    .win-text {
-      font-size: 5em;
-      font-weight: bold;
-      color: #feca57;
-      text-shadow: 0 0 20px rgba(254, 202, 87, 0.8);
-      animation: textPulse 1s ease-in-out infinite;
-    }
-
-    @keyframes textPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
     .speed-indicator {
       position: absolute;
       top: 10px;
@@ -494,7 +490,6 @@
       display: none;
     }
 
-    /* ANIMATIONS DE RÉCOMPENSE */
     .reward-animation {
       position: fixed;
       top: 0;
@@ -591,7 +586,6 @@
       transform: scale(1.1);
     }
 
-    /* AFFICHAGE DES RÉCOMPENSES */
     .rewards-display {
       display: flex;
       justify-content: center;
@@ -632,7 +626,6 @@
     .reward-icon {
       font-size: 3em;
       margin-bottom: 10px;
-      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
     }
 
     .reward-title {
@@ -667,65 +660,6 @@
       justify-content: center;
       font-weight: bold;
       font-size: 0.8em;
-    }
-
-    /* EFFETS SPÉCIAUX POUR LES ÉMOJIS */
-    .whale-emoji { animation: float 3s ease-in-out infinite; }
-    .planet-emoji { animation: rotate 4s linear infinite; }
-    .universe-emoji { animation: twinkle 2s ease-in-out infinite; }
-    .coins-emoji { animation: shine 2s ease-in-out infinite; }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) scale(1); }
-      50% { transform: translateY(-10px) scale(1.1); }
-    }
-
-    @keyframes rotate {
-      0% { transform: rotate(0deg) scale(1); }
-      100% { transform: rotate(360deg) scale(1); }
-    }
-
-    @keyframes twinkle {
-      0%, 100% { opacity: 1; filter: brightness(1); }
-      50% { opacity: 0.8; filter: brightness(1.5); }
-    }
-
-    @keyframes shine {
-      0%, 100% { transform: scale(1) rotate(0deg); }
-      25% { transform: scale(1.1) rotate(5deg); }
-      75% { transform: scale(1.1) rotate(-5deg); }
-    }
-
-    /* CONTROLES SON */
-    .sound-controls {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .sound-btn {
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 1.2em;
-    }
-
-    .sound-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: scale(1.1);
-    }
-
-    .sound-btn.muted {
-      background: rgba(255, 0, 0, 0.3);
     }
 
     @media (max-width: 768px) {
@@ -780,15 +714,10 @@
         font-size: 2.5em;
       }
 
-      .sound-controls {
-        top: 10px;
-        left: 10px;
-      }
-
-      .sound-btn {
-        width: 35px;
-        height: 35px;
-        font-size: 1em;
+      .tiktok-connection {
+        position: static;
+        justify-content: center;
+        margin-bottom: 15px;
       }
     }
 
@@ -836,10 +765,9 @@
 </head>
 <body>
   <div class="game-container">
-    <!-- Contrôles son -->
-    <div class="sound-controls">
-      <div class="sound-btn" id="soundToggle">🔊</div>
-      <div class="sound-btn" id="musicToggle">🎵</div>
+    <div class="tiktok-connection">
+      <div class="tiktok-status" id="tikfinityStatus">🔴 Hors ligne</div>
+      <button class="tiktok-btn" id="tikfinityConnectBtn">Connecter TikTok</button>
     </div>
 
     <h1>🎯 Mot du Jour - Version Cadenas</h1>
@@ -864,7 +792,6 @@
       </div>
     </div>
 
-    <!-- Affichage des récompenses -->
     <div class="rewards-display" id="rewardsDisplay">
       <!-- Les récompenses seront générées ici -->
     </div>
@@ -911,12 +838,13 @@
     <div class="speed-indicator" id="speedIndicator">VITESSE RAPIDE</div>
   </div>
 
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
   <script>
-    // Mots du jour par difficulté
     const dailyWords = {
       4: [
         { word: "CIEL", hint: "Au-dessus de nos têtes" },
-        { word: "FLEUR", hint: "Pousse dans les jardins" },
+        { word: "ROSE", hint: "Fleur rouge parfumée" },
         { word: "LIVRE", hint: "Se lit page par page" },
         { word: "TABLE", hint: "Meuble avec des pieds" },
         { word: "MAISON", hint: "Abri pour une famille" }
@@ -944,39 +872,33 @@
       ]
     };
 
-    // Récompenses par difficulté avec emojis améliorés
     const rewards = {
       4: {
         icon: "🐋",
-        title: "BALEINE GÉANTE !",
-        description: "Félicitations ! Vous avez gagné une magnifique baleine bleue !",
-        emojiClass: "whale-emoji",
+        title: "UNE BALEINE !",
+        description: "Félicitations ! Vous avez gagné une magnifique baleine !",
         unlocked: false
       },
       5: {
-        icon: "🪐",
-        title: "PLANÈTE D'OR !",
-        description: "Incroyable ! Vous avez découvert une planète merveilleuse !",
-        emojiClass: "planet-emoji",
+        icon: "🌍",
+        title: "LA PLANÈTE MERVEILLE !",
+        description: "Incroyable ! Vous avez découvert la planète merveilleuse !",
         unlocked: false
       },
       6: {
-        icon: "🌠",
-        title: "UNIVERS MAGIQUE !",
+        icon: "🌌",
+        title: "L'UNIVERS !",
         description: "Extraordinaire ! Vous avez conquis l'univers tout entier !",
-        emojiClass: "universe-emoji",
         unlocked: false
       },
       7: {
-        icon: "💎",
-        title: "TRÉSOR FABULEUX !",
-        description: "Fantastique ! Vous avez gagné un trésor de 100 000 pièces d'or !",
-        emojiClass: "coins-emoji",
+        icon: "💰",
+        title: "100 000 PIÈCES !",
+        description: "Fantastique ! Vous avez gagné 100 000 pièces d'or !",
         unlocked: false
       }
     };
 
-    // Variables du jeu
     let currentWord = "";
     let currentHint = "";
     let currentLetters = [];
@@ -988,13 +910,11 @@
     let isFastMode = false;
     let unlockedRewards = 0;
 
-    // Variables audio
-    let audioContext = null;
-    let soundsEnabled = true;
-    let musicEnabled = true;
-    let backgroundMusic = null;
+    let tikfinitySocket = null;
+    let isConnectedToTikfinity = false;
+    let playerId = localStorage.getItem('playerId') || 'player_' + Date.now();
+    let playerName = localStorage.getItem('playerName') || 'Joueur_' + Math.random().toString(36).substr(2, 5);
 
-    // Éléments DOM
     const wordContainer = document.getElementById('wordContainer');
     const spinBtn = document.getElementById('spinBtn');
     const speedBtn = document.getElementById('speedBtn');
@@ -1011,146 +931,74 @@
     const speedIndicator = document.getElementById('speedIndicator');
     const rewardsDisplay = document.getElementById('rewardsDisplay');
     const rewardsCount = document.getElementById('rewardsCount');
-    const soundToggle = document.getElementById('soundToggle');
-    const musicToggle = document.getElementById('musicToggle');
+    const tikfinityStatus = document.getElementById('tikfinityStatus');
+    const tikfinityConnectBtn = document.getElementById('tikfinityConnectBtn');
 
-    // Initialisation de l'audio
-    function initAudio() {
+    function connectToTikfinity() {
       try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        createBackgroundMusic();
-      } catch (e) {
-        console.log("Audio non supporté par le navigateur");
-        soundsEnabled = false;
-        musicEnabled = false;
-        updateSoundButtons();
+        tikfinitySocket = io('http://localhost:8832');
+        
+        tikfinitySocket.on('connect', () => {
+          isConnectedToTikfinity = true;
+          tikfinityStatus.textContent = '🟢 Connecté';
+          tikfinityStatus.classList.add('connected');
+          tikfinityConnectBtn.textContent = 'Déconnecter';
+          
+          tikfinitySocket.emit('registerPlayer', {
+            playerId: playerId,
+            playerName: playerName,
+            game: 'MotDuJour'
+          });
+        });
+
+        tikfinitySocket.on('disconnect', () => {
+          isConnectedToTikfinity = false;
+          tikfinityStatus.textContent = '🔴 Hors ligne';
+          tikfinityStatus.classList.remove('connected');
+          tikfinityConnectBtn.textContent = 'Connecter TikTok';
+        });
+
+        tikfinitySocket.on('gameResult', (result) => {
+          if (result.rank) {
+            message.textContent += ` - Rang TikTok: #${result.rank}`;
+          }
+        });
+
+        tikfinitySocket.on('tiktok-rose', (data) => {
+          console.log('🌹 Rose TikTok reçue !', data);
+          message.textContent = `🌹 ${data.username} a envoyé une rose ! Le jeu tourne automatiquement !`;
+          
+          if (!isSpinning && !winAnimationActive) {
+            spinAllLetters();
+          }
+        });
+
+      } catch (error) {
+        console.log('TikTok Infinity non disponible');
+        tikfinityStatus.textContent = '🟡 Indisponible';
       }
     }
 
-    // Créer la musique de fond
-    function createBackgroundMusic() {
-      if (!musicEnabled || !audioContext) return;
-      
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.02, audioContext.currentTime);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.start();
-      backgroundMusic = { oscillator, gainNode };
-    }
-
-    // Sons pour le jeu
-    function playSound(type, frequency = 440, duration = 0.2) {
-      if (!soundsEnabled || !audioContext) return;
-      
-      try {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        // Configuration selon le type de son
-        switch(type) {
-          case 'spin':
-            oscillator.type = 'sawtooth';
-            frequency = 100 + Math.random() * 300;
-            break;
-          case 'correct':
-            oscillator.type = 'sine';
-            frequency = 523.25; // Do
-            break;
-          case 'win':
-            oscillator.type = 'triangle';
-            frequency = 784.00; // Sol
-            break;
-          case 'click':
-            oscillator.type = 'square';
-            frequency = 330;
-            duration = 0.1;
-            break;
-          case 'reward':
-            oscillator.type = 'sine';
-            frequency = 659.25; // Mi
-            break;
-        }
-        
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + duration);
-      } catch (e) {
-        console.log("Erreur de lecture audio");
+    tikfinityConnectBtn.addEventListener('click', () => {
+      if (isConnectedToTikfinity) {
+        tikfinitySocket.disconnect();
+      } else {
+        connectToTikfinity();
       }
-    }
+    });
 
-    // Jouer une séquence de notes pour la victoire
-    function playWinSequence() {
-      if (!soundsEnabled) return;
-      
-      const notes = [523.25, 587.33, 659.25, 698.46, 783.99, 880.00]; // Do, Ré, Mi, Fa, Sol, La
-      notes.forEach((note, index) => {
-        setTimeout(() => playSound('win', note, 0.3), index * 200);
-      });
-    }
-
-    // Jouer un son de rotation
-    function playSpinSound() {
-      playSound('spin', 200 + Math.random() * 400, 0.1);
-    }
-
-    // Basculer les sons
-    function toggleSounds() {
-      soundsEnabled = !soundsEnabled;
-      updateSoundButtons();
-    }
-
-    // Basculer la musique
-    function toggleMusic() {
-      musicEnabled = !musicEnabled;
-      if (backgroundMusic) {
-        if (musicEnabled) {
-          backgroundMusic.gainNode.gain.setValueAtTime(0.02, audioContext.currentTime);
-        } else {
-          backgroundMusic.gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        }
-      }
-      updateSoundButtons();
-    }
-
-    // Mettre à jour l'apparence des boutons son
-    function updateSoundButtons() {
-      soundToggle.textContent = soundsEnabled ? "🔊" : "🔇";
-      soundToggle.classList.toggle('muted', !soundsEnabled);
-      
-      musicToggle.textContent = musicEnabled ? "🎵" : "🔇";
-      musicToggle.classList.toggle('muted', !musicEnabled);
-    }
-
-    // Initialisation du jeu
     function initGame() {
-      // Sélectionner un mot aléatoire selon la difficulté
       const wordList = dailyWords[currentDifficulty];
       const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
       currentWord = randomWord.word;
       currentHint = randomWord.hint;
       
-      // Initialiser les lettres avec des valeurs aléatoires
       currentLetters = [];
       for (let i = 0; i < currentWord.length; i++) {
         currentLetters.push(getRandomLetter());
       }
       
       attempts = 0;
-      
       updateDisplay();
       updateRewardsDisplay();
       attemptsCount.textContent = attempts;
@@ -1161,12 +1009,8 @@
       message.textContent = "Prêt à jouer ? Faites tourner les lettres !";
       spinBtn.disabled = false;
       removeWinClasses();
-      
-      // Son de démarrage
-      playSound('click');
     }
 
-    // Mettre à jour l'affichage des récompenses
     function updateRewardsDisplay() {
       rewardsDisplay.innerHTML = '';
       
@@ -1177,7 +1021,7 @@
         
         rewardItem.innerHTML = `
           ${!reward.unlocked ? '<div class="reward-badge">?</div>' : ''}
-          <div class="reward-icon ${reward.unlocked ? reward.emojiClass : ''}">${reward.unlocked ? reward.icon : '❓'}</div>
+          <div class="reward-icon">${reward.unlocked ? reward.icon : '❓'}</div>
           <div class="reward-title">${reward.unlocked ? reward.title : 'À DÉCOUVRIR'}</div>
           <div class="reward-difficulty">${difficulty} lettres</div>
           <div class="reward-description">${reward.unlocked ? reward.description : 'Terminez une partie avec cette difficulté pour débloquer'}</div>
@@ -1186,23 +1030,19 @@
         rewardsDisplay.appendChild(rewardItem);
       });
       
-      // Mettre à jour le compteur de récompenses
       const totalRewards = Object.keys(rewards).length;
       rewardsCount.textContent = `${unlockedRewards}/${totalRewards}`;
     }
 
-    // Débloquer une récompense
     function unlockReward(difficulty) {
       if (rewards[difficulty] && !rewards[difficulty].unlocked) {
         rewards[difficulty].unlocked = true;
         unlockedRewards++;
         updateRewardsDisplay();
         showRewardAnimation(difficulty);
-        playSound('reward', 784, 0.5);
       }
     }
 
-    // Afficher l'animation de récompense
     function showRewardAnimation(difficulty) {
       const reward = rewards[difficulty];
       const rewardAnimation = document.createElement('div');
@@ -1210,7 +1050,7 @@
       
       rewardAnimation.innerHTML = `
         <div class="reward-popup">
-          <div class="reward-popup-icon ${reward.emojiClass}">${reward.icon}</div>
+          <div class="reward-popup-icon">${reward.icon}</div>
           <div class="reward-popup-title">${reward.title}</div>
           <div class="reward-popup-description">${reward.description}</div>
           <button class="reward-close">CONTINUER</button>
@@ -1219,14 +1059,11 @@
       
       document.body.appendChild(rewardAnimation);
       
-      // Fermer l'animation
       const closeButton = rewardAnimation.querySelector('.reward-close');
       closeButton.addEventListener('click', () => {
         document.body.removeChild(rewardAnimation);
-        playSound('click');
       });
       
-      // Fermer automatiquement après 7 secondes
       setTimeout(() => {
         if (document.body.contains(rewardAnimation)) {
           document.body.removeChild(rewardAnimation);
@@ -1234,13 +1071,11 @@
       }, 7000);
     }
 
-    // Obtenir une lettre aléatoire
     function getRandomLetter() {
       const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       return alphabet[Math.floor(Math.random() * alphabet.length)];
     }
 
-    // Mise à jour de l'affichage des lettres
     function updateDisplay() {
       wordContainer.innerHTML = '';
       
@@ -1250,7 +1085,6 @@
         letterElement.id = `letter${index}`;
         letterElement.textContent = letter;
         
-        // Vérifier si la lettre est correcte
         if (letter === currentWord[index]) {
           letterElement.classList.add('correct');
         }
@@ -1259,7 +1093,6 @@
       });
     }
 
-    // Animation de rotation d'une lettre
     function spinLetter(index) {
       return new Promise(resolve => {
         const letterElement = document.getElementById(`letter${index}`);
@@ -1276,20 +1109,13 @@
         const spinInterval = isFastMode ? 30 : 100;
         
         const spinIntervalId = setInterval(() => {
-          // Changer la lettre aléatoirement
           currentLetters[index] = getRandomLetter();
           letterElement.textContent = currentLetters[index];
           
-          // Vérifier si c'est la bonne lettre
           if (currentLetters[index] === currentWord[index]) {
             letterElement.classList.add('correct');
           } else {
             letterElement.classList.remove('correct');
-          }
-          
-          // Son de rotation
-          if (spins % 2 === 0) {
-            playSpinSound();
           }
           
           spins++;
@@ -1303,18 +1129,14 @@
       });
     }
 
-    // Faire tourner toutes les lettres
     async function spinAllLetters() {
       if (isSpinning) return;
       
       isSpinning = true;
       spinBtn.disabled = true;
       message.textContent = "Les lettres tournent...";
-      playSound('click');
       
-      // Faire le nombre de tours sélectionné
       for (let tour = 0; tour < attackMode; tour++) {
-        // Faire tourner toutes les lettres en parallèle
         const spinPromises = [];
         for (let i = 0; i < currentWord.length; i++) {
           spinPromises.push(spinLetter(i));
@@ -1325,18 +1147,15 @@
         attempts++;
         attemptsCount.textContent = attempts;
         
-        // Vérifier si le mot est correct
         const currentWordAttempt = currentLetters.join('');
         if (currentWordAttempt === currentWord) {
           await winGame();
           break;
         } else if (tour < attackMode - 1) {
-          // Pause entre les tours
           await new Promise(resolve => setTimeout(resolve, isFastMode ? 100 : 300));
         }
       }
       
-      // Vérifier une dernière fois après tous les tours
       const currentWordAttempt = currentLetters.join('');
       if (currentWordAttempt !== currentWord) {
         message.textContent = `Mot actuel: ${currentWordAttempt} - Continuez !`;
@@ -1346,29 +1165,30 @@
       spinBtn.disabled = false;
     }
 
-    // Gestion de la victoire
     async function winGame() {
       winAnimationActive = true;
       message.textContent = "🎉 FÉLICITATIONS ! Vous avez trouvé le mot ! 🎉";
       
-      // Débloquer la récompense pour cette difficulté
+      if (isConnectedToTikfinity && tikfinitySocket) {
+        tikfinitySocket.emit('gameWon', {
+          playerId: playerId,
+          playerName: playerName,
+          word: currentWord,
+          attempts: attempts,
+          difficulty: currentDifficulty,
+          score: Math.max(1000 - (attempts * 10), 100)
+        });
+      }
+      
       unlockReward(currentDifficulty);
       
-      // Sons de victoire
-      playWinSequence();
-      
-      // Animation de victoire pour chaque lettre
       for (let i = 0; i < currentWord.length; i++) {
         setTimeout(() => {
           const letterElement = document.getElementById(`letter${i}`);
-          if (letterElement) {
-            letterElement.classList.add('correct');
-            playSound('correct', 523.25 + (i * 100), 0.2);
-          }
+          if (letterElement) letterElement.classList.add('correct');
         }, i * 200);
       }
       
-      // Affichage du résultat
       winMessage.textContent = "Vous avez découvert le mot du jour !";
       attemptsResult.textContent = `Nombre de tours : ${attempts}`;
       actualWord.textContent = currentWord;
@@ -1376,7 +1196,6 @@
       await new Promise(resolve => setTimeout(resolve, 1500));
       resultContainer.classList.remove('hidden');
       
-      // Animation de victoire
       showVictoryAnimation();
       
       setTimeout(() => {
@@ -1384,7 +1203,6 @@
       }, 5000);
     }
 
-    // Afficher l'animation de victoire
     function showVictoryAnimation() {
       const victoryAnimation = document.createElement('div');
       victoryAnimation.className = 'reward-animation';
@@ -1400,14 +1218,11 @@
       
       document.body.appendChild(victoryAnimation);
       
-      // Fermer l'animation
       const closeButton = victoryAnimation.querySelector('.reward-close');
       closeButton.addEventListener('click', () => {
         document.body.removeChild(victoryAnimation);
-        playSound('click');
       });
       
-      // Fermer automatiquement après 7 secondes
       setTimeout(() => {
         if (document.body.contains(victoryAnimation)) {
           document.body.removeChild(victoryAnimation);
@@ -1415,17 +1230,14 @@
       }, 7000);
     }
 
-    // Supprimer les classes de victoire
     function removeWinClasses() {
       document.querySelectorAll('.letter-wheel').forEach(letter => {
         letter.classList.remove('correct', 'spinning', 'fast-spin');
       });
     }
 
-    // Basculer le mode accéléré
     function toggleSpeedMode() {
       isFastMode = !isFastMode;
-      playSound('click');
       
       if (isFastMode) {
         speedBtn.classList.add('active');
@@ -1440,10 +1252,8 @@
       }
     }
 
-    // Définir le mode d'attaque
     function setAttackMode(mode) {
       attackMode = mode;
-      playSound('click');
       
       document.querySelectorAll('.attack-mode-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -1454,10 +1264,8 @@
       spinBtn.textContent = `Tourner (${mode} tour${mode > 1 ? 's' : ''})`;
     }
 
-    // Changer la difficulté
     function setDifficulty(difficulty) {
       currentDifficulty = difficulty;
-      playSound('click');
       
       document.querySelectorAll('.difficulty-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -1468,12 +1276,9 @@
       initGame();
     }
 
-    // Événements
     spinBtn.addEventListener('click', spinAllLetters);
     speedBtn.addEventListener('click', toggleSpeedMode);
     resetBtn.addEventListener('click', initGame);
-    soundToggle.addEventListener('click', toggleSounds);
-    musicToggle.addEventListener('click', toggleMusic);
 
     document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
     document.getElementById("mode5").addEventListener("click", () => setAttackMode(5));
@@ -1487,7 +1292,6 @@
     document.getElementById("difficulty6").addEventListener("click", () => setDifficulty(6));
     document.getElementById("difficulty7").addEventListener("click", () => setDifficulty(7));
 
-    // Raccourcis clavier
     document.addEventListener('keydown', (e) => {
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
@@ -1503,24 +1307,9 @@
       if (e.key === 's' || e.key === 'S') {
         toggleSpeedMode();
       }
-      
-      if (e.key === 'm' || e.key === 'M') {
-        toggleSounds();
-      }
     });
 
-    // Initialisation au chargement
-    window.addEventListener('load', () => {
-      initAudio();
-      initGame();
-    });
-
-    // Redémarrer l'audio après interaction utilisateur (requis par certains navigateurs)
-    document.addEventListener('click', () => {
-      if (audioContext && audioContext.state === 'suspended') {
-        audioContext.resume();
-      }
-    });
+    window.addEventListener('load', initGame);
   </script>
 </body>
 </html>
