@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎯 Mot du Jour - Version Cadenas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+
+    .game-container {
+      max-width: 1000px;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      border: 3px solid rgba(255, 215, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-container::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      background: linear-gradient(45deg, #ffd700, #ff6b9d, #c44569, #ffd700);
+      border-radius: 25px;
+      z-index: -1;
+      animation: borderGlow 3s linear infinite;
+    }
+
+    @keyframes borderGlow {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 2.8em;
+      margin-bottom: 15px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .difficulty-selector {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .difficulty-btn {
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      min-width: 120px;
+      font-weight: bold;
+    }
+
+    .difficulty-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .difficulty-btn.active {
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      border-color: #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .difficulty-btn.easy {
+      border-color: #2ecc71;
+    }
+
+    .difficulty-btn.medium {
+      border-color: #feca57;
+    }
+
+    .difficulty-btn.hard {
+      border-color: #ff6b9d;
+    }
+
+    .difficulty-btn.expert {
+      border-color: #c44569;
+    }
+
+    .word-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px 0;
+      perspective: 1000px;
+      flex-wrap: wrap;
+    }
+
+    .letter-wheel {
+      width: 70px;
+      height: 110px;
+      background: linear-gradient(145deg, #2c3e50, #34495e);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3em;
+      font-weight: bold;
+      color: #feca57;
+      box-shadow: 
+        inset 0 0 10px rgba(0, 0, 0, 0.5),
+        0 5px 15px rgba(0, 0, 0, 0.3);
+      border: 3px solid #feca57;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s;
+      text-transform: uppercase;
+    }
+
+    .letter-wheel:hover {
+      transform: translateY(-5px);
+    }
+
+    .letter-wheel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
+      pointer-events: none;
+    }
+
+    .letter-wheel::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #feca57;
+      box-shadow: 0 0 10px #feca57;
+    }
+
+    .letter-wheel.correct {
+      animation: correctPulse 0.5s ease-in-out 3;
+      background: linear-gradient(145deg, #27ae60, #2ecc71);
+      color: white;
+    }
+
+    @keyframes correctPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .letter-wheel.spinning {
+      animation: spinLetter 0.1s linear infinite;
+    }
+
+    .letter-wheel.fast-spin {
+      animation: spinLetter 0.03s linear infinite;
+    }
+
+    @keyframes spinLetter {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+
+    .word-body {
+      width: 100%;
+      max-width: 600px;
+      height: 150px;
+      background: linear-gradient(145deg, #8B4513, #A0522D);
+      margin: 0 auto 20px;
+      border-radius: 10px;
+      position: relative;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .word-shackle {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 80px;
+      border: 15px solid #D2691E;
+      border-bottom: none;
+      border-radius: 60px 60px 0 0;
+      z-index: 1;
+    }
+
+    .attack-modes {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .attack-mode-btn {
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      min-width: 60px;
+      font-weight: bold;
+    }
+
+    .attack-mode-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .attack-mode-btn.active {
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      border-color: #fff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .controls {
+      margin: 25px 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button {
+      padding: 15px 30px;
+      margin: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(45deg, #ff6b9d, #c44569);
+      color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(45deg, #feca57, #ff6b9d);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    button:disabled:hover::before {
+      left: -100%;
+    }
+
+    #spinBtn {
+      background: linear-gradient(45deg, #27ae60, #2ecc71);
+      font-size: 20px;
+      padding: 18px 40px;
+    }
+
+    #spinBtn:hover {
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
+    }
+
+    #speedBtn {
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      font-size: 16px;
+      padding: 15px 25px;
+    }
+
+    #speedBtn:hover {
+      background: linear-gradient(45deg, #2980b9, #3498db);
+    }
+
+    #speedBtn.active {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      animation: pulseSpeed 1s infinite;
+    }
+
+    @keyframes pulseSpeed {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    #message {
+      margin: 20px 0;
+      font-size: 1.3em;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-box {
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.9), rgba(46, 204, 113, 0.9));
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px 0;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      margin: 5px 10px;
+    }
+
+    .stat-value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #feca57;
+    }
+
+    .word-info {
+      margin: 10px 0;
+      font-size: 1.1em;
+      color: #feca57;
+    }
+
+    .hint-container {
+      margin: 15px 0;
+      padding: 10px;
+      background: rgba(255, 215, 0, 0.2);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 215, 0, 0.5);
+    }
+
+    .hint-text {
+      font-size: 1.1em;
+      color: #feca57;
+      font-style: italic;
+    }
+
+    .win-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #feca57;
+      opacity: 0;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(1000px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .win-text {
+      font-size: 5em;
+      font-weight: bold;
+      color: #feca57;
+      text-shadow: 0 0 20px rgba(254, 202, 87, 0.8);
+      animation: textPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes textPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .speed-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: bold;
+      display: none;
+    }
+
+    /* ANIMATIONS DE RÉCOMPENSE */
+    .reward-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.95);
+      animation: rewardFadeIn 0.8s ease;
+    }
+
+    @keyframes rewardFadeIn {
+      from { 
+        opacity: 0; 
+        background: rgba(0, 0, 0, 0);
+      }
+      to { 
+        opacity: 1; 
+        background: rgba(0, 0, 0, 0.95);
+      }
+    }
+
+    .reward-popup {
+      background: linear-gradient(135deg, #ff6b9d, #feca57, #ff6b9d);
+      padding: 40px;
+      border-radius: 25px;
+      text-align: center;
+      max-width: 600px;
+      animation: rewardScaleIn 0.8s ease;
+      border: 4px solid gold;
+      box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+      position: relative;
+      overflow: hidden;
+      z-index: 10000;
+    }
+
+    @keyframes rewardScaleIn {
+      from { 
+        transform: scale(0.3) rotate(-10deg);
+        opacity: 0;
+      }
+      to { 
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .reward-popup-icon {
+      font-size: 8em;
+      margin-bottom: 20px;
+      animation: rewardBounce 1s infinite;
+    }
+
+    @keyframes rewardBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.2); }
+    }
+
+    .reward-popup-title {
+      font-size: 3.5em;
+      margin-bottom: 15px;
+      color: white;
+      text-shadow: 0 0 20px rgba(0,0,0,0.8);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .reward-popup-description {
+      font-size: 1.5em;
+      margin-bottom: 25px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .reward-close {
+      padding: 15px 30px;
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-size: 1.3em;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: bold;
+    }
+
+    .reward-close:hover {
+      background: linear-gradient(45deg, #27ae60, #2ecc71);
+      transform: scale(1.1);
+    }
+
+    /* AFFICHAGE DES RÉCOMPENSES */
+    .rewards-display {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .reward-item {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 107, 157, 0.3));
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      border-radius: 15px;
+      padding: 15px;
+      width: 180px;
+      text-align: center;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reward-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+    }
+
+    .reward-item.unlocked {
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.4), rgba(46, 204, 113, 0.4));
+      border-color: #2ecc71;
+      animation: rewardGlow 2s infinite;
+    }
+
+    @keyframes rewardGlow {
+      0%, 100% { box-shadow: 0 0 10px rgba(46, 204, 113, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(46, 204, 113, 0.8); }
+    }
+
+    .reward-icon {
+      font-size: 3em;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+    }
+
+    .reward-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #feca57;
+    }
+
+    .reward-difficulty {
+      font-size: 0.9em;
+      color: #ccc;
+      margin-bottom: 10px;
+    }
+
+    .reward-description {
+      font-size: 0.9em;
+      color: #ddd;
+    }
+
+    .reward-badge {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.8em;
+    }
+
+    /* EFFETS SPÉCIAUX POUR LES ÉMOJIS */
+    .whale-emoji { animation: float 3s ease-in-out infinite; }
+    .planet-emoji { animation: rotate 4s linear infinite; }
+    .universe-emoji { animation: twinkle 2s ease-in-out infinite; }
+    .coins-emoji { animation: shine 2s ease-in-out infinite; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-10px) scale(1.1); }
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg) scale(1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; filter: brightness(1); }
+      50% { opacity: 0.8; filter: brightness(1.5); }
+    }
+
+    @keyframes shine {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(1.1) rotate(5deg); }
+      75% { transform: scale(1.1) rotate(-5deg); }
+    }
+
+    @media (max-width: 768px) {
+      .game-container {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      h1 {
+        font-size: 2.2em;
+      }
+      
+      .letter-wheel {
+        width: 55px;
+        height: 90px;
+        font-size: 2.5em;
+      }
+      
+      button {
+        padding: 12px 25px;
+        font-size: 16px;
+      }
+      
+      #spinBtn {
+        font-size: 18px;
+        padding: 15px 30px;
+      }
+
+      .attack-mode-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 50px;
+      }
+
+      .difficulty-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+        min-width: 100px;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .reward-item {
+        width: 150px;
+        padding: 10px;
+      }
+
+      .reward-icon {
+        font-size: 2.5em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .letter-wheel {
+        width: 45px;
+        height: 75px;
+        font-size: 2em;
+      }
+      
+      .word-container {
+        gap: 8px;
+      }
+
+      .attack-modes {
+        gap: 5px;
+      }
+
+      .attack-mode-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+        min-width: 45px;
+      }
+
+      .difficulty-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 80px;
+      }
+
+      .reward-item {
+        width: 130px;
+        padding: 8px;
+      }
+
+      .reward-icon {
+        font-size: 2em;
+      }
+
+      .reward-title {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>🎯 Mot du Jour - Version Cadenas</h1>
+    
+    <div class="difficulty-selector">
+      <button id="difficulty4" class="difficulty-btn easy active">4 Lettres</button>
+      <button id="difficulty5" class="difficulty-btn medium">5 Lettres</button>
+      <button id="difficulty6" class="difficulty-btn hard">6 Lettres</button>
+      <button id="difficulty7" class="difficulty-btn expert">7 Lettres</button>
+    </div>
+
+    <div class="word-info" id="wordInfo">Objectif : Faire tourner les lettres pour former le mot du jour !</div>
+    
+    <div class="hint-container">
+      <div class="hint-text" id="hintText">Indice : Le mot est un nom commun...</div>
+    </div>
+
+    <div class="word-body">
+      <div class="word-shackle"></div>
+      <div class="word-container" id="wordContainer">
+        <!-- Les roues de lettres seront générées ici -->
+      </div>
+    </div>
+
+    <!-- Affichage des récompenses -->
+    <div class="rewards-display" id="rewardsDisplay">
+      <!-- Les récompenses seront générées ici -->
+    </div>
+
+    <div class="attack-modes">
+      <button id="mode1" class="attack-mode-btn active">1 tour</button>
+      <button id="mode5" class="attack-mode-btn">5 tours</button>
+      <button id="mode10" class="attack-mode-btn">10 tours</button>
+      <button id="mode50" class="attack-mode-btn">50 tours</button>
+      <button id="mode100" class="attack-mode-btn">100 tours</button>
+      <button id="mode1000" class="attack-mode-btn">1000 tours</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div>Tours joués</div>
+        <div class="stat-value" id="attemptsCount">0</div>
+      </div>
+      <div class="stat-item">
+        <div>Difficulté</div>
+        <div class="stat-value" id="currentDifficulty">4</div>
+      </div>
+      <div class="stat-item">
+        <div>Récompenses</div>
+        <div class="stat-value" id="rewardsCount">0/4</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="spinBtn">Tourner les lettres</button>
+      <button id="speedBtn">⏩ Accélérer</button>
+      <button id="resetBtn">Nouveau mot</button>
+    </div>
+
+    <div id="message">Prêt à jouer ? Faites tourner les lettres pour trouver le mot du jour !</div>
+
+    <div id="resultContainer" class="hidden result-box">
+      <h3>🎉 Félicitations !</h3>
+      <p id="winMessage">Vous avez trouvé le mot du jour !</p>
+      <p id="attemptsResult">Nombre de tours : 0</p>
+      <p id="wordResult">Le mot était : <span id="actualWord"></span></p>
+    </div>
+
+    <div class="speed-indicator" id="speedIndicator">VITESSE RAPIDE</div>
+  </div>
+
+  <script>
+    // Mots du jour par difficulté
+    const dailyWords = {
+      4: [
+        { word: "CIEL", hint: "Au-dessus de nos têtes" },
+        { word: "FLEUR", hint: "Pousse dans les jardins" },
+        { word: "LIVRE", hint: "Se lit page par page" },
+        { word: "TABLE", hint: "Meuble avec des pieds" },
+        { word: "MAISON", hint: "Abri pour une famille" }
+      ],
+      5: [
+        { word: "ARBRE", hint: "A des racines et des feuilles" },
+        { word: "OCEAN", hint: "Vaste étendue d'eau salée" },
+        { word: "MUSIQUE", hint: "Art des sons et des rythmes" },
+        { word: "SOLEIL", hint: "Étoile de notre système" },
+        { word: "AVENTURE", hint: "Expérience excitante et risquée" }
+      ],
+      6: [
+        { word: "JARDIN", hint: "Espace de culture et de détente" },
+        { word: "VOYAGE", hint: "Déplacement vers un lieu lointain" },
+        { word: "MYSTERE", hint: "Quelque chose d'inexpliqué" },
+        { word: "HORIZON", hint: "Ligne où le ciel rencontre la terre" },
+        { word: "LIBERTE", hint: "État de non-assujettissement" }
+      ],
+      7: [
+        { word: "MONTAGNE", hint: "Élévation naturelle du terrain" },
+        { word: "HISTOIRE", hint: "Récit d'événements passés" },
+        { word: "UNIVERS", hint: "Ensemble de tout ce qui existe" },
+        { word: "FANTAISIE", hint: "Imagination créative" },
+        { word: "TREASURE", hint: "Richesse cachée ou précieuse" }
+      ]
+    };
+
+    // Récompenses par difficulté avec emojis améliorés
+    const rewards = {
+      4: {
+        icon: "🐋",
+        title: "BALEINE GÉANTE !",
+        description: "Félicitations ! Vous avez gagné une magnifique baleine bleue !",
+        emojiClass: "whale-emoji",
+        unlocked: false
+      },
+      5: {
+        icon: "🪐",
+        title: "PLANÈTE D'OR !",
+        description: "Incroyable ! Vous avez découvert une planète merveilleuse !",
+        emojiClass: "planet-emoji",
+        unlocked: false
+      },
+      6: {
+        icon: "🌠",
+        title: "UNIVERS MAGIQUE !",
+        description: "Extraordinaire ! Vous avez conquis l'univers tout entier !",
+        emojiClass: "universe-emoji",
+        unlocked: false
+      },
+      7: {
+        icon: "💎",
+        title: "TRÉSOR FABULEUX !",
+        description: "Fantastique ! Vous avez gagné un trésor de 100 000 pièces d'or !",
+        emojiClass: "coins-emoji",
+        unlocked: false
+      }
+    };
+
+    // Variables du jeu
+    let currentWord = "";
+    let currentHint = "";
+    let currentLetters = [];
+    let attempts = 0;
+    let isSpinning = false;
+    let winAnimationActive = false;
+    let attackMode = 1;
+    let audioContext = null;
+    let currentDifficulty = 4;
+    let isFastMode = false;
+    let unlockedRewards = 0;
+
+    // Éléments DOM
+    const wordContainer = document.getElementById('wordContainer');
+    const spinBtn = document.getElementById('spinBtn');
+    const speedBtn = document.getElementById('speedBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const message = document.getElementById('message');
+    const resultContainer = document.getElementById('resultContainer');
+    const attemptsCount = document.getElementById('attemptsCount');
+    const currentDifficultyElement = document.getElementById('currentDifficulty');
+    const attemptsResult = document.getElementById('attemptsResult');
+    const winMessage = document.getElementById('winMessage');
+    const actualWord = document.getElementById('actualWord');
+    const wordInfo = document.getElementById('wordInfo');
+    const hintText = document.getElementById('hintText');
+    const speedIndicator = document.getElementById('speedIndicator');
+    const rewardsDisplay = document.getElementById('rewardsDisplay');
+    const rewardsCount = document.getElementById('rewardsCount');
+
+    // Initialisation du jeu
+    function initGame() {
+      // Sélectionner un mot aléatoire selon la difficulté
+      const wordList = dailyWords[currentDifficulty];
+      const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+      currentWord = randomWord.word;
+      currentHint = randomWord.hint;
+      
+      // Initialiser les lettres avec des valeurs aléatoires
+      currentLetters = [];
+      for (let i = 0; i < currentWord.length; i++) {
+        currentLetters.push(getRandomLetter());
+      }
+      
+      attempts = 0;
+      
+      updateDisplay();
+      updateRewardsDisplay();
+      attemptsCount.textContent = attempts;
+      currentDifficultyElement.textContent = currentDifficulty;
+      resultContainer.classList.add('hidden');
+      wordInfo.textContent = `Mot à ${currentWord.length} lettres`;
+      hintText.textContent = `Indice : ${currentHint}`;
+      message.textContent = "Prêt à jouer ? Faites tourner les lettres !";
+      spinBtn.disabled = false;
+      removeWinClasses();
+    }
+
+    // Mettre à jour l'affichage des récompenses
+    function updateRewardsDisplay() {
+      rewardsDisplay.innerHTML = '';
+      
+      Object.keys(rewards).forEach(difficulty => {
+        const reward = rewards[difficulty];
+        const rewardItem = document.createElement('div');
+        rewardItem.className = `reward-item ${reward.unlocked ? 'unlocked' : ''}`;
+        
+        rewardItem.innerHTML = `
+          ${!reward.unlocked ? '<div class="reward-badge">?</div>' : ''}
+          <div class="reward-icon ${reward.unlocked ? reward.emojiClass : ''}">${reward.unlocked ? reward.icon : '❓'}</div>
+          <div class="reward-title">${reward.unlocked ? reward.title : 'À DÉCOUVRIR'}</div>
+          <div class="reward-difficulty">${difficulty} lettres</div>
+          <div class="reward-description">${reward.unlocked ? reward.description : 'Terminez une partie avec cette difficulté pour débloquer'}</div>
+        `;
+        
+        rewardsDisplay.appendChild(rewardItem);
+      });
+      
+      // Mettre à jour le compteur de récompenses
+      const totalRewards = Object.keys(rewards).length;
+      rewardsCount.textContent = `${unlockedRewards}/${totalRewards}`;
+    }
+
+    // Débloquer une récompense
+    function unlockReward(difficulty) {
+      if (rewards[difficulty] && !rewards[difficulty].unlocked) {
+        rewards[difficulty].unlocked = true;
+        unlockedRewards++;
+        updateRewardsDisplay();
+        showRewardAnimation(difficulty);
+      }
+    }
+
+    // Afficher l'animation de récompense
+    function showRewardAnimation(difficulty) {
+      const reward = rewards[difficulty];
+      const rewardAnimation = document.createElement('div');
+      rewardAnimation.className = 'reward-animation';
+      
+      rewardAnimation.innerHTML = `
+        <div class="reward-popup">
+          <div class="reward-popup-icon ${reward.emojiClass}">${reward.icon}</div>
+          <div class="reward-popup-title">${reward.title}</div>
+          <div class="reward-popup-description">${reward.description}</div>
+          <button class="reward-close">CONTINUER</button>
+        </div>
+      `;
+      
+      document.body.appendChild(rewardAnimation);
+      
+      // Fermer l'animation
+      const closeButton = rewardAnimation.querySelector('.reward-close');
+      closeButton.addEventListener('click', () => {
+        document.body.removeChild(rewardAnimation);
+      });
+      
+      // Fermer automatiquement après 7 secondes
+      setTimeout(() => {
+        if (document.body.contains(rewardAnimation)) {
+          document.body.removeChild(rewardAnimation);
+        }
+      }, 7000);
+    }
+
+    // Obtenir une lettre aléatoire
+    function getRandomLetter() {
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      return alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+
+    // Mise à jour de l'affichage des lettres
+    function updateDisplay() {
+      wordContainer.innerHTML = '';
+      
+      currentLetters.forEach((letter, index) => {
+        const letterElement = document.createElement('div');
+        letterElement.className = 'letter-wheel';
+        letterElement.id = `letter${index}`;
+        letterElement.textContent = letter;
+        
+        // Vérifier si la lettre est correcte
+        if (letter === currentWord[index]) {
+          letterElement.classList.add('correct');
+        }
+        
+        wordContainer.appendChild(letterElement);
+      });
+    }
+
+    // Animation de rotation d'une lettre
+    function spinLetter(index) {
+      return new Promise(resolve => {
+        const letterElement = document.getElementById(`letter${index}`);
+        if (!letterElement) return resolve();
+        
+        if (isFastMode) {
+          letterElement.classList.add('spinning', 'fast-spin');
+        } else {
+          letterElement.classList.add('spinning');
+        }
+        
+        let spins = 0;
+        const maxSpins = isFastMode ? 5 + Math.floor(Math.random() * 5) : 10 + Math.floor(Math.random() * 10);
+        const spinInterval = isFastMode ? 30 : 100;
+        
+        const spinIntervalId = setInterval(() => {
+          // Changer la lettre aléatoirement
+          currentLetters[index] = getRandomLetter();
+          letterElement.textContent = currentLetters[index];
+          
+          // Vérifier si c'est la bonne lettre
+          if (currentLetters[index] === currentWord[index]) {
+            letterElement.classList.add('correct');
+          } else {
+            letterElement.classList.remove('correct');
+          }
+          
+          spins++;
+          
+          if (spins >= maxSpins) {
+            clearInterval(spinIntervalId);
+            letterElement.classList.remove('spinning', 'fast-spin');
+            setTimeout(resolve, isFastMode ? 20 : 100);
+          }
+        }, spinInterval);
+      });
+    }
+
+    // Faire tourner toutes les lettres
+    async function spinAllLetters() {
+      if (isSpinning) return;
+      
+      isSpinning = true;
+      spinBtn.disabled = true;
+      message.textContent = "Les lettres tournent...";
+      
+      // Faire le nombre de tours sélectionné
+      for (let tour = 0; tour < attackMode; tour++) {
+        // Faire tourner toutes les lettres en parallèle
+        const spinPromises = [];
+        for (let i = 0; i < currentWord.length; i++) {
+          spinPromises.push(spinLetter(i));
+        }
+        
+        await Promise.all(spinPromises);
+        
+        attempts++;
+        attemptsCount.textContent = attempts;
+        
+        // Vérifier si le mot est correct
+        const currentWordAttempt = currentLetters.join('');
+        if (currentWordAttempt === currentWord) {
+          await winGame();
+          break;
+        } else if (tour < attackMode - 1) {
+          // Pause entre les tours
+          await new Promise(resolve => setTimeout(resolve, isFastMode ? 100 : 300));
+        }
+      }
+      
+      // Vérifier une dernière fois après tous les tours
+      const currentWordAttempt = currentLetters.join('');
+      if (currentWordAttempt !== currentWord) {
+        message.textContent = `Mot actuel: ${currentWordAttempt} - Continuez !`;
+      }
+      
+      isSpinning = false;
+      spinBtn.disabled = false;
+    }
+
+    // Vérifier si le mot est correct
+    function checkWord() {
+      const currentWordAttempt = currentLetters.join('');
+      return currentWordAttempt === currentWord;
+    }
+
+    // Gestion de la victoire
+    async function winGame() {
+      winAnimationActive = true;
+      message.textContent = "🎉 FÉLICITATIONS ! Vous avez trouvé le mot ! 🎉";
+      
+      // Débloquer la récompense pour cette difficulté
+      unlockReward(currentDifficulty);
+      
+      // Animation de victoire pour chaque lettre
+      for (let i = 0; i < currentWord.length; i++) {
+        setTimeout(() => {
+          const letterElement = document.getElementById(`letter${i}`);
+          if (letterElement) letterElement.classList.add('correct');
+        }, i * 200);
+      }
+      
+      // Affichage du résultat
+      winMessage.textContent = "Vous avez découvert le mot du jour !";
+      attemptsResult.textContent = `Nombre de tours : ${attempts}`;
+      actualWord.textContent = currentWord;
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      resultContainer.classList.remove('hidden');
+      
+      // Animation de victoire
+      showVictoryAnimation();
+      
+      setTimeout(() => {
+        winAnimationActive = false;
+      }, 5000);
+    }
+
+    // Afficher l'animation de victoire
+    function showVictoryAnimation() {
+      const victoryAnimation = document.createElement('div');
+      victoryAnimation.className = 'reward-animation';
+      
+      victoryAnimation.innerHTML = `
+        <div class="reward-popup">
+          <div class="reward-popup-icon">🏆</div>
+          <div class="reward-popup-title">MOT TROUVÉ !</div>
+          <div class="reward-popup-description">Félicitations ! Vous avez formé le mot "${currentWord}"</div>
+          <button class="reward-close">CONTINUER</button>
+        </div>
+      `;
+      
+      document.body.appendChild(victoryAnimation);
+      
+      // Fermer l'animation
+      const closeButton = victoryAnimation.querySelector('.reward-close');
+      closeButton.addEventListener('click', () => {
+        document.body.removeChild(victoryAnimation);
+      });
+      
+      // Fermer automatiquement après 7 secondes
+      setTimeout(() => {
+        if (document.body.contains(victoryAnimation)) {
+          document.body.removeChild(victoryAnimation);
+        }
+      }, 7000);
+    }
+
+    // Supprimer les classes de victoire
+    function removeWinClasses() {
+      document.querySelectorAll('.letter-wheel').forEach(letter => {
+        letter.classList.remove('correct', 'spinning', 'fast-spin');
+      });
+    }
+
+    // Basculer le mode accéléré
+    function toggleSpeedMode() {
+      isFastMode = !isFastMode;
+      
+      if (isFastMode) {
+        speedBtn.classList.add('active');
+        speedBtn.innerHTML = '⏩ Ralenti';
+        speedIndicator.style.display = 'block';
+        message.textContent = 'Mode accéléré activé !';
+      } else {
+        speedBtn.classList.remove('active');
+        speedBtn.innerHTML = '⏩ Accélérer';
+        speedIndicator.style.display = 'none';
+        message.textContent = 'Mode normal activé';
+      }
+    }
+
+    // Définir le mode d'attaque
+    function setAttackMode(mode) {
+      attackMode = mode;
+      
+      document.querySelectorAll('.attack-mode-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(`mode${mode}`).classList.add('active');
+      
+      spinBtn.textContent = `Tourner (${mode} tour${mode > 1 ? 's' : ''})`;
+    }
+
+    // Changer la difficulté
+    function setDifficulty(difficulty) {
+      currentDifficulty = difficulty;
+      
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(`difficulty${difficulty}`).classList.add('active');
+      
+      initGame();
+    }
+
+    // Événements
+    spinBtn.addEventListener('click', spinAllLetters);
+    speedBtn.addEventListener('click', toggleSpeedMode);
+    resetBtn.addEventListener('click', initGame);
+
+    document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
+    document.getElementById("mode5").addEventListener("click", () => setAttackMode(5));
+    document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
+    document.getElementById("mode50").addEventListener("click", () => setAttackMode(50));
+    document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
+    document.getElementById("mode1000").addEventListener("click", () => setAttackMode(1000));
+
+    document.getElementById("difficulty4").addEventListener("click", () => setDifficulty(4));
+    document.getElementById("difficulty5").addEventListener("click", () => setDifficulty(5));
+    document.getElementById("difficulty6").addEventListener("click", () => setDifficulty(6));
+    document.getElementById("difficulty7").addEventListener("click", () => setDifficulty(7));
+
+    // Raccourcis clavier
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        if (!isSpinning && !winAnimationActive) {
+          spinAllLetters();
+        }
+      }
+      
+      if (e.key === 'r' || e.key === 'R') {
+        initGame();
+      }
+      
+      if (e.key === 's' || e.key === 'S') {
+        toggleSpeedMode();
+      }
+    });
+
+    // Initialisation au chargement
+    window.addEventListener('load', initGame);
+  </script>
+</body>
+</html>
