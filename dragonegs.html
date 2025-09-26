@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐉 Casse l'Œuf de Dragon</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Arial', sans-serif;
+background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 50%, #415a77 100%);
+background-size: cover;
+background-position: center;
+background-attachment: fixed;
+color: #fff;
+text-align: center;
+min-height: 100vh;
+padding: 10px;
+position: relative;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+gap: 10px;
+}
+
+.game-container {
+width: 100%;
+max-width: 500px;
+background: rgba(13, 27, 42, 0.9);
+border-radius: 20px;
+padding: 20px;
+backdrop-filter: blur(10px);
+box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+position: relative;
+border: 2px solid rgba(220, 20, 60, 0.5);
+margin-bottom: 20px;
+}
+
+.game-container::before {
+content: '';
+position: absolute;
+top: -2px;
+left: -2px;
+right: -2px;
+bottom: -2px;
+background: linear-gradient(45deg, #dc143c, #ff2400, #ff4500, #ff2400, #dc143c);
+border-radius: 22px;
+z-index: -1;
+animation: borderGlow 3s linear infinite;
+opacity: 0.7;
+}
+
+@keyframes borderGlow {
+0% { filter: hue-rotate(0deg); }
+100% { filter: hue-rotate(360deg); }
+}
+
+h1 {
+font-size: 1.8em;
+margin-bottom: 15px;
+text-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+background: linear-gradient(45deg, #ff4500, #ff2400, #dc143c);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+
+.dragon-logo {
+width: 50px;
+height: 50px;
+margin: 0 auto 15px;
+background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f432.png');
+background-size: contain;
+background-repeat: no-repeat;
+background-position: center;
+filter: drop-shadow(0 0 10px rgba(255, 69, 0, 0.5));
+animation: dragonBounce 2s ease-in-out infinite;
+}
+
+@keyframes dragonBounce {
+0%, 100% { transform: translateY(0) scale(1); }
+50% { transform: translateY(-5px) scale(1.05); }
+}
+
+.instructions {
+margin: 20px 0;
+padding: 15px;
+background: rgba(255, 255, 255, 0.1);
+border-radius: 15px;
+backdrop-filter: blur(10px);
+border: 1px solid rgba(220, 20, 60, 0.3);
+}
+
+.instructions h2 {
+font-size: 1.4em;
+margin-bottom: 8px;
+background: linear-gradient(45deg, #ff4500, #ff2400);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+
+.instructions p {
+font-size: 1em;
+font-weight: bold;
+color: #ff4500;
+}
+
+.egg-container {
+position: relative;
+margin: 20px auto;
+display: flex;
+justify-content: center;
+align-items: center;
+width: 100%;
+min-height: 200px;
+perspective: 1000px;
+}
+
+/* Styles pour l'œuf de dragon 3D */
+.dragon-egg-3d {
+width: 120px;
+height: 160px;
+margin: 0 auto;
+position: relative;
+transform-style: preserve-3d;
+transition: all 0.3s ease;
+z-index: 5;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 2.5em;
+color: #ff4500;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.dragon-egg-3d .front {
+position: absolute;
+width: 100%;
+height: 100%;
+background: linear-gradient(45deg, #ff4500, #ff6347, #ff4500);
+border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+transform: translateZ(15px);
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow: 0 0 20px rgba(255, 69, 0, 0.8);
+}
+
+.dragon-egg-3d .top {
+position: absolute;
+width: 100%;
+height: 30px;
+background: linear-gradient(45deg, #dc143c, #ff4500, #dc143c);
+border-radius: 50% 50% 0 0;
+transform: rotateX(90deg) translateZ(15px);
+top: -15px;
+}
+
+.dragon-egg-3d .side {
+position: absolute;
+width: 30px;
+height: 100%;
+background: linear-gradient(45deg, #b22222, #dc143c, #b22222);
+transform: rotateY(90deg) translateZ(60px);
+right: -15px;
+border-radius: 0 15px 15px 0;
+}
+
+.dragon-egg-3d .side.left {
+transform: rotateY(-90deg) translateZ(60px);
+left: -15px;
+right: auto;
+border-radius: 15px 0 0 15px;
+}
+
+.dragon-egg-3d.special .front {
+background: linear-gradient(45deg, #9370db, #ba55d3, #9370db);
+box-shadow: 0 0 20px rgba(147, 112, 219, 0.8);
+animation: purpleGlow 2s ease-in-out infinite alternate;
+}
+
+.dragon-egg-3d.special .top {
+background: linear-gradient(45deg, #8a2be2, #9370db, #8a2be2);
+}
+
+.dragon-egg-3d.special .side {
+background: linear-gradient(45deg, #4b0082, #8a2be2, #4b0082);
+}
+
+@keyframes purpleGlow {
+0% { box-shadow: 0 0 20px rgba(147, 112, 219, 0.8); }
+100% { box-shadow: 0 0 30px rgba(186, 85, 211, 1); }
+}
+
+.dragon-egg-3d.hit {
+animation: lightHit 0.4s ease-out;
+}
+
+.dragon-egg-3d.heavy-hit {
+animation: heavyHit 0.6s ease-out;
+}
+
+.dragon-egg-3d.critical-hit {
+animation: criticalHit 0.8s ease-out;
+}
+
+.dragon-egg-3d.mega-hit {
+animation: megaHit 1.2s ease-out;
+}
+
+.dragon-egg-3d.ultra-hit {
+animation: ultraHit 1.5s ease-out;
+}
+
+.dragon-egg-3d.cracked .front {
+filter: brightness(0.7);
+animation: redPulse 1s infinite;
+background: linear-gradient(45deg, #b22222, #dc143c, #b22222);
+}
+
+.dragon-egg-3d.broken {
+opacity: 0.3;
+filter: grayscale(100%) brightness(0.3);
+animation: knockout 1.5s ease-out forwards;
+}
+
+/* Animations pour le marteau */
+.hammer {
+position: absolute;
+width: 60px;
+height: 60px;
+font-size: 2.5em;
+z-index: 10;
+top: -30px;
+right: -15px;
+transform-origin: bottom center;
+transition: transform 0.3s ease;
+pointer-events: none;
+}
+
+.hammer.hitting {
+animation: hammerHit 0.4s ease-out;
+}
+
+@keyframes hammerHit {
+0% { transform: rotate(0deg) translateY(0); }
+50% { transform: rotate(-45deg) translateY(15px); }
+100% { transform: rotate(0deg) translateY(0); }
+}
+
+@keyframes lightHit {
+0% { transform: translateY(0) scale(1); }
+25% { transform: translateY(-5px) scale(0.95); }
+50% { transform: translateY(3px) scale(1.02); }
+75% { transform: translateY(-2px) scale(0.98); }
+100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes heavyHit {
+0% { transform: translateY(0) scale(1); }
+20% { transform: translateY(-8px) scale(0.9); }
+40% { transform: translateY(5px) scale(1.05); }
+60% { transform: translateY(-3px) scale(0.95); }
+80% { transform: translateY(2px) scale(1.02); }
+100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes criticalHit {
+0% { transform: translateY(0) scale(1); }
+15% { transform: translateY(-12px) scale(0.85); }
+30% { transform: translateY(8px) scale(1.1); }
+45% { transform: translateY(-6px) scale(0.9); }
+60% { transform: translateY(4px) scale(1.05); }
+75% { transform: translateY(-2px) scale(0.97); }
+90% { transform: translateY(1px) scale(1.02); }
+100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes megaHit {
+0% { transform: translateY(0) scale(1); }
+10% { transform: translateY(-15px) scale(0.8); }
+20% { transform: translateY(10px) scale(1.15); }
+30% { transform: translateY(-8px) scale(0.85); }
+40% { transform: translateY(6px) scale(1.1); }
+50% { transform: translateY(-4px) scale(0.9); }
+60% { transform: translateY(3px) scale(1.05); }
+70% { transform: translateY(-2px) scale(0.97); }
+80% { transform: translateY(1px) scale(1.02); }
+90% { transform: translateY(-0.5px) scale(0.99); }
+100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes ultraHit {
+0% { transform: translateY(0) scale(1); }
+8% { transform: translateY(-20px) scale(0.7); }
+16% { transform: translateY(12px) scale(1.2); }
+24% { transform: translateY(-10px) scale(0.8); }
+32% { transform: translateY(8px) scale(1.15); }
+40% { transform: translateY(-6px) scale(0.85); }
+48% { transform: translateY(5px) scale(1.1); }
+56% { transform: translateY(-3px) scale(0.9); }
+64% { transform: translateY(2px) scale(1.05); }
+72% { transform: translateY(-1px) scale(0.97); }
+80% { transform: translateY(0.5px) scale(1.02); }
+88% { transform: translateY(-0.3px) scale(0.99); }
+96% { transform: translateY(0.1px) scale(1.01); }
+100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes knockout {
+0% { transform: translateY(0) scale(1); opacity: 1; }
+30% { transform: translateY(-10px) scale(0.9); opacity: 0.9; }
+70% { transform: translateY(40px) scale(0.7); opacity: 0.7; }
+100% { transform: translateY(60px) scale(0.6); opacity: 0.4; }
+}
+
+@keyframes redPulse {
+0%, 100% { filter: brightness(0.7); }
+50% { filter: brightness(0.5); }
+}
+
+.screen-shake {
+animation: screenShake 0.4s ease-out;
+}
+
+.mega-shake {
+animation: megaShake 0.8s ease-out;
+}
+
+.ultra-shake {
+animation: ultraShake 1.2s ease-out;
+}
+
+@keyframes screenShake {
+0%, 100% { transform: translateX(0); }
+25% { transform: translateX(-5px); }
+75% { transform: translateX(5px); }
+}
+
+@keyframes megaShake {
+0%, 100% { transform: translateX(0) translateY(0); }
+10% { transform: translateX(-8px) translateY(-3px); }
+20% { transform: translateX(8px) translateY(3px); }
+30% { transform: translateX(-6px) translateY(-2px); }
+40% { transform: translateX(6px) translateY(2px); }
+50% { transform: translateX(-4px) translateY(-1px); }
+60% { transform: translateX(4px) translateY(1px); }
+70% { transform: translateX(-2px) translateY(-0.5px); }
+80% { transform: translateX(2px) translateY(0.5px); }
+}
+
+@keyframes ultraShake {
+0%, 100% { transform: translateX(0) translateY(0); }
+5% { transform: translateX(-12px) translateY(-5px); }
+10% { transform: translateX(12px) translateY(5px); }
+15% { transform: translateX(-10px) translateY(-4px); }
+20% { transform: translateX(10px) translateY(4px); }
+25% { transform: translateX(-8px) translateY(-3px); }
+30% { transform: translateX(8px) translateY(3px); }
+35% { transform: translateX(-6px) translateY(-2px); }
+40% { transform: translateX(6px) translateY(2px); }
+45% { transform: translateX(-4px) translateY(-1px); }
+50% { transform: translateX(4px) translateY(1px); }
+55% { transform: translateX(-3px) translateY(-1px); }
+60% { transform: translateX(3px) translateY(1px); }
+65% { transform: translateX(-2px) translateY(-0.5px); }
+70% { transform: translateX(2px) translateY(0.5px); }
+75% { transform: translateX(-1px) translateY(-0.2px); }
+80% { transform: translateX(1px) translateY(0.2px); }
+}
+
+.impact-effect {
+position: absolute;
+font-size: 2em;
+pointer-events: none;
+z-index: 3;
+animation: impactPop 1s ease-out forwards;
+opacity: 0;
+filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
+}
+
+@keyframes impactPop {
+0% { opacity: 0; transform: scale(0.3) translateY(0); }
+30% { opacity: 1; transform: scale(1.5) translateY(-15px); }
+100% { opacity: 0; transform: scale(1) translateY(-50px); }
+}
+
+.attack-modes {
+display: flex;
+justify-content: center;
+gap: 5px;
+margin: 15px 0;
+flex-wrap: wrap;
+}
+
+.attack-mode-btn {
+padding: 8px 12px;
+font-size: 14px;
+cursor: pointer;
+border: 2px solid rgba(220, 20, 60, 0.5);
+border-radius: 18px;
+background: rgba(20, 25, 45, 0.8);
+color: #ff4500;
+transition: all 0.3s ease;
+backdrop-filter: blur(5px);
+min-width: 50px;
+font-weight: bold;
+}
+
+.attack-mode-btn:hover {
+background: rgba(30, 35, 55, 0.8);
+transform: translateY(-2px);
+border-color: #ff4500;
+}
+
+.attack-mode-btn.active {
+background: linear-gradient(45deg, #dc143c, #ff4500);
+border-color: #ff4500;
+box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+color: #fff;
+}
+
+.controls {
+margin: 15px 0;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+button {
+padding: 12px 25px;
+font-size: 16px;
+cursor: pointer;
+border: none;
+border-radius: 25px;
+background: linear-gradient(45deg, #dc143c, #ff4500);
+color: #fff;
+transition: all 0.3s ease;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+text-transform: uppercase;
+font-weight: bold;
+letter-spacing: 1px;
+}
+
+button:hover {
+transform: translateY(-3px);
+box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+background: linear-gradient(45deg, #ff4500, #ff6347);
+}
+
+button:active {
+transform: translateY(0);
+}
+
+#resetBtn {
+background: linear-gradient(45deg, #555, #777);
+}
+
+#resetBtn:hover {
+background: linear-gradient(45deg, #777, #999);
+}
+
+#message {
+margin: 15px 0;
+font-size: 1em;
+font-weight: bold;
+text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+min-height: 25px;
+color: #ff4500;
+}
+
+.result-box {
+background: linear-gradient(135deg, rgba(220, 20, 60, 0.9), rgba(255, 69, 0, 0.9));
+padding: 15px;
+border-radius: 15px;
+margin: 15px 0;
+border: 2px solid rgba(255, 255, 255, 0.5);
+backdrop-filter: blur(10px);
+animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+from {
+opacity: 0;
+transform: translateY(30px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+.hidden {
+display: none;
+}
+
+.coins-display {
+position: absolute;
+top: -20px;
+left: 50%;
+transform: translateX(-50%);
+background: linear-gradient(45deg, #dc143c, #ff4500);
+color: white;
+padding: 5px 15px;
+border-radius: 20px;
+font-weight: bold;
+animation: coinPop 1s ease;
+pointer-events: none;
+z-index: 4;
+}
+
+@keyframes coinPop {
+0% {
+opacity: 0;
+transform: translateX(-50%) translateY(20px) scale(0.5);
+}
+50% {
+opacity: 1;
+transform: translateX(-50%) translateY(-10px) scale(1.2);
+}
+100% {
+opacity: 0;
+transform: translateX(-50%) translateY(-30px) scale(1);
+}
+}
+
+.combo-indicator {
+position: absolute;
+top: 10px;
+right: 10px;
+background: linear-gradient(45deg, #dc143c, #ff4500);
+padding: 8px 15px;
+border-radius: 20px;
+font-weight: bold;
+font-size: 0.9em;
+display: none;
+box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+border: 2px solid rgba(255,255,255,0.2);
+}
+
+/* Styles pour les écrans plus larges (tablettes) */
+@media (min-width: 768px) {
+.game-container {
+padding: 30px;
+max-width: 600px;
+}
+
+h1 {
+font-size: 2.2em;
+}
+
+.dragon-egg-3d {
+width: 150px;
+height: 200px;
+font-size: 3em;
+}
+
+.dragon-egg-3d .side {
+width: 40px;
+transform: rotateY(90deg) translateZ(75px);
+}
+
+.dragon-egg-3d .side.left {
+transform: rotateY(-90deg) translateZ(75px);
+}
+
+.dragon-egg-3d .top {
+height: 40px;
+transform: rotateX(90deg) translateZ(20px);
+top: -20px;
+}
+
+.hammer {
+width: 80px;
+height: 80px;
+font-size: 3em;
+top: -40px;
+right: -20px;
+}
+
+.controls {
+flex-direction: row;
+justify-content: center;
+}
+
+button {
+padding: 15px 30px;
+}
+}
+
+/* Styles pour les écrans très larges */
+@media (min-width: 1024px) {
+body {
+flex-direction: row;
+justify-content: center;
+align-items: flex-start;
+padding: 20px;
+}
+
+.game-container {
+margin: 0 10px;
+}
+}
+</style>
+</head>
+<body>
+<div class="game-container" id="gameContainer">
+<div class="combo-indicator" id="comboIndicator">COMBO x0</div>
+
+<h1>🐉 Casse l'Œuf de Dragon !</h1>
+<div class="dragon-logo"></div>
+
+<div class="egg-container">
+<div class="dragon-egg-3d" id="dragonEgg">
+<div class="front">🥚</div>
+<div class="top"></div>
+<div class="side"></div>
+<div class="side left"></div>
+</div>
+<div class="hammer" id="hammer">🔨</div>
+</div>
+
+<div class="instructions">
+<h2>🐲 Casse l'Œuf de Dragon et Libère le Bébé Dragon ! 🐲</h2>
+<p>Un Bébé Dragon - Un Coup de Marteau</p>
+</div>
+
+<div class="attack-modes">
+<button id="mode1" class="attack-mode-btn active">1</button>
+<button id="mode5" class="attack-mode-btn">5</button>
+<button id="mode10" class="attack-mode-btn">10</button>
+<button id="mode100" class="attack-mode-btn">100</button>
+<button id="mode500" class="attack-mode-btn">500</button>
+<button id="mode1000" class="attack-mode-btn">1000</button>
+</div>
+
+<div class="controls">
+<button id="attackBtn">Frapper (1 coup)</button>
+<button id="resetBtn">Nouvel Œuf</button>
+</div>
+
+<p id="message"></p>
+
+<div id="resultContainer" class="hidden result-box">
+<h3>🎉 Œuf de Dragon Cassé ! 🎉</h3>
+<p id="coinsResult">Vous avez gagné 0 bébé dragon !</p>
+</div>
+</div>
+
+<script>
+let maxHP, currentHP, coupCounter, totalHits;
+let hitsUntilCoin = 4;
+let attackMode = 1;
+let dragonsEarnedThisEgg = 0;
+let combo = 0;
+let lastHitTime = 0;
+let isAttacking = false;
+let audioContext = null;
+let isSpecialEgg = false;
+
+const dragonEgg = document.getElementById("dragonEgg");
+const hammer = document.getElementById("hammer");
+const message = document.getElementById("message");
+const attackBtn = document.getElementById("attackBtn");
+const resultContainer = document.getElementById("resultContainer");
+const coinsResult = document.getElementById("coinsResult");
+const gameContainer = document.getElementById("gameContainer");
+const comboIndicator = document.getElementById("comboIndicator");
+
+const impactEffects = ["💥", "🔥", "⭐", "💫", "✨", "💢"];
+
+// Système audio
+function initAudioContext() {
+try {
+if (!audioContext) {
+audioContext = new (window.AudioContext || window.webkitAudioContext)();
+}
+if (audioContext.state === 'suspended') {
+audioContext.resume();
+}
+return audioContext;
+} catch (e) {
+return null;
+}
+}
+
+function createSound(frequency, duration, type = 'sine', volume = 0.15) {
+const context = initAudioContext();
+if (!context) return;
+
+try {
+const oscillator = context.createOscillator();
+const gainNode = context.createGain();
+
+oscillator.connect(gainNode);
+gainNode.connect(context.destination);
+
+oscillator.frequency.value = frequency;
+oscillator.type = type;
+
+gainNode.gain.setValueAtTime(volume, context.currentTime);
+gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + duration);
+
+oscillator.start(context.currentTime);
+oscillator.stop(context.currentTime + duration);
+} catch (e) {
+// Silence en cas d'erreur
+}
+}
+
+function playHitSound() {
+createSound(600, 0.1, 'square');
+setTimeout(() => createSound(300, 0.05, 'triangle'), 50);
+}
+
+function playCrackSound() {
+createSound(150, 0.3, 'sawtooth');
+setTimeout(() => createSound(100, 0.2, 'sawtooth'), 100);
+}
+
+function playBreakSound() {
+createSound(80, 0.5, 'sawtooth');
+setTimeout(() => createSound(200, 0.3, 'square'), 100);
+setTimeout(() => createSound(400, 0.2, 'sine'), 200);
+}
+
+// Fonctions d'effets visuels pour l'œuf de dragon
+function createEggShards() {
+const container = dragonEgg.parentElement;
+
+for (let i = 0; i < 12; i++) {
+const shard = document.createElement('div');
+shard.style.cssText = `
+position: absolute;
+width: 8px;
+height: 10px;
+background: linear-gradient(45deg, #ff4500, #ff6347);
+border-radius: 4px;
+pointer-events: none;
+left: 50%;
+top: 50%;
+z-index: 1000;
+`;
+
+container.appendChild(shard);
+
+const angle = (i / 12) * Math.PI * 2;
+const distance = 80 + Math.random() * 80;
+const duration = 600 + Math.random() * 400;
+
+shard.animate([
+{
+transform: 'translate(-50%, -50%) scale(1)',
+opacity: 1
+},
+{
+transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) scale(0)`,
+opacity: 0
+}
+], {
+duration: duration,
+easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+}).onfinish = () => shard.remove();
+}
+}
+
+function createHitParticles() {
+const container = dragonEgg.parentElement;
+
+for (let i = 0; i < 4; i++) {
+const particle = document.createElement('div');
+particle.style.cssText = `
+position: absolute;
+width: 6px;
+height: 6px;
+background: #ff4500;
+border-radius: 50%;
+pointer-events: none;
+left: ${45 + Math.random() * 10}%;
+top: ${45 + Math.random() * 10}%;
+z-index: 999;
+`;
+
+container.appendChild(particle);
+
+const angle = Math.random() * Math.PI * 2;
+const distance = 20 + Math.random() * 20;
+
+particle.animate([
+{
+transform: 'scale(1)',
+opacity: 1
+},
+{
+transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
+opacity: 0
+}
+], {
+duration: 300,
+easing: 'ease-out'
+}).onfinish = () => particle.remove();
+}
+}
+
+function createImpactEffect() {
+const effect = document.createElement('div');
+effect.className = 'impact-effect';
+effect.textContent = impactEffects[Math.floor(Math.random() * impactEffects.length)];
+effect.style.left = (Math.random() * 80 + 10) + '%';
+effect.style.top = (Math.random() * 60 + 20) + '%';
+
+document.querySelector('.egg-container').appendChild(effect);
+
+setTimeout(() => {
+effect.remove();
+}, 1000);
+}
+
+function updateCombo() {
+const currentTime = Date.now();
+if (currentTime - lastHitTime > 2000) {
+combo = 0;
+}
+combo++;
+lastHitTime = currentTime;
+
+if (combo >= 3) {
+comboIndicator.textContent = `COMBO x${combo}`;
+comboIndicator.style.display = 'block';
+}
+}
+
+// Fonction d'attaque avec animation du marteau
+function attack() {
+if (currentHP <= 0 || isAttacking) return;
+
+isAttacking = true;
+
+let hits = attackMode;
+let actualHits = 0;
+let dragonsEarned = 0;
+let wasCracked = dragonEgg.classList.contains('cracked');
+
+// Animation du marteau
+hammer.classList.add('hitting');
+playHitSound();
+createHitParticles();
+createImpactEffect();
+updateCombo();
+
+let animationType = 'hit';
+let shakeType = 'screen-shake';
+let animationDuration = 400;
+
+if (attackMode >= 1000) {
+animationType = 'ultra-hit';
+shakeType = 'ultra-shake';
+animationDuration = 1200;
+} else if (attackMode >= 500) {
+animationType = 'mega-hit';
+shakeType = 'mega-shake';
+animationDuration = 1000;
+} else if (attackMode >= 100) {
+animationType = 'critical-hit';
+shakeType = 'mega-shake';
+animationDuration = 800;
+} else if (attackMode >= 10) {
+animationType = 'heavy-hit';
+animationDuration = 600;
+}
+
+dragonEgg.classList.add(animationType);
+if (shakeType) gameContainer.classList.add(shakeType);
+
+for (let i = 0; i < hits && currentHP > 0; i++) {
+coupCounter++;
+actualHits++;
+totalHits++;
+
+if (coupCounter >= 2) {
+coupCounter = 0;
+currentHP--;
+}
+
+hitsUntilCoin--;
+if (hitsUntilCoin <= 0) {
+dragonsEarnedThisEgg++;
+dragonsEarned++;
+hitsUntilCoin = 4;
+}
+}
+
+if (dragonsEarned > 0) {
+showDragonGain(dragonsEarned);
+}
+
+updateUI();
+
+if (!wasCracked && dragonEgg.classList.contains('cracked')) {
+playCrackSound();
+}
+
+setTimeout(() => {
+dragonEgg.classList.remove(animationType);
+hammer.classList.remove('hitting');
+if (shakeType) gameContainer.classList.remove(shakeType);
+isAttacking = false;
+
+if (currentHP <= 0) {
+endGame();
+}
+}, animationDuration);
+}
+
+function showDragonGain(amount) {
+const dragonDisplay = document.createElement('div');
+dragonDisplay.className = 'coins-display';
+dragonDisplay.textContent = `+${amount} 🐲`;
+dragonEgg.parentElement.appendChild(dragonDisplay);
+
+setTimeout(() => {
+dragonDisplay.remove();
+}, 1000);
+}
+
+function updateUI() {
+if (currentHP === 0) {
+dragonEgg.className = "dragon-egg-3d broken";
+message.textContent = "💥 L'œuf s'est brisé !";
+} else {
+if (maxHP - currentHP >= 20) {
+dragonEgg.classList.add("cracked");
+message.textContent = "⚠️ L'œuf commence à se fissurer...";
+} else {
+dragonEgg.classList.remove("cracked");
+if (isSpecialEgg) {
+message.textContent = "✨ ŒUF DE DRAGON VIOLET SPÉCIAL ! ✨";
+} else {
+message.textContent = "À tout moment l'œuf peut éclore...";
+}
+}
+}
+}
+
+function endGame() {
+let recompense = Math.floor(maxHP / 2);
+
+playBreakSound();
+setTimeout(() => createEggShards(), 100);
+
+message.textContent = "💥 Félicitations ! Tu as cassé l'œuf de dragon ! 🐉✨";
+
+setTimeout(() => {
+coinsResult.innerHTML = `
+<strong>🎉 BRAVO ! 🎉</strong><br>
+Tu as cassé l'œuf de dragon !<br>
+<div style="font-size: 3em; margin: 10px 0; color: #ff6347;">${recompense}</div>
+<strong>Ta récompense : ${recompense} bébé dragon${recompense > 1 ? 's' : ''} !</strong>
+`;
+resultContainer.classList.remove("hidden");
+}, 500);
+
+comboIndicator.style.display = "none";
+}
+
+function setAttackMode(mode) {
+attackMode = mode;
+
+document.querySelectorAll('.attack-mode-btn').forEach(btn => {
+btn.classList.remove('active');
+});
+
+const btnEl = document.getElementById(`mode${mode}`);
+if (btnEl) btnEl.classList.add('active');
+
+attackBtn.textContent = `Frapper (${mode} coup${mode > 1 ? 's' : ''})`;
+}
+
+function initGame() {
+maxHP = Math.floor(Math.random() * (30000 - 10000 + 1)) + 10000;
+currentHP = maxHP;
+coupCounter = 0;
+totalHits = 0;
+hitsUntilCoin = 4;
+dragonsEarnedThisEgg = 0;
+combo = 0;
+lastHitTime = 0;
+isAttacking = false;
+
+isSpecialEgg = Math.random() < 0.1;
+
+dragonEgg.className = "dragon-egg-3d";
+if (isSpecialEgg) {
+dragonEgg.classList.add("special");
+message.textContent = "✨ ŒUF DE DRAGON VIOLET SPÉCIAL ! ✨";
+} else {
+message.textContent = `À tout moment l'œuf peut éclore...`;
+}
+
+resultContainer.classList.add("hidden");
+comboIndicator.style.display = "none";
+
+coupCounter = 0;
+totalHits = 0;
+hitsUntilCoin = 4;
+}
+
+// Événements
+document.getElementById("attackBtn").addEventListener("click", attack);
+document.getElementById("resetBtn").addEventListener("click", initGame);
+
+document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
+document.getElementById("mode5").addEventListener("click", () => setAttackMode(5));
+document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
+document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
+document.getElementById("mode500").addEventListener("click", () => setAttackMode(500));
+document.getElementById("mode1000").addEventListener("click", () => setAttackMode(1000));
+
+// Raccourcis clavier
+document.addEventListener('keydown', (e) => {
+if (isAttacking) return;
+
+switch(e.key) {
+case ' ':
+case 'Enter':
+e.preventDefault();
+attack();
+break;
+case '1':
+setAttackMode(1);
+break;
+case '2':
+setAttackMode(5);
+break;
+case '3':
+setAttackMode(10);
+break;
+case '4':
+setAttackMode(100);
+break;
+case '5':
+setAttackMode(500);
+break;
+case '6':
+setAttackMode(1000);
+break;
+case 'r':
+case 'R':
+initGame();
+break;
+}
+});
+
+// Reset combo après inactivité
+setInterval(() => {
+const currentTime = Date.now();
+if (currentTime - lastHitTime > 3000 && combo > 0) {
+combo = 0;
+comboIndicator.style.display = "none";
+}
+}, 1000);
+
+initGame();
+</script>
+</body>
+</html>
