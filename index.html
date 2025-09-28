@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💎 Casse le Diamant</title>
+  <title>🎰 Jackpot des Symboles Mystères</title>
   <style>
-    /* Tous les styles CSS restent exactement les mêmes */
     * {
       margin: 0;
       padding: 0;
@@ -14,105 +13,38 @@
 
     body {
       font-family: 'Arial', sans-serif;
-      background-image: url('https://img.freepik.com/premium-photo/cherry-blossoms-forest_1091302-2482.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
       color: #fff;
       text-align: center;
       min-height: 100vh;
       padding: 20px;
-      position: relative;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: -1;
-    }
-
-    .widget-left {
-      width: 200px;
-      height: 400px;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 15px;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .widget-left iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .widget-right {
-      width: 200px;
-      height: 400px;
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 15px;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      position: relative;
-    }
-
-    .widget-right iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .timer-widget-right {
-      position: absolute;
-      bottom: -80px;
-      left: 0;
-      width: 100%;
-      height: 60px;
-      z-index: 15;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-right iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
+      align-items: center;
     }
 
     .game-container {
-      max-width: 500px;
-      flex: 1;
-      background: rgba(0, 0, 0, 0.8);
+      max-width: 900px;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.7);
       border-radius: 20px;
       padding: 30px;
       backdrop-filter: blur(10px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-      margin: 0 5px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      border: 3px solid rgba(255, 215, 0, 0.5);
       position: relative;
-      border: 2px solid rgba(255, 215, 0, 0.3);
+      overflow: hidden;
     }
 
     .game-container::before {
       content: '';
       position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
       background: linear-gradient(45deg, #ffd700, #ff6b9d, #c44569, #ffd700);
-      border-radius: 22px;
+      border-radius: 25px;
       z-index: -1;
       animation: borderGlow 3s linear infinite;
     }
@@ -123,8 +55,8 @@
     }
 
     h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
+      font-size: 2.8em;
+      margin-bottom: 15px;
       text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
       background: linear-gradient(45deg, #ff6b9d, #feca57);
       -webkit-background-clip: text;
@@ -132,407 +64,140 @@
       background-clip: text;
     }
 
-    .squirrel-logo {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 20px;
-      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43f.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-      animation: squirrelBounce 2s ease-in-out infinite;
-    }
-
-    @keyframes squirrelBounce {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-5px) scale(1.05); }
-    }
-
-    .instructions {
-      margin: 30px 0;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
+    .jackpot-display {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      padding: 15px;
       border-radius: 15px;
-      backdrop-filter: blur(10px);
+      margin: 15px 0;
+      border: 3px solid gold;
+      animation: jackpotPulse 2s infinite;
+      box-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
     }
 
-    .instructions h2 {
-      font-size: 1.8em;
-      margin-bottom: 10px;
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    @keyframes jackpotPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(231, 76, 60, 0.5); }
+      50% { transform: scale(1.02); box-shadow: 0 0 30px rgba(231, 76, 60, 0.8); }
     }
 
-    .instructions p {
-      font-size: 1.2em;
+    .jackpot-amount {
+      font-size: 2.5em;
       font-weight: bold;
-      color: #feca57;
+      color: gold;
+      text-shadow: 0 0 10px rgba(0,0,0,0.8);
     }
 
-    .diamond-container {
-      position: relative;
-      margin: 30px auto;
+    .jackpot-label {
+      font-size: 1.2em;
+      color: white;
+      margin-bottom: 5px;
+    }
+
+    .lock-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px 0;
+      perspective: 1000px;
+      flex-wrap: wrap;
+    }
+
+    .symbol-wheel {
+      width: 80px;
+      height: 120px;
+      background: linear-gradient(145deg, #2c3e50, #34495e);
+      border-radius: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100%;
-      min-height: 260px; /* reserve espace pour le widget de pièces */
-    }
-
-    .actions-widget {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 180px;
-      height: 80px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .firework-widget-bottom {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 400px;
-      height: 300px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .firework-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-bottom {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 150px;
-      height: 60px;
-      z-index: 1000;
-      border: none;
-      background: transparent;
-    }
-
-    .timer-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .coindrop-widget-bottom {
-      position: fixed;
-      bottom: 200px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 400px;
-      height: 200px;
-      z-index: 500;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-    }
-
-    .coindrop-widget-bottom iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .actions-widget iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-
-    .diamond {
-      width: 200px;
-      height: 200px;
-      margin: 0 auto;
-      background-image: url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48e.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
+      font-size: 3em;
+      font-weight: bold;
+      color: #feca57;
+      box-shadow: 
+        inset 0 0 10px rgba(0, 0, 0, 0.5),
+        0 5px 15px rgba(0, 0, 0, 0.3);
+      border: 3px solid #feca57;
       position: relative;
-      transition: all 0.3s ease;
-      filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) brightness(1.2) contrast(1.1);
-      z-index: 5;
+      overflow: hidden;
+      transition: transform 0.3s;
     }
 
-    .diamond.pink {
-      filter: drop-shadow(0 0 30px rgba(255, 105, 180, 0.8)) brightness(1.2) contrast(1.1) hue-rotate(15deg) saturate(1.5);
-      animation: pinkGlow 2s ease-in-out infinite alternate;
+    .symbol-wheel:hover {
+      transform: translateY(-5px);
     }
 
-    @keyframes pinkGlow {
-      0% { filter: drop-shadow(0 0 30px rgba(255, 105, 180, 0.8)) brightness(1.2) contrast(1.1) hue-rotate(15deg) saturate(1.5); }
-      100% { filter: drop-shadow(0 0 40px rgba(255, 20, 147, 1)) brightness(1.4) contrast(1.2) hue-rotate(25deg) saturate(1.8); }
-    }
-
-    .diamond.hit {
-      animation: lightHit 0.4s ease-out;
-    }
-
-    .diamond.heavy-hit {
-      animation: heavyHit 0.6s ease-out;
-    }
-
-    .diamond.critical-hit {
-      animation: criticalHit 0.8s ease-out;
-    }
-
-    .diamond.mega-hit {
-      animation: megaHit 1.2s ease-out;
-    }
-
-    .diamond.ultra-hit {
-      animation: ultraHit 1.5s ease-out;
-    }
-
-    .diamond.cracked {
-      filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)) hue-rotate(0deg);
-      animation: redPulse 1s infinite;
-    }
-
-    .diamond.broken {
-      opacity: 0.3;
-      filter: grayscale(100%) brightness(0.3);
-      animation: knockout 1.5s ease-out forwards;
-    }
-
-    @keyframes lightHit {
-      0% { transform: translateX(0) rotate(0deg); }
-      25% { transform: translateX(-15px) rotate(-8deg); }
-      50% { transform: translateX(8px) rotate(5deg); }
-      75% { transform: translateX(-4px) rotate(-2deg); }
-      100% { transform: translateX(0) rotate(0deg); }
-    }
-
-    @keyframes heavyHit {
-      0% { transform: translateX(0) rotate(0deg) scale(1); }
-      20% { transform: translateX(-25px) rotate(-15deg) scale(0.9); }
-      40% { transform: translateX(12px) rotate(8deg) scale(1.05); }
-      60% { transform: translateX(-6px) rotate(-4deg) scale(0.95); }
-      80% { transform: translateX(3px) rotate(2deg) scale(1.02); }
-      100% { transform: translateX(0) rotate(0deg) scale(1); }
-    }
-
-    @keyframes criticalHit {
-      0% { transform: translateX(0) rotate(0deg) scale(1); }
-      15% { transform: translateX(-35px) rotate(-25deg) scale(0.85); }
-      30% { transform: translateX(20px) rotate(15deg) scale(1.1); }
-      45% { transform: translateX(-15px) rotate(-10deg) scale(0.9); }
-      60% { transform: translateX(8px) rotate(5deg) scale(1.05); }
-      75% { transform: translateX(-4px) rotate(-3deg) scale(0.97); }
-      90% { transform: translateX(2px) rotate(1deg) scale(1.02); }
-      100% { transform: translateX(0) rotate(0deg) scale(1); }
-    }
-
-    @keyframes megaHit {
-      0% { transform: translateX(0) rotate(0deg) scale(1); }
-      10% { transform: translateX(-45px) rotate(-35deg) scale(0.8); }
-      20% { transform: translateX(30px) rotate(20deg) scale(1.15); }
-      30% { transform: translateX(-25px) rotate(-15deg) scale(0.85); }
-      40% { transform: translateX(15px) rotate(10deg) scale(1.1); }
-      50% { transform: translateX(-10px) rotate(-8deg) scale(0.9); }
-      60% { transform: translateX(8px) rotate(5deg) scale(1.05); }
-      70% { transform: translateX(-4px) rotate(-3deg) scale(0.97); }
-      80% { transform: translateX(2px) rotate(2deg) scale(1.02); }
-      90% { transform: translateX(-1px) rotate(-1deg) scale(0.99); }
-      100% { transform: translateX(0) rotate(0deg) scale(1); }
-    }
-
-    @keyframes ultraHit {
-      0% { transform: translateX(0) rotate(0deg) scale(1); }
-      8% { transform: translateX(-55px) rotate(-45deg) scale(0.7); }
-      16% { transform: translateX(40px) rotate(25deg) scale(1.2); }
-      24% { transform: translateX(-35px) rotate(-20deg) scale(0.8); }
-      32% { transform: translateX(25px) rotate(15deg) scale(1.15); }
-      40% { transform: translateX(-18px) rotate(-12deg) scale(0.85); }
-      48% { transform: translateX(12px) rotate(8deg) scale(1.1); }
-      56% { transform: translateX(-8px) rotate(-6deg) scale(0.9); }
-      64% { transform: translateX(6px) rotate(4deg) scale(1.05); }
-      72% { transform: translateX(-4px) rotate(-3deg) scale(0.97); }
-      80% { transform: translateX(2px) rotate(2deg) scale(1.02); }
-      88% { transform: translateX(-1px) rotate(-1deg) scale(0.99); }
-      96% { transform: translateX(0.5px) rotate(0.5deg) scale(1.01); }
-      100% { transform: translateX(0) rotate(0deg) scale(1); }
-    }
-
-    @keyframes knockout {
-      0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-      30% { transform: translateY(-15px) rotate(-20deg) scale(0.9); opacity: 0.9; }
-      70% { transform: translateY(60px) rotate(-120deg) scale(0.7); opacity: 0.7; }
-      100% { transform: translateY(80px) rotate(-120deg) scale(0.6); opacity: 0.4; }
-    }
-
-    @keyframes redPulse {
-      0%, 100% { filter: brightness(0.7) drop-shadow(0 0 20px rgba(255, 0, 0, 0.8)); }
-      50% { filter: brightness(0.5) drop-shadow(0 0 40px rgba(255, 0, 0, 1)); }
-    }
-
-    .screen-shake {
-      animation: screenShake 0.4s ease-out;
-    }
-
-    .mega-shake {
-      animation: megaShake 0.8s ease-out;
-    }
-
-    .ultra-shake {
-      animation: ultraShake 1.2s ease-out;
-    }
-
-    @keyframes screenShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    @keyframes megaShake {
-      0%, 100% { transform: translateX(0) translateY(0); }
-      10% { transform: translateX(-8px) translateY(-3px); }
-      20% { transform: translateX(8px) translateY(3px); }
-      30% { transform: translateX(-6px) translateY(-2px); }
-      40% { transform: translateX(6px) translateY(2px); }
-      50% { transform: translateX(-4px) translateY(-1px); }
-      60% { transform: translateX(4px) translateY(1px); }
-      70% { transform: translateX(-2px) translateY(-0.5px); }
-      80% { transform: translateX(2px) translateY(0.5px); }
-    }
-
-    @keyframes ultraShake {
-      0%, 100% { transform: translateX(0) translateY(0); }
-      5% { transform: translateX(-12px) translateY(-5px); }
-      10% { transform: translateX(12px) translateY(5px); }
-      15% { transform: translateX(-10px) translateY(-4px); }
-      20% { transform: translateX(10px) translateY(4px); }
-      25% { transform: translateX(-8px) translateY(-3px); }
-      30% { transform: translateX(8px) translateY(3px); }
-      35% { transform: translateX(-6px) translateY(-2px); }
-      40% { transform: translateX(6px) translateY(2px); }
-      45% { transform: translateX(-4px) translateY(-1px); }
-      50% { transform: translateX(4px) translateY(1px); }
-      55% { transform: translateX(-3px) translateY(-1px); }
-      60% { transform: translateX(3px) translateY(1px); }
-      65% { transform: translateX(-2px) translateY(-0.5px); }
-      70% { transform: translateX(2px) translateY(0.5px); }
-      75% { transform: translateX(-1px) translateY(-0.2px); }
-      80% { transform: translateX(1px) translateY(0.2px); }
-    }
-
-    .impact-effect {
+    .symbol-wheel::before {
+      content: '';
       position: absolute;
-      font-size: 2.5em;
-      pointer-events: none;
-      z-index: 3;
-      animation: impactPop 1s ease-out forwards;
-      opacity: 0;
-      filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
-    }
-
-    @keyframes impactPop {
-      0% { opacity: 0; transform: scale(0.3) translateY(0); }
-      30% { opacity: 1; transform: scale(1.5) translateY(-15px); }
-      100% { opacity: 0; transform: scale(1) translateY(-50px); }
-    }
-
-    /* Styles pour le marteau */
-    .hammer {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      z-index: 10;
-      pointer-events: none;
-      opacity: 0;
-      transform-origin: bottom center;
-    }
-
-    .hammer-head {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(45deg, #8B4513, #A0522D, #8B4513);
-      border-radius: 5px;
       top: 0;
-      left: 50%;
-      transform: translateX(-50%) rotate(45deg);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
+      pointer-events: none;
     }
 
-    .hammer-handle {
+    .symbol-wheel::after {
+      content: '';
       position: absolute;
-      width: 8px;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #feca57;
+      box-shadow: 0 0 10px #feca57;
+    }
+
+    .symbol-wheel.winning {
+      animation: winPulse 0.5s ease-in-out 3;
+      background: linear-gradient(145deg, #27ae60, #2ecc71);
+      color: white;
+    }
+
+    @keyframes winPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .symbol-wheel.spinning {
+      animation: spinSymbol 0.1s linear infinite;
+    }
+
+    .symbol-wheel.fast-spin {
+      animation: spinSymbol 0.03s linear infinite;
+    }
+
+    @keyframes spinSymbol {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+
+    .symbol-image {
+      width: 60px;
       height: 60px;
-      background: linear-gradient(to bottom, #D2691E, #8B4513);
-      top: 35px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-radius: 4px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    .hammer-hit {
-      animation: hammerSwing 0.6s ease-out forwards;
-    }
-
-    @keyframes hammerSwing {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, -100%) rotate(-30deg) scale(0.8);
-      }
-      20% {
-        opacity: 1;
-        transform: translate(-50%, -100%) rotate(15deg) scale(1);
-      }
-      40% {
-        transform: translate(-50%, -100%) rotate(-10deg) scale(1.1);
-      }
-      60% {
-        transform: translate(-50%, -100%) rotate(5deg) scale(1);
-      }
-      80% {
-        transform: translate(-50%, -100%) rotate(-2deg) scale(1);
-      }
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -100%) rotate(0deg) scale(0.8);
-      }
+      object-fit: contain;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
     }
 
     .attack-modes {
       display: flex;
       justify-content: center;
-      gap: 6px;
+      gap: 10px;
       margin: 20px 0;
       flex-wrap: wrap;
     }
 
     .attack-mode-btn {
-      padding: 8px 12px;
-      font-size: 11px;
+      padding: 10px 15px;
+      font-size: 14px;
       cursor: pointer;
       border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 18px;
+      border-radius: 20px;
       background: rgba(255, 255, 255, 0.1);
       color: #fff;
       transition: all 0.3s ease;
       backdrop-filter: blur(5px);
-      min-width: 50px;
+      min-width: 60px;
       font-weight: bold;
     }
 
@@ -548,16 +213,20 @@
     }
 
     .controls {
-      margin: 20px 0;
+      margin: 25px 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     button {
       padding: 15px 30px;
-      margin: 10px;
-      font-size: 16px;
+      margin: 5px;
+      font-size: 18px;
       cursor: pointer;
       border: none;
-      border-radius: 25px;
+      border-radius: 50px;
       background: linear-gradient(45deg, #ff6b9d, #c44569);
       color: #fff;
       transition: all 0.3s ease;
@@ -565,6 +234,23 @@
       text-transform: uppercase;
       font-weight: bold;
       letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
     }
 
     button:hover {
@@ -577,24 +263,60 @@
       transform: translateY(0);
     }
 
-    #resetBtn {
-      background: linear-gradient(45deg, #555, #777);
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
-    #resetBtn:hover {
-      background: linear-gradient(45deg, #777, #999);
+    button:disabled:hover::before {
+      left: -100%;
+    }
+
+    #spinBtn {
+      background: linear-gradient(45deg, #27ae60, #2ecc71);
+      font-size: 20px;
+      padding: 18px 40px;
+    }
+
+    #spinBtn:hover {
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
+    }
+
+    #speedBtn {
+      background: linear-gradient(45deg, #3498db, #2980b9);
+      font-size: 16px;
+      padding: 15px 25px;
+    }
+
+    #speedBtn:hover {
+      background: linear-gradient(45deg, #2980b9, #3498db);
+    }
+
+    #speedBtn.active {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      animation: pulseSpeed 1s infinite;
+    }
+
+    @keyframes pulseSpeed {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
 
     #message {
       margin: 20px 0;
-      font-size: 1.2em;
+      font-size: 1.3em;
       font-weight: bold;
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-      min-height: 30px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .result-box {
-      background: linear-gradient(135deg, rgba(255, 107, 157, 0.9), rgba(254, 202, 87, 0.9));
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.9), rgba(46, 204, 113, 0.9));
       padding: 20px;
       border-radius: 15px;
       margin: 20px 0;
@@ -618,560 +340,789 @@
       display: none;
     }
 
-    .coins-display {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(45deg, #ff6b9d, #feca57);
-      color: white;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-weight: bold;
-      animation: coinPop 1s ease;
-      pointer-events: none;
-      z-index: 4;
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      flex-wrap: wrap;
     }
 
-    @keyframes coinPop {
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      margin: 5px 10px;
+    }
+
+    .stat-value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #feca57;
+    }
+
+    .win-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #feca57;
+      opacity: 0;
+    }
+
+    @keyframes confettiFall {
       0% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px) scale(0.5);
-      }
-      50% {
+        transform: translateY(-100px) rotate(0deg);
         opacity: 1;
-        transform: translateX(-50%) translateY(-10px) scale(1.2);
       }
       100% {
+        transform: translateY(1000px) rotate(360deg);
         opacity: 0;
-        transform: translateX(-50%) translateY(-30px) scale(1);
       }
     }
 
-    .combo-indicator {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: linear-gradient(45deg, #ff6b9d, #c44569);
-      padding: 10px 18px;
-      border-radius: 25px;
+    .win-text {
+      font-size: 5em;
       font-weight: bold;
-      font-size: 1em;
-      display: none;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      border: 2px solid rgba(255,255,255,0.2);
+      color: #feca57;
+      text-shadow: 0 0 20px rgba(254, 202, 87, 0.8);
+      animation: textPulse 1s ease-in-out infinite;
     }
 
-    /* styles du widget coindrop intégré sous le diamant */
-    .diamond-coindrop {
+    @keyframes textPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .lock-body {
+      width: 100%;
+      max-width: 600px;
+      height: 150px;
+      background: linear-gradient(145deg, #8B4513, #A0522D);
+      margin: 0 auto 20px;
+      border-radius: 10px;
+      position: relative;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lock-shackle {
       position: absolute;
+      top: -60px;
       left: 50%;
       transform: translateX(-50%);
-      bottom: -140px; /* place sous le diamant */
-      width: 320px;
-      height: 220px;
-      z-index: 6; /* au-dessus pour que les pièces soient visibles */
-      pointer-events: none; /* ne bloque pas le clic sur le diamant */
-      background: transparent;
+      width: 120px;
+      height: 80px;
+      border: 15px solid #D2691E;
+      border-bottom: none;
+      border-radius: 60px 60px 0 0;
+      z-index: 1;
+    }
+
+    .difficulty-info {
+      margin: 10px 0;
+      font-size: 1.1em;
+      color: #feca57;
+    }
+
+    /* ANIMATIONS DE RÉCOMPENSE */
+    .reward-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.95);
+      animation: rewardFadeIn 0.8s ease;
+    }
+
+    @keyframes rewardFadeIn {
+      from { 
+        opacity: 0; 
+        background: rgba(0, 0, 0, 0);
+      }
+      to { 
+        opacity: 1; 
+        background: rgba(0, 0, 0, 0.95);
+      }
+    }
+
+    .reward-popup {
+      background: linear-gradient(135deg, #ff6b9d, #feca57, #ff6b9d);
+      padding: 40px;
+      border-radius: 25px;
+      text-align: center;
+      max-width: 600px;
+      animation: rewardScaleIn 0.8s ease;
+      border: 4px solid gold;
+      box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+      position: relative;
+      overflow: hidden;
+      z-index: 10000;
+    }
+
+    .reward-popup::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shine 3s infinite;
+      transform: rotate(45deg);
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    @keyframes rewardScaleIn {
+      from { 
+        transform: scale(0.3) rotate(-10deg);
+        opacity: 0;
+      }
+      to { 
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .reward-popup-icon {
+      font-size: 8em;
+      margin-bottom: 20px;
+      animation: rewardBounce 1s infinite, glow 2s infinite;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+    }
+
+    @keyframes rewardBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.2); }
+    }
+
+    @keyframes glow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)); }
+      50% { filter: drop-shadow(0 0 40px rgba(255, 255, 255, 1)); }
+    }
+
+    .reward-popup-title {
+      font-size: 3.5em;
+      margin-bottom: 15px;
+      color: white;
+      text-shadow: 0 0 20px rgba(0,0,0,0.8);
+      background: linear-gradient(45deg, #ff6b9d, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: titlePulse 2s infinite;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .reward-popup-description {
+      font-size: 1.5em;
+      margin-bottom: 25px;
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .reward-close {
+      padding: 15px 30px;
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
       border: none;
-    }
-    .diamond-coindrop iframe { width:100%; height:100%; border: none; background: transparent; }
-
-    @media (max-width: 1200px) {
-      body {
-        flex-direction: column;
-        align-items: center;
-      }
-      
-      .widget-left, .widget-right {
-        width: 100%;
-        max-width: 500px;
-        height: 300px;
-        margin-bottom: 15px;
-      }
-      
-      .game-container {
-        margin: 0;
-      }
-
-      .attack-modes {
-        gap: 6px;
-      }
-
-      .attack-mode-btn {
-        padding: 8px 12px;
-        font-size: 11px;
-        min-width: 50px;
-      }
-
-      .diamond-coindrop {
-        bottom: -120px;
-        width: 260px;
-        height: 180px;
-      }
+      border-radius: 50px;
+      color: white;
+      font-size: 1.3em;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: bold;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 10001;
     }
 
-    @media (max-width: 480px) {
+    .reward-close:hover {
+      background: linear-gradient(45deg, #27ae60, #2ecc71);
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    .speed-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      font-weight: bold;
+      display: none;
+    }
+
+    /* COULEURS POUR CHAQUE SYMBOLE */
+    .symbol-1 { border-color: #9b59b6; }
+    .symbol-2 { border-color: #e74c3c; }
+    .symbol-3 { border-color: #f39c12; }
+    .symbol-4 { border-color: #34495e; }
+    .symbol-5 { border-color: #7f8c8d; }
+    .symbol-6 { border-color: #27ae60; }
+    .symbol-7 { border-color: #8e44ad; }
+    .symbol-8 { border-color: #d35400; }
+
+    .symbol-1.winning { background: linear-gradient(145deg, #8e44ad, #9b59b6); }
+    .symbol-2.winning { background: linear-gradient(145deg, #c0392b, #e74c3c); }
+    .symbol-3.winning { background: linear-gradient(145deg, #e67e22, #f39c12); }
+    .symbol-4.winning { background: linear-gradient(145deg, #2c3e50, #34495e); }
+    .symbol-5.winning { background: linear-gradient(145deg, #636e72, #7f8c8d); }
+    .symbol-6.winning { background: linear-gradient(145deg, #27ae60, #2ecc71); }
+    .symbol-7.winning { background: linear-gradient(145deg, #8e44ad, #9b59b6); }
+    .symbol-8.winning { background: linear-gradient(145deg, #e67e22, #f39c12); }
+
+    .jackpot-hidden {
+      opacity: 0.3;
+      filter: blur(3px);
+    }
+
+    .jackpot-visible {
+      opacity: 1;
+      filter: none;
+    }
+
+    @media (max-width: 768px) {
       .game-container {
         padding: 20px;
         margin: 10px;
       }
       
-      .diamond {
-        width: 150px;
-        height: 150px;
-      }
-      
       h1 {
-        font-size: 2em;
+        font-size: 2.2em;
       }
       
-      .widget-left, .widget-right {
-        height: 250px;
+      .symbol-wheel {
+        width: 70px;
+        height: 100px;
+      }
+      
+      .symbol-image {
+        width: 50px;
+        height: 50px;
+      }
+      
+      button {
+        padding: 12px 25px;
+        font-size: 16px;
+      }
+      
+      #spinBtn {
+        font-size: 18px;
+        padding: 15px 30px;
+      }
+
+      .attack-mode-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 50px;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .symbol-wheel {
+        width: 60px;
+        height: 90px;
+      }
+      
+      .symbol-image {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .lock-container {
+        gap: 8px;
+      }
+
+      .attack-modes {
+        gap: 5px;
       }
 
       .attack-mode-btn {
         padding: 6px 10px;
-        font-size: 10px;
+        font-size: 11px;
         min-width: 45px;
-      }
-
-      .diamond-coindrop {
-        bottom: -100px;
-        width: 220px;
-        height: 140px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="actions-widget">
-    <iframe src="https://tikfinity.zerody.one/widget/myactions?cid=2136326&screen=1" frameborder="0"></iframe>
-  </div>
-  
-  <div class="coindrop-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/coindrop?cid=2136326" frameborder="0"></iframe>
-  </div>
-  
-  <div class="firework-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/firework?cid=2136326" frameborder="0"></iframe>
-  </div>
-  
-  <div class="timer-widget-bottom">
-    <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2136326" frameborder="0"></iframe>
-  </div>
-  
-  <div class="widget-left">
-    <iframe src="https://tikfinity.zerody.one/widget/topliker?cid=2136326" frameborder="0"></iframe>
-  </div>
-
-  <div class="game-container" id="gameContainer">
-    <div class="combo-indicator" id="comboIndicator">COMBO x0</div>
-
-    <h1>💎 Casse le Diamant !</h1>
-    <div class="squirrel-logo"></div>
+  <div class="game-container">
+    <h1>🎰 Jackpot des Symboles Mystères</h1>
     
-    <div class="diamond-container">
-      <div class="diamond" id="diamond"></div>
+    <!-- COMPTEUR DE ROSES JACKPOT -->
+    <div class="jackpot-display" id="jackpotDisplay">
+      <div class="jackpot-label">JACKPOT ACTUEL</div>
+      <div class="jackpot-amount" id="jackpotAmount">0 🌹</div>
+      <div class="jackpot-info" id="jackpotInfo">Jackpot visible à partir de 1000 roses</div>
+    </div>
 
-      <!-- WIDGET COINDROP intégré sous/le long du diamant (transparent, sans contour, pointer-events:none) -->
-      <div class="diamond-coindrop" aria-hidden="true">
-        <iframe src="https://tikfinity.zerody.one/widget/coindrop?cid=2136326"></iframe>
+    <div class="difficulty-info" id="difficultyInfo">Objectif : Aligner 5 symboles identiques ! (0.0244% de chances - 1 sur 4,096)</div>
+    
+    <div class="lock-body">
+      <div class="lock-shackle"></div>
+      <div class="lock-container" id="lockContainer">
+        <!-- Les roues de symboles seront générées ici -->
       </div>
     </div>
 
-    <div class="instructions">
-      <h2>🌹 Casse le Diamant et Gagne le Cadeau ! 🌹</h2>
-      <p>Une Rose - Un Coup</p>
+    <div class="attack-modes">
+      <button id="mode1" class="attack-mode-btn active">1 tour</button>
+      <button id="mode5" class="attack-mode-btn">5 tours</button>
+      <button id="mode10" class="attack-mode-btn">10 tours</button>
+      <button id="mode30" class="attack-mode-btn">30 tours</button>
+      <button id="mode100" class="attack-mode-btn">100 tours</button>
+      <button id="mode10000" class="attack-mode-btn">10,000 tours</button>
     </div>
 
-    <div class="attack-modes">
-      <button id="mode1" class="attack-mode-btn active">1</button>
-      <button id="mode5" class="attack-mode-btn">5</button>
-      <button id="mode10" class="attack-mode-btn">10</button>
-      <button id="mode30" class="attack-mode-btn">30</button>
-      <button id="mode50" class="attack-mode-btn">50</button>
-      <button id="mode100" class="attack-mode-btn">100</button>
-      <button id="mode500" class="attack-mode-btn">500</button>
-      <button id="mode1000" class="attack-mode-btn">1000</button>
+    <!-- STATISTIQUES -->
+    <div class="stats">
+      <div class="stat-item">
+        <div>Tours joués</div>
+        <div class="stat-value" id="attemptsCount">0</div>
+      </div>
+      <div class="stat-item">
+        <div>Roses accumulées</div>
+        <div class="stat-value" id="rosesCount">0</div>
+      </div>
+      <div class="stat-item">
+        <div>Prochain bonus</div>
+        <div class="stat-value" id="nextBonus">4</div>
+      </div>
     </div>
 
     <div class="controls">
-      <button id="attackBtn">Attaquer (1 coup)</button>
-      <button id="resetBtn">Nouveau Diamant</button>
+      <button id="spinBtn">Tourner les rouleaux</button>
+      <button id="speedBtn">⏩ Accélérer</button>
+      <button id="resetBtn">Nouvelle partie</button>
     </div>
 
-    <p id="message"></p>
+    <div id="message">Prêt à jouer ? Alignez 5 symboles identiques pour remporter le jackpot !</div>
 
     <div id="resultContainer" class="hidden result-box">
-      <h3>🎉 Diamant Détruit ! 🎉</h3>
-      <p id="coinsResult">Vous avez gagné 0 pièce !</p>
+      <h3>🎉 JACKPOT GAGNÉ !</h3>
+      <p id="winMessage">Vous avez aligné les 5 symboles !</p>
+      <p id="attemptsResult">Nombre de tours : 0</p>
+      <p id="winningSymbol">Symbole gagnant : </p>
+      <p id="jackpotWin" class="jackpot-amount">+ 0 🌹</p>
     </div>
-  </div>
 
-  <div class="widget-right">
-    <iframe src="https://tikfinity.zerody.one/widget/ranking?cid=2136326" frameborder="0"></iframe>
-    <div class="timer-widget-right">
-      <iframe src="https://tikfinity.zerody.one/widget/timer?cid=2136326" frameborder="0"></iframe>
-    </div>
+    <div class="speed-indicator" id="speedIndicator">VITESSE RAPIDE</div>
   </div>
 
   <script>
-    let maxHP, currentHP, coupCounter, totalHits;
-    let hitsUntilCoin = 4;
+    // Variables du jeu
+    let symbols = [];
+    let attempts = 0;
+    let isSpinning = false;
+    let winAnimationActive = false;
     let attackMode = 1;
-    let rosesEarnedThisDiamond = 0;
-    let combo = 0;
-    let lastHitTime = 0;
-    let isAttacking = false;
-    let audioContext = null;
-    let isPinkDiamond = false;
+    let currentDifficulty = 5; // 5 symboles (niveau 2 uniquement)
+    let isFastMode = false;
+    let lastWinningSymbol = null;
+    let rosesCount = 0;
+    let jackpotAmount = 0;
+    let bonusCounter = 0;
 
-    const diamond = document.getElementById("diamond");
-    const message = document.getElementById("message");
-    const attackBtn = document.getElementById("attackBtn");
-    const resultContainer = document.getElementById("resultContainer");
-    const coinsResult = document.getElementById("coinsResult");
-    const gameContainer = document.getElementById("gameContainer");
-    const comboIndicator = document.getElementById("comboIndicator");
-
-    const impactEffects = ["💥", "🔥", "⭐", "💫", "✨", "💢"];
-
-    // Système audio corrigé
-    function initAudioContext() {
-      try {
-        if (!audioContext) {
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioContext.state === 'suspended') {
-          audioContext.resume();
-        }
-        return audioContext;
-      } catch (e) {
-        return null;
+    // Symboles disponibles avec le symbole remplacé
+    const symbolTypes = [
+      { 
+        type: 'symbol1', 
+        image: 'https://i.ibb.co/whJNdnxZ/symbol1.png', 
+        name: 'Symbole 1',
+        colorClass: 'symbol-1'
+      },
+      { 
+        type: 'symbol2', 
+        image: 'https://i.ibb.co/ymsZKVwn/symbol2.png', 
+        name: 'Symbole 2',
+        colorClass: 'symbol-2'
+      },
+      { 
+        type: 'symbol3', 
+        image: 'https://i.ibb.co/gbf2RYFk/symbol3.png', 
+        name: 'Symbole 3',
+        colorClass: 'symbol-3'
+      },
+      { 
+        type: 'symbol4', 
+        image: 'https://i.ibb.co/sv8c6sRK/symbol4.png', 
+        name: 'Symbole 4',
+        colorClass: 'symbol-4'
+      },
+      { 
+        type: 'symbol5', 
+        image: 'https://i.ibb.co/Xr6J8bfK/symbol5.png', 
+        name: 'Symbole 5',
+        colorClass: 'symbol-5'
+      },
+      { 
+        type: 'symbol6', 
+        image: 'https://i.ibb.co/prk8cpBr/symbol6.png',  // Symbole remplacé
+        name: 'Symbole 6',
+        colorClass: 'symbol-6'
+      },
+      { 
+        type: 'symbol7', 
+        image: 'https://i.ibb.co/2fBDM0x/symbol7.png', 
+        name: 'Symbole 7',
+        colorClass: 'symbol-7'
+      },
+      { 
+        type: 'symbol8', 
+        image: 'https://i.ibb.co/gbnj5Qzw/symbol8.png', 
+        name: 'Symbole 8',
+        colorClass: 'symbol-8'
       }
+    ];
+
+    // Éléments DOM
+    const lockContainer = document.getElementById('lockContainer');
+    const spinBtn = document.getElementById('spinBtn');
+    const speedBtn = document.getElementById('speedBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const message = document.getElementById('message');
+    const resultContainer = document.getElementById('resultContainer');
+    const attemptsCount = document.getElementById('attemptsCount');
+    const rosesCountElement = document.getElementById('rosesCount');
+    const nextBonusElement = document.getElementById('nextBonus');
+    const jackpotAmountElement = document.getElementById('jackpotAmount');
+    const jackpotDisplay = document.getElementById('jackpotDisplay');
+    const jackpotInfo = document.getElementById('jackpotInfo');
+    const attemptsResult = document.getElementById('attemptsResult');
+    const winMessage = document.getElementById('winMessage');
+    const winningSymbolElement = document.getElementById('winningSymbol');
+    const jackpotWinElement = document.getElementById('jackpotWin');
+    const difficultyInfo = document.getElementById('difficultyInfo');
+    const speedIndicator = document.getElementById('speedIndicator');
+
+    // Initialisation du jeu
+    function initGame() {
+      attempts = 0;
+      rosesCount = 0;
+      jackpotAmount = 0;
+      bonusCounter = 0;
+      symbols = Array(currentDifficulty).fill(0).map(() => getRandomSymbol());
+      updateDisplay();
+      updateStats();
+      resultContainer.classList.add('hidden');
+      updateDifficultyInfo();
+      message.textContent = `Prêt à jouer ? Alignez ${currentDifficulty} symboles identiques pour remporter le jackpot !`;
+      spinBtn.disabled = false;
+      removeWinClasses();
+      updateJackpotDisplay();
     }
 
-    function createSound(frequency, duration, type = 'sine', volume = 0.15) {
-      const context = initAudioContext();
-      if (!context) return;
-
-      try {
-        const oscillator = context.createOscillator();
-        const gainNode = context.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(context.destination);
-        
-        oscillator.frequency.value = frequency;
-        oscillator.type = type;
-        
-        gainNode.gain.setValueAtTime(volume, context.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + duration);
-        
-        oscillator.start(context.currentTime);
-        oscillator.stop(context.currentTime + duration);
-      } catch (e) {
-        // Silence en cas d'erreur
-      }
+    // Mettre à jour les statistiques
+    function updateStats() {
+      attemptsCount.textContent = attempts;
+      rosesCountElement.textContent = rosesCount;
+      nextBonusElement.textContent = 4 - (bonusCounter % 4);
     }
 
-    function playHitSound() {
-      createSound(800, 0.1, 'square');
-      setTimeout(() => createSound(400, 0.05, 'triangle'), 50);
-    }
-
-    function playCrackSound() {
-      createSound(200, 0.3, 'sawtooth');
-      setTimeout(() => createSound(150, 0.2, 'sawtooth'), 100);
-    }
-
-    function playBreakSound() {
-      createSound(100, 0.5, 'sawtooth');
-      setTimeout(() => createSound(300, 0.3, 'square'), 100);
-      setTimeout(() => createSound(600, 0.2, 'sine'), 200);
-    }
-
-    // Fonction pour créer un marteau animé
-    function createHammer() {
-      const hammer = document.createElement('div');
-      hammer.className = 'hammer';
+    // Mettre à jour l'affichage du jackpot
+    function updateJackpotDisplay() {
+      jackpotAmountElement.textContent = `${jackpotAmount} 🌹`;
       
-      const hammerHead = document.createElement('div');
-      hammerHead.className = 'hammer-head';
-      
-      const hammerHandle = document.createElement('div');
-      hammerHandle.className = 'hammer-handle';
-      
-      hammer.appendChild(hammerHead);
-      hammer.appendChild(hammerHandle);
-      
-      // Positionner le marteau au-dessus du diamant
-      const diamondRect = diamond.getBoundingClientRect();
-      const containerRect = diamond.parentElement.getBoundingClientRect();
-      
-      hammer.style.left = (diamondRect.left + diamondRect.width/2 - containerRect.left) + 'px';
-      hammer.style.top = (diamondRect.top - containerRect.top) + 'px';
-      
-      diamond.parentElement.appendChild(hammer);
-      
-      return hammer;
-    }
-
-    // Fonction pour animer le marteau
-    function animateHammer() {
-      const hammer = createHammer();
-      hammer.classList.add('hammer-hit');
-      
-      // Supprimer le marteau après l'animation
-      setTimeout(() => {
-        if (hammer.parentElement) {
-          hammer.parentElement.removeChild(hammer);
-        }
-      }, 600);
-    }
-
-    // Fonctions d'effets visuels CORRIGÉES
-    function createDiamondShards() {
-      const container = diamond.parentElement;
-      
-      for (let i = 0; i < 12; i++) {
-        const shard = document.createElement('div');
-        shard.style.cssText = `
-          position: absolute;
-          width: 8px;
-          height: 8px;
-          background: linear-gradient(45deg, #4fc3f7, #29b6f6, #0288d1);
-          transform: rotate(45deg);
-          pointer-events: none;
-          left: 50%;
-          top: 50%;
-          z-index: 1000;
-        `;
-        
-        container.appendChild(shard);
-        
-        const angle = (i / 12) * Math.PI * 2;
-        const distance = 100 + Math.random() * 100;
-        const duration = 800 + Math.random() * 400;
-        
-        shard.animate([
-          {
-            transform: 'translate(-50%, -50%) rotate(45deg) scale(1)',
-            opacity: 1
-          },
-          {
-            transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) rotate(${45 + Math.random() * 360}deg) scale(0)`,
-            opacity: 0
-          }
-        ], {
-          duration: duration,
-          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        }).onfinish = () => shard.remove();
-      }
-    }
-
-    function createHitParticles() {
-      const container = diamond.parentElement;
-      
-      for (let i = 0; i < 6; i++) {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background: #feca57;
-          border-radius: 50%;
-          pointer-events: none;
-          left: ${45 + Math.random() * 10}%;
-          top: ${45 + Math.random() * 10}%;
-          z-index: 999;
-        `;
-        
-        container.appendChild(particle);
-        
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 30 + Math.random() * 30;
-        
-        particle.animate([
-          {
-            transform: 'scale(1)',
-            opacity: 1
-          },
-          {
-            transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
-            opacity: 0
-          }
-        ], {
-          duration: 400,
-          easing: 'ease-out'
-        }).onfinish = () => particle.remove();
-      }
-    }
-
-    function createImpactEffect() {
-      const effect = document.createElement('div');
-      effect.className = 'impact-effect';
-      effect.textContent = impactEffects[Math.floor(Math.random() * impactEffects.length)];
-      effect.style.left = (Math.random() * 80 + 10) + '%';
-      effect.style.top = (Math.random() * 60 + 20) + '%';
-      
-      document.querySelector('.diamond-container').appendChild(effect);
-      
-      setTimeout(() => {
-        effect.remove();
-      }, 1000);
-    }
-
-    function updateCombo() {
-      const currentTime = Date.now();
-      if (currentTime - lastHitTime > 2000) {
-        combo = 0;
-      }
-      combo++;
-      lastHitTime = currentTime;
-      
-      if (combo >= 3) {
-        comboIndicator.textContent = `COMBO x${combo}`;
-        comboIndicator.style.display = 'block';
-      }
-    }
-
-    // Fonction d'attaque CORRIGÉE avec protection anti-clics multiples
-    function attack() {
-      if (currentHP <= 0 || isAttacking) return;
-      
-      isAttacking = true;
-      
-      let hits = attackMode;
-      let actualHits = 0;
-      let rosesEarned = 0;
-      let wasCracked = diamond.classList.contains('cracked');
-      
-      // Animer le marteau
-      animateHammer();
-      
-      playHitSound();
-      createHitParticles();
-      createImpactEffect();
-      updateCombo();
-      
-      let animationType = 'hit';
-      let shakeType = 'screen-shake';
-      let animationDuration = 400;
-      
-      if (attackMode >= 1000) {
-        animationType = 'ultra-hit';
-        shakeType = 'ultra-shake';
-        animationDuration = 1200;
-      } else if (attackMode >= 500) {
-        animationType = 'mega-hit';
-        shakeType = 'mega-shake';
-        animationDuration = 1000;
-      } else if (attackMode >= 100) {
-        animationType = 'critical-hit';
-        shakeType = 'mega-shake';
-        animationDuration = 800;
-      } else if (attackMode >= 30) {
-        animationType = 'heavy-hit';
-        animationDuration = 600;
-      } else if (attackMode >= 10) {
-        animationType = 'heavy-hit';
-        animationDuration = 600;
-      }
-
-      diamond.classList.add(animationType);
-      if (shakeType) gameContainer.classList.add(shakeType);
-      
-      for (let i = 0; i < hits && currentHP > 0; i++) {
-        coupCounter++;
-        actualHits++;
-        totalHits++;
-
-        // MODIFICATION : 1 coup = -1 point de vie (plus besoin de coupCounter >= 2)
-        currentHP--;
-
-        hitsUntilCoin--;
-        if (hitsUntilCoin <= 0) {
-          rosesEarnedThisDiamond++;
-          rosesEarned++;
-          hitsUntilCoin = 4;
-        }
-      }
-      
-      if (rosesEarned > 0) {
-        showRoseGain(rosesEarned);
-      }
-      
-      updateUI();
-      
-      if (!wasCracked && diamond.classList.contains('cracked')) {
-        playCrackSound();
-      }
-      
-      setTimeout(() => {
-        diamond.classList.remove(animationType);
-        if (shakeType) gameContainer.classList.remove(shakeType);
-        isAttacking = false;
-        
-        if (currentHP <= 0) {
-          endGame();
-        }
-      }, animationDuration);
-    }
-
-    function showRoseGain(amount) {
-      const roseDisplay = document.createElement('div');
-      roseDisplay.className = 'coins-display';
-      roseDisplay.textContent = `+${amount} 🌹`;
-      diamond.parentElement.appendChild(roseDisplay);
-      
-      setTimeout(() => {
-        roseDisplay.remove();
-      }, 1000);
-    }
-
-    function updateUI() {
-      if (currentHP === 0) {
-        diamond.className = "diamond broken";
-        message.textContent = "💥 Le diamant s'est brisé !";
+      if (jackpotAmount >= 1000) {
+        jackpotDisplay.classList.remove('jackpot-hidden');
+        jackpotDisplay.classList.add('jackpot-visible');
+        jackpotInfo.textContent = `Jackpot progressif ! Gagnez ${jackpotAmount} roses !`;
       } else {
-        if (maxHP - currentHP >= 20) {
-          diamond.classList.add("cracked");
-          message.textContent = "⚠️ Le diamant commence à se fissurer...";
-        } else {
-          diamond.classList.remove("cracked");
-          if (isPinkDiamond) {
-            message.textContent = "✨ DIAMANT ROSE SPÉCIAL ! ✨";
-          } else {
-            message.textContent = "À tout moment le diamant peut se briser...";
-          }
-        }
+        jackpotDisplay.classList.remove('jackpot-visible');
+        jackpotDisplay.classList.add('jackpot-hidden');
+        jackpotInfo.textContent = `Jackpot visible à partir de 1000 roses`;
       }
     }
 
-    function endGame() {
-      // MODIFICATION : Récompense = HP divisé par 5
-      let recompense = Math.floor(maxHP / 5);
-      
-      playBreakSound();
-      setTimeout(() => createDiamondShards(), 100);
-      
-      message.textContent = "💥 Félicitations ! Tu as cassé le diamant ! 🌹✨";
-      
-      setTimeout(() => {
-        coinsResult.innerHTML = `
-          <strong>🎉 BRAVO ! 🎉</strong><br>
-          Tu as cassé le diamant !<br>
-          <div style="font-size: 4em; margin: 10px 0; color: #feca57;">${recompense}</div>
-          <strong>Ta récompense : ${recompense} rose${recompense > 1 ? 's' : ''} !</strong>
-        `;
-        resultContainer.classList.remove("hidden");
-      }, 500);
-      
-      comboIndicator.style.display = "none";
+    // Obtenir un symbole aléatoire
+    function getRandomSymbol() {
+      return Math.floor(Math.random() * symbolTypes.length);
     }
 
+    // Mise à jour de l'affichage des symboles
+    function updateDisplay() {
+      lockContainer.innerHTML = '';
+      
+      symbols.forEach((symbolIndex, index) => {
+        const symbolElement = document.createElement('div');
+        symbolElement.className = `symbol-wheel ${symbolTypes[symbolIndex].colorClass}`;
+        symbolElement.id = `symbol${index + 1}`;
+        
+        const symbolData = symbolTypes[symbolIndex];
+        const img = document.createElement('img');
+        img.src = symbolData.image;
+        img.alt = symbolData.name;
+        img.className = 'symbol-image';
+        symbolElement.appendChild(img);
+        
+        lockContainer.appendChild(symbolElement);
+      });
+    }
+
+    // Mise à jour des informations de difficulté
+    function updateDifficultyInfo() {
+      difficultyInfo.textContent = `Objectif : Aligner 5 symboles identiques ! (0.0244% de chances - 1 sur 4,096)`;
+    }
+
+    // Supprimer les classes de victoire
+    function removeWinClasses() {
+      document.querySelectorAll('.symbol-wheel').forEach(symbol => {
+        symbol.classList.remove('winning');
+        symbol.classList.remove('spinning');
+        symbol.classList.remove('fast-spin');
+        
+        symbolTypes.forEach((sym, index) => {
+          symbol.classList.remove(sym.colorClass);
+        });
+        
+        const currentSymbol = symbols[parseInt(symbol.id.replace('symbol', '')) - 1];
+        if (currentSymbol !== undefined) {
+          symbol.classList.add(symbolTypes[currentSymbol].colorClass);
+        }
+      });
+    }
+
+    // Vérifier la victoire
+    function checkWin() {
+      const firstSymbol = symbols[0];
+      for (let i = 1; i < symbols.length; i++) {
+        if (symbols[i] !== firstSymbol) {
+          return false;
+        }
+      }
+      
+      lastWinningSymbol = firstSymbol;
+      return true;
+    }
+
+    // Gérer le bonus de roses
+    function handleRoseBonus() {
+      bonusCounter++;
+      
+      // Ajouter une rose seulement tous les 4 tours
+      if (bonusCounter % 4 === 0) {
+        rosesCount += 1;
+        jackpotAmount += 1;
+        message.textContent = `🌹 +1 rose ajoutée au jackpot !`;
+        
+        updateStats();
+        updateJackpotDisplay();
+      }
+    }
+
+    // Animation de rotation d'un symbole
+    function spinSymbol(index) {
+      return new Promise(resolve => {
+        const symbolElement = document.getElementById(`symbol${index + 1}`);
+        if (!symbolElement) return resolve();
+        
+        if (isFastMode) {
+          symbolElement.classList.add('spinning', 'fast-spin');
+        } else {
+          symbolElement.classList.add('spinning');
+        }
+        
+        let spins = 0;
+        const maxSpins = isFastMode ? 5 + Math.floor(Math.random() * 5) : 10 + Math.floor(Math.random() * 10);
+        const spinInterval = isFastMode ? 30 : 100;
+        
+        const spinIntervalId = setInterval(() => {
+          symbols[index] = getRandomSymbol();
+          updateSingleSymbol(index);
+          spins++;
+          
+          if (spins >= maxSpins) {
+            clearInterval(spinIntervalId);
+            symbolElement.classList.remove('spinning', 'fast-spin');
+            setTimeout(resolve, isFastMode ? 20 : 100);
+          }
+        }, spinInterval);
+      });
+    }
+
+    // Mettre à jour un seul symbole
+    function updateSingleSymbol(index) {
+      const symbolElement = document.getElementById(`symbol${index + 1}`);
+      if (!symbolElement) return;
+      
+      symbolTypes.forEach(sym => {
+        symbolElement.classList.remove(sym.colorClass);
+      });
+      
+      const symbolData = symbolTypes[symbols[index]];
+      symbolElement.classList.add(symbolData.colorClass);
+      
+      symbolElement.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = symbolData.image;
+      img.alt = symbolData.name;
+      img.className = 'symbol-image';
+      symbolElement.appendChild(img);
+    }
+
+    // Basculer le mode accéléré
+    function toggleSpeedMode() {
+      isFastMode = !isFastMode;
+      
+      if (isFastMode) {
+        speedBtn.classList.add('active');
+        speedBtn.innerHTML = '⏩ Ralenti';
+        speedIndicator.style.display = 'block';
+        message.textContent = 'Mode accéléré activé !';
+      } else {
+        speedBtn.classList.remove('active');
+        speedBtn.innerHTML = '⏩ Accélérer';
+        speedIndicator.style.display = 'none';
+        message.textContent = 'Mode normal activé';
+      }
+    }
+
+    // Afficher la récompense
+    function showReward() {
+      const rewardAnimation = document.createElement('div');
+      rewardAnimation.className = 'reward-animation';
+      
+      rewardAnimation.innerHTML = `
+        <div class="reward-popup">
+          <div class="reward-popup-icon">
+            <img src="${symbolTypes[lastWinningSymbol].image}" alt="${symbolTypes[lastWinningSymbol].name}" style="width: 100px; height: 100px;">
+          </div>
+          <div class="reward-popup-title">JACKPOT GAGNÉ !</div>
+          <div class="reward-popup-description">Vous avez remporté ${jackpotAmount} roses !</div>
+          <button class="reward-close">CONTINUER</button>
+        </div>
+      `;
+      
+      document.body.appendChild(rewardAnimation);
+      
+      const closeButton = rewardAnimation.querySelector('.reward-close');
+      closeButton.addEventListener('click', () => {
+        document.body.removeChild(rewardAnimation);
+      });
+      
+      setTimeout(() => {
+        if (document.body.contains(rewardAnimation)) {
+          document.body.removeChild(rewardAnimation);
+        }
+      }, 7000);
+    }
+
+    // Tourner tous les symboles
+    async function spinAllSymbols() {
+      if (isSpinning) return;
+      
+      isSpinning = true;
+      spinBtn.disabled = true;
+      message.textContent = "Les rouleaux tournent...";
+      
+      for (let coup = 0; coup < attackMode; coup++) {
+        const spinPromises = [];
+        for (let i = 0; i < currentDifficulty; i++) {
+          if (isFastMode) {
+            spinPromises.push(spinSymbol(i));
+          } else {
+            await spinSymbol(i);
+          }
+        }
+        
+        if (isFastMode && spinPromises.length > 0) {
+          await Promise.all(spinPromises);
+        }
+        
+        attempts++;
+        
+        // Gérer le bonus de roses
+        handleRoseBonus();
+        updateStats();
+        
+        if (checkWin()) {
+          await winGame();
+          break;
+        } else if (coup < attackMode - 1) {
+          await new Promise(resolve => setTimeout(resolve, isFastMode ? 100 : 300));
+        }
+      }
+      
+      if (!checkWin()) {
+        const symbolCounts = {};
+        symbols.forEach(symbolIndex => {
+          const symbolName = symbolTypes[symbolIndex].name;
+          symbolCounts[symbolName] = (symbolCounts[symbolName] || 0) + 1;
+        });
+        
+        const maxCount = Math.max(...Object.values(symbolCounts));
+        message.textContent = `Maximum ${maxCount} symboles identiques - Jackpot: ${jackpotAmount} roses`;
+      }
+      
+      isSpinning = false;
+      spinBtn.disabled = false;
+    }
+
+    // Gestion de la victoire
+    async function winGame() {
+      winAnimationActive = true;
+      const winningSymbol = symbolTypes[lastWinningSymbol];
+      message.textContent = `🎉 JACKPOT ! Vous avez aligné ${currentDifficulty} ${winningSymbol.name}s ! 🎉`;
+      
+      for (let i = 0; i < currentDifficulty; i++) {
+        setTimeout(() => {
+          const symbolElement = document.getElementById(`symbol${i + 1}`);
+          if (symbolElement) symbolElement.classList.add('winning');
+        }, i * 200);
+      }
+      
+      winMessage.textContent = `Vous avez aligné ${currentDifficulty} ${winningSymbol.name}s !`;
+      attemptsResult.textContent = `Nombre de tours : ${attempts}`;
+      winningSymbolElement.textContent = `Symbole gagnant : ${winningSymbol.name}`;
+      jackpotWinElement.textContent = `+ ${jackpotAmount} 🌹`;
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      resultContainer.classList.remove('hidden');
+      
+      showReward();
+      
+      setTimeout(() => {
+        winAnimationActive = false;
+      }, 5000);
+    }
+
+    // Définir le mode d'attaque
     function setAttackMode(mode) {
       attackMode = mode;
       
@@ -1179,108 +1130,51 @@
         btn.classList.remove('active');
       });
       
-      // si l'élément existe (sécurité)
-      const btnEl = document.getElementById(`mode${mode}`);
-      if (btnEl) btnEl.classList.add('active');
-
-      attackBtn.textContent = `Attaquer (${mode} coup${mode > 1 ? 's' : ''})`;
+      document.getElementById(`mode${mode}`).classList.add('active');
+      
+      spinBtn.textContent = `Tourner (${mode.toLocaleString()} tour${mode > 1 ? 's' : ''})`;
     }
 
-    function initGame() {
-      // MODIFICATION : vie fixée à 140000 au lieu d'être aléatoire
-      maxHP = 140000;
-      currentHP = maxHP;
-      coupCounter = 0;
-      totalHits = 0;
-      hitsUntilCoin = 4;
-      rosesEarnedThisDiamond = 0;
-      combo = 0;
-      lastHitTime = 0;
-      isAttacking = false;
-      
-      isPinkDiamond = Math.random() < 0.1;
-      
-      diamond.className = "diamond";
-      if (isPinkDiamond) {
-        diamond.classList.add("pink");
-        message.textContent = "✨ DIAMANT ROSE SPÉCIAL ! ✨";
-      } else {
-        message.textContent = `À tout moment le diamant peut se briser...`;
-      }
-      
-      resultContainer.classList.add("hidden");
-      comboIndicator.style.display = "none";
-
-      // reset des compteurs visibles (sécurité si tu veux les afficher autrement)
-      coupCounter = 0;
-      totalHits = 0;
-      hitsUntilCoin = 4;
-    }
-
-    // Événements CORRIGÉS
-    document.getElementById("attackBtn").addEventListener("click", attack);
-    document.getElementById("resetBtn").addEventListener("click", initGame);
+    // Événements
+    spinBtn.addEventListener('click', spinAllSymbols);
+    speedBtn.addEventListener('click', toggleSpeedMode);
+    resetBtn.addEventListener('click', initGame);
 
     document.getElementById("mode1").addEventListener("click", () => setAttackMode(1));
     document.getElementById("mode5").addEventListener("click", () => setAttackMode(5));
     document.getElementById("mode10").addEventListener("click", () => setAttackMode(10));
     document.getElementById("mode30").addEventListener("click", () => setAttackMode(30));
-    document.getElementById("mode50").addEventListener("click", () => setAttackMode(50));
     document.getElementById("mode100").addEventListener("click", () => setAttackMode(100));
-    document.getElementById("mode500").addEventListener("click", () => setAttackMode(500));
-    document.getElementById("mode1000").addEventListener("click", () => setAttackMode(1000));
+    document.getElementById("mode10000").addEventListener("click", () => setAttackMode(10000));
 
     // Raccourcis clavier
     document.addEventListener('keydown', (e) => {
-      if (isAttacking) return;
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        if (!isSpinning && !winAnimationActive) {
+          spinAllSymbols();
+        }
+      }
       
-      switch(e.key) {
-        case ' ':
-        case 'Enter':
-          e.preventDefault();
-          attack();
-          break;
-        case '1':
-          setAttackMode(1);
-          break;
-        case '2':
-          setAttackMode(5);
-          break;
-        case '3':
-          setAttackMode(10);
-          break;
-        case '4':
-          setAttackMode(30);
-          break;
-        case '5':
-          setAttackMode(50);
-          break;
-        case '6':
-          setAttackMode(100);
-          break;
-        case '7':
-          setAttackMode(500);
-          break;
-        case '8':
-          setAttackMode(1000);
-          break;
-        case 'r':
-        case 'R':
-          initGame();
-          break;
+      if (e.key === 'r' || e.key === 'R') {
+        initGame();
+      }
+      
+      if (e.key === 's' || e.key === 'S') {
+        toggleSpeedMode();
+      }
+      
+      if (e.key >= '1' && e.key <= '6') {
+        const modes = [1, 5, 10, 30, 100, 10000];
+        const index = parseInt(e.key) - 1;
+        if (index < modes.length) {
+          setAttackMode(modes[index]);
+        }
       }
     });
 
-    // Reset combo après inactivité
-    setInterval(() => {
-      const currentTime = Date.now();
-      if (currentTime - lastHitTime > 3000 && combo > 0) {
-        combo = 0;
-        comboIndicator.style.display = "none";
-      }
-    }, 1000);
-
-    initGame();
+    // Initialisation au chargement
+    window.addEventListener('load', initGame);
   </script>
 </body>
 </html>
